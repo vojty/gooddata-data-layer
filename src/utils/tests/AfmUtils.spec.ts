@@ -1,7 +1,7 @@
-import { appendFilters } from '../AfmUtils';
+import { appendFilters, isAfmExecutable } from '../AfmUtils';
 import { IAttributeFilter, IDateFilter } from '../../interfaces/Afm';
 
-describe('appendFilters', () => {
+describe('AFM utils', () => {
     const af1 = {
         id: '1',
         type: 'attribute',
@@ -28,61 +28,106 @@ describe('appendFilters', () => {
         type: 'date'
     } as IDateFilter;
 
-    it('should concatenate filters when all different', () => {
-        const afm = {
-            filters: [
-                af1
-            ]
-        };
-        const attributeFilters = [af2];
-        const dateFilter = df1;
+    describe('appendFilters', () => {
+        it('should concatenate filters when all different', () => {
+            const afm = {
+                filters: [
+                    af1
+                ]
+            };
+            const attributeFilters = [af2];
+            const dateFilter = df1;
 
-        const enriched = appendFilters(afm, attributeFilters, dateFilter);
-        expect(enriched.filters).toEqual([
-            af1, af2, df1
-        ]);
-    });
+            const enriched = appendFilters(afm, attributeFilters, dateFilter);
+            expect(enriched.filters).toEqual([
+                af1, af2, df1
+            ]);
+        });
 
-    it('should override date filter if id identical', () => {
-        const afm = {
-            filters: [
+        it('should override date filter if id identical', () => {
+            const afm = {
+                filters: [
+                    af1, df1
+                ]
+            };
+            const attributeFilters = [];
+            const dateFilter = df1;
+
+            const enriched = appendFilters(afm, attributeFilters, dateFilter);
+            expect(enriched.filters).toEqual([
                 af1, df1
-            ]
-        };
-        const attributeFilters = [];
-        const dateFilter = df1;
+            ]);
+        });
 
-        const enriched = appendFilters(afm, attributeFilters, dateFilter);
-        expect(enriched.filters).toEqual([
-            af1, df1
-        ]);
+        it('should duplicate date filter if id different', () => {
+            const afm = {
+                filters: [
+                    df1
+                ]
+            };
+            const attributeFilters = [];
+            const dateFilter = df2;
+
+            const enriched = appendFilters(afm, attributeFilters, dateFilter);
+            expect(enriched.filters).toEqual([
+                df1, df2
+            ]);
+        });
+
+        it('should delete date filter from afm if all time date filter requested', () => {
+            const afm = {
+                filters: [
+                    df1
+                ]
+            };
+            const attributeFilters = [];
+            const dateFilter = df1AllTime;
+
+            const enriched = appendFilters(afm, attributeFilters, dateFilter);
+            expect(enriched.filters).toEqual([]);
+        });
     });
 
-    it('should duplicate date filter if id different', () => {
-        const afm = {
-            filters: [
-                df1
-            ]
-        };
-        const attributeFilters = [];
-        const dateFilter = df2;
+    describe('isAfmExecutable', () => {
+        it('should be false for only filters', () => {
+            const afm = {
+                filters: [
+                    df1
+                ]
+            };
 
-        const enriched = appendFilters(afm, attributeFilters, dateFilter);
-        expect(enriched.filters).toEqual([
-            df1, df2
-        ]);
-    });
+            expect(isAfmExecutable(afm)).toBeFalsy();
+        });
 
-    it('should delete date filter from afm if all time date filter requested', () => {
-        const afm = {
-            filters: [
-                df1
-            ]
-        };
-        const attributeFilters = [];
-        const dateFilter = df1AllTime;
+        it('should be true for at least one measure', () => {
+            const afm = {
+                measures: [
+                    {
+                        id: 'm1',
+                        definition: {
+                            baseObject: {
+                                id: 'm1'
+                            },
+                            aggregation: 'count'
+                        }
+                    }
+                ]
+            };
 
-        const enriched = appendFilters(afm, attributeFilters, dateFilter);
-        expect(enriched.filters).toEqual([]);
+            expect(isAfmExecutable(afm)).toBeTruthy();
+        });
+
+        it('should be true for at least one attribute', () => {
+            const afm = {
+                attributes: [
+                    {
+                        id: '/gdc/project/dsdf1',
+                        type: 'date'
+                    }
+                ]
+            };
+
+            expect(isAfmExecutable(afm)).toBeTruthy();
+        });
     });
 });

@@ -1,4 +1,4 @@
-import { compact } from 'lodash';
+import { get, compact } from 'lodash';
 import { IAfm, IDateFilter, IFilter, IAttributeFilter } from '../interfaces/Afm';
 
 /**
@@ -33,3 +33,7 @@ export const appendFilters = (afm: IAfm, attributeFilters: IAttributeFilter[], d
 
     return Object.assign({}, afm, { filters });
 };
+
+export function isAfmExecutable(afm) {
+    return get(afm, 'measures.length') > 0 || get(afm, 'attributes.length') > 0;
+}

@@ -28,4 +28,8 @@ export class UriMetadataSource implements IMetadataSource {
             });
         });
     }
+
+    public getFingerprint() {
+        return this.uri;
+    }
 }

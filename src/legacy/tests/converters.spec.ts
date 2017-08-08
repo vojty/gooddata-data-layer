@@ -14,6 +14,7 @@ import {
     attributeBasedMeasure,
     stackingAttribute,
     attributeFilter,
+    attributeFilterWithAll,
     dateFilter,
     dateFilterWithoutInterval,
     attributeWithIdentifier,
@@ -308,6 +309,13 @@ describe('converters', () => {
         it('should convert stacking attribute', () => {
             expect(toAFM(charts.bar.stackingAttribute, attributesMap)).toEqual({
                 ...stackingAttribute,
+                type: 'bar'
+            });
+        });
+
+        it('should skip attribute filter with ALL', () => {
+            expect(toAFM(charts.bar.attributeFilterWithAll, attributesMap)).toEqual({
+                ...attributeFilterWithAll,
                 type: 'bar'
             });
         });
