@@ -20,6 +20,7 @@ import {
 describe('UriAdapter', () => {
     const projectId = 'FoodMartDemo';
     const uri = '/gdc/md/FoodMartDemo/1';
+    const uri2 = '/gdc/md/FoodMartDemo/2';
 
     let DummySDK;
     beforeEach(() => {
@@ -56,6 +57,20 @@ describe('UriAdapter', () => {
         adapter.createDataSource({ uri }).catch((error) => {
             expect(error).toBe('invalid URI');
             done();
+        });
+    });
+
+    it('should request visualization object for consecutive createDataSource call only when uri changes', (done) => {
+        const adapter = new UriAdapter(DummySDK, projectId);
+        adapter.createDataSource({ uri }).then((dataSource) => {
+            expect(DummySDK.xhr.get).toHaveBeenCalledTimes(1);
+            adapter.createDataSource({ uri }).then((dataSource) => {
+                expect(DummySDK.xhr.get).toHaveBeenCalledTimes(1);
+                adapter.createDataSource({ uri2 }).then((dataSource) => {
+                    expect(DummySDK.xhr.get).toHaveBeenCalledTimes(2);
+                    done();
+                });
+            });
         });
     });
 });
