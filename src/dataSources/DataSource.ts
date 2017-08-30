@@ -1,5 +1,10 @@
+import * as stringify from 'json-stable-stringify';
 import { IDataSource } from '../interfaces/DataSource';
 import { IAfm } from '../interfaces/Afm';
+
+export {
+    IDataSource
+};
 
 export type execFactory = (transformation) => Promise<any>;
 
@@ -15,6 +20,6 @@ export class DataSource implements IDataSource {
     }
 
     public getFingerprint(): string {
-        return JSON.stringify(this.afm);
+        return stringify(this.afm);
     }
 }

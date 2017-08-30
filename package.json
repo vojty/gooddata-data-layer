@@ -9,6 +9,7 @@
   ],
   "typings": "dist/index.d.ts",
   "dependencies": {
+    "json-stable-stringify": "1.0.1",
     "lodash": "4.17.4"
   },
   "devDependencies": {
@@ -23,8 +24,7 @@
     "typescript": "2.4.2"
   },
   "scripts": {
-    "test": "jest",
-    "watchTest": "jest --watch",
+    "test": "jest --watch",
     "dev": "rm -rf dist && tsc -d --outDir dist --watch",
     "prepublish": "rm -rf dist && tsc -d --outDir dist",
     "tslint": "tslint --format verbose --config tslint.json index.ts src/**/*.ts",

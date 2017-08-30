@@ -1,3 +1,4 @@
+import * as stringify from 'json-stable-stringify';
 import { DataSource } from '../DataSource';
 
 describe('DataSource', () => {
@@ -23,6 +24,6 @@ describe('DataSource', () => {
         const execFactory = () => Promise.resolve({});
         const dataSource = new DataSource(execFactory, afm);
 
-        expect(dataSource.getFingerprint()).toEqual(JSON.stringify(afm));
+        expect(dataSource.getFingerprint()).toEqual(stringify(afm));
     });
 });

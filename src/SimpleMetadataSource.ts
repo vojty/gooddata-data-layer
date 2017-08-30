@@ -1,11 +1,16 @@
+import * as stringify from 'json-stable-stringify';
 import * as VisObj from './legacy/model/VisualizationObject';
 import { IMetadataSource } from './interfaces/MetadataSource';
 
 export class SimpleMetadataSource implements IMetadataSource {
+    private fingerprint;
+
     constructor(
         private visualizationObjectContent: VisObj.IVisualizationObject,
         private measuresMap: VisObj.IMeasuresMap
-    ) {}
+    ) {
+        this.fingerprint = stringify(this.visualizationObjectContent);
+    }
 
     public getVisualizationMetadata(): Promise<VisObj.IVisualizationMetadataResult> {
         return Promise.resolve({
@@ -15,5 +20,9 @@ export class SimpleMetadataSource implements IMetadataSource {
             },
             measuresMap: this.measuresMap
         });
+    }
+
+    public getFingerprint() {
+        return this.fingerprint;
     }
 }

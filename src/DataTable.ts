@@ -1,15 +1,11 @@
 import isEqual = require('lodash/isEqual');
-import get = require('lodash/get');
 
 import { IAdapter } from './interfaces/Adapter';
 import { IDataSource } from './interfaces/DataSource';
+import { isAfmExecutable } from './utils/AfmUtils';
 
 export type IDataSubscriber = (data: any) => any;
 export type IErrorSubscriber = (error: any) => any;
-
-function shouldExecuteAfm(afm) {
-    return get(afm, 'measures.length') > 0 || get(afm, 'attributes.length') > 0;
-}
 
 /*
  * We are not able to cancel Promise, so we make it "cancellable".
@@ -55,7 +51,7 @@ export class DataTable {
     }
 
     public getData(afm, transformation) {
-        if (!shouldExecuteAfm(afm)) {
+        if (!isAfmExecutable(afm)) {
             return;
         }
 
@@ -77,7 +73,7 @@ export class DataTable {
      * cancelled, it's rejected with object { isCancelled: true }
      */
     public execute(afm, transformation) {
-        if (!shouldExecuteAfm(afm)) {
+        if (!isAfmExecutable(afm)) {
             return Promise.resolve(null);
         }
 

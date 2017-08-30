@@ -334,7 +334,41 @@ const attributeFilter: IVisualizationObject = {
                     displayForm: ATTRIBUTE_DISPLAY_FORM_URI_2,
                     default: {
                         negativeSelection: false,
+                        attributeElements: [
+                            `${ATTRIBUTE_DISPLAY_FORM_URI_2}?id=a`
+                        ]
+                    }
+                }
+            }
+        ]
+    }
+};
+
+const attributeFilterWithAll: IVisualizationObject = {
+    type: 'bar',
+    buckets: {
+        measures: [],
+        categories: [],
+        filters: [
+            {
+                listAttributeFilter: {
+                    attribute: ATTRIBUTE_URI,
+                    displayForm: ATTRIBUTE_DISPLAY_FORM_URI,
+                    default: {
+                        negativeSelection: true,
                         attributeElements: []
+                    }
+                }
+            },
+            {
+                listAttributeFilter: {
+                    attribute: ATTRIBUTE_URI_2,
+                    displayForm: ATTRIBUTE_DISPLAY_FORM_URI_2,
+                    default: {
+                        negativeSelection: false,
+                        attributeElements: [
+                            `${ATTRIBUTE_DISPLAY_FORM_URI_2}?id=a`
+                        ]
                     }
                 }
             }
@@ -396,9 +430,7 @@ const stackingAttribute: IVisualizationObject = {
                     displayForm: ATTRIBUTE_DISPLAY_FORM_URI,
                     default: {
                         negativeSelection: true,
-                        attributeElements: [
-
-                        ]
+                        attributeElements: [`${ATTRIBUTE_DISPLAY_FORM_URI}?id=1`]
                     }
                 }
             }
@@ -422,6 +454,7 @@ export const charts = {
         dateFilterWithStrings,
         dateFilterWithUndefs,
         attributeFilter,
+        attributeFilterWithAll,
         stackingAttribute
     }
 };

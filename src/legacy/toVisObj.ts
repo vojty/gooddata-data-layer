@@ -8,6 +8,7 @@ import { isUri } from '../helpers/uri';
 import * as VisObj from './model/VisualizationObject';
 import { IHeader } from '../interfaces/Header';
 
+// Now ignores attribute elements, will be added in ONE-2706
 function convertMeasureFilter(): VisObj.IEmbeddedListAttributeFilter {
     return {
         listAttributeFilter: {
@@ -184,6 +185,12 @@ function isNegativeAttributeFilter(filter: Afm.IAttributeFilter): filter is Afm.
     return !!(filter as Afm.INegativeAttributeFilter).notIn;
 }
 
+function toUris(ids: string[], attributeUri: string) {
+    return ids.map((id) => {
+        return `${attributeUri}?id=${id}`;
+    });
+}
+
 function convertFilter(filter: Afm.IFilter): VisObj.EmbeddedFilter {
     if (isDateFilter(filter)) {
         const [from, to] = filter.between;
@@ -207,7 +214,8 @@ function convertFilter(filter: Afm.IFilter): VisObj.EmbeddedFilter {
                 displayForm: attributeFilter.id,
                 default: {
                     negativeSelection: false,
-                    attributeElements: attributeFilter.in
+                    // Note: should lookup attribute uri from displayForm and pass that to the toUris method, ONE-2706
+                    attributeElements: toUris(attributeFilter.in, attributeFilter.id)
                 }
             }
         } as VisObj.IEmbeddedListAttributeFilter;
@@ -221,7 +229,7 @@ function convertFilter(filter: Afm.IFilter): VisObj.EmbeddedFilter {
                 displayForm: attributeFilter.id,
                 default: {
                     negativeSelection: true,
-                    attributeElements: attributeFilter.notIn
+                    attributeElements: toUris(attributeFilter.notIn, attributeFilter.id)
                 }
             }
         } as VisObj.IEmbeddedListAttributeFilter;

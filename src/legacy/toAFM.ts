@@ -22,11 +22,16 @@ function convertBaseAttributeFilter(filter) {
         return el.split('=')[1]; // pick ID from URL: /gdc/md/obj/1/elements?id=1
     });
 
-    const selectionType = filter.listAttributeFilter.default.negativeSelection ? 'notIn' : 'in';
-    return {
-        id: filter.listAttributeFilter.displayForm,
-        [selectionType]: items
-    };
+    // skip filters with ALL
+    if (items.length > 0) {
+        const selectionType = filter.listAttributeFilter.default.negativeSelection ? 'notIn' : 'in';
+        return {
+            id: filter.listAttributeFilter.displayForm,
+            [selectionType]: items
+        };
+    }
+
+    return null;
 }
 
 function convertMeasureAttributeFilters(measure: VisObj.IMeasure): Afm.IMeasureAttributeFilter[] {

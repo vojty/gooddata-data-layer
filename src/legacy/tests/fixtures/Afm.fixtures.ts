@@ -373,7 +373,7 @@ export const stackingAttribute: IFixture = {
             {
                 id: ATTRIBUTE_DISPLAY_FORM_URI,
                 type: 'attribute',
-                notIn: []
+                notIn: ['1']
             }
         ]
     },
@@ -406,7 +406,18 @@ export const attributeFilter: IFixture = {
         }, {
             id: ATTRIBUTE_DISPLAY_FORM_URI_2,
             type: 'attribute',
-            in: []
+            in: ['a']
+        }]
+    },
+    transformation: {}
+};
+
+export const attributeFilterWithAll: IFixture = {
+    afm: {
+        filters: [{
+            id: ATTRIBUTE_DISPLAY_FORM_URI_2,
+            type: 'attribute',
+            in: ['a']
         }]
     },
     transformation: {}
@@ -429,7 +440,7 @@ export const dateFilterWithoutInterval: IFixture = {
         filters: [{
             id: DATE_DATA_SET_URI,
             type: 'date',
-            between: [undefined, undefined]
+            between: [undefined, undefined],
             granularity: 'date'
         }]
     },
