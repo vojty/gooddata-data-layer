@@ -29,7 +29,8 @@
     "prepublish": "rm -rf dist && tsc -d --outDir dist",
     "tslint": "tslint --format verbose --config tslint.json index.ts src/**/*.ts",
     "tslint-ci": "mkdir -p ./ci/results && tslint --config tslint.json --format checkstyle --out ./ci/results/tslint-results.xml index.ts src/**/*.ts",
-    "validate": "tsc -p tsconfig.base.json --noEmit && yarn tslint"
+    "validate": "tsc -p tsconfig.base.json --noEmit && yarn tslint",
+    "validate-ci": "tsc -p tsconfig.base.json --noEmit && yarn tslint-ci"
   },
   "author": "GoodData",
   "license": "SEE LICENSE IN LICENSE.txt",

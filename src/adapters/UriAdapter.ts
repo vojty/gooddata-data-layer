@@ -5,6 +5,7 @@ import { SimpleExecutorAdapter } from './SimpleExecutorAdapter';
 import { toAFM } from '../legacy/converters';
 import { appendFilters } from '../utils/AfmUtils';
 import { getAttributesMap } from '../helpers/metadata';
+import { IDataSourceParams } from '../interfaces/DataSourceParams';
 
 export class UriAdapter implements IAdapter {
     private projectId: string;
@@ -17,14 +18,16 @@ export class UriAdapter implements IAdapter {
         this.projectId = projectId;
     }
 
-    public createDataSource({ uri, attributeFilters, dateFilter }): Promise<IDataSource> {
-        return this.fetchVisualizationObject(uri)
+    public createDataSource(dataSourceParams: IDataSourceParams): Promise<IDataSource> {
+        return this.fetchVisualizationObject(dataSourceParams.uri)
             .then((visObject) => {
                 return getAttributesMap(this.sdk, this.projectId, visObject.visualization)
                     .then((attributesMap = {}) => {
                         const content = visObject.visualization.content;
                         const { afm } = toAFM(content, attributesMap);
-                        const afmWithAttributeFilters: IAfm = appendFilters(afm, attributeFilters, dateFilter);
+                        const afmWithAttributeFilters: IAfm = appendFilters(afm,
+                            dataSourceParams.attributeFilters,
+                            dataSourceParams.dateFilter);
                         const simpleAdapter = new SimpleExecutorAdapter(this.sdk, this.projectId);
 
                         return simpleAdapter.createDataSource(afmWithAttributeFilters);
