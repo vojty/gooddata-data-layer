@@ -9,14 +9,12 @@ import { ISort, ITransformation } from '../interfaces/Transformation';
 import { isUri, areUris } from '../helpers/uri';
 import {
     IMeasure,
-    IMeasureAttributeFilter,
     ISpecificObject,
     ILookupObject,
     IAfm,
+    IFilter,
     IDateFilter,
     IAttributeFilter,
-    IPositiveFilter,
-    INegativeFilter,
     IPositiveAttributeFilter,
     INegativeAttributeFilter
 } from '../interfaces/Afm';
@@ -32,25 +30,35 @@ export interface IAttributeMapKeys {
 
 export type AttributeMap = IAttributeMapKeys[];
 
-const getFilterExpression = (filter: IMeasureAttributeFilter, attributesMapping) => {
-    const elements = (filter as IPositiveFilter).in || (filter as INegativeFilter).notIn;
+function  getAttributeFilterExpression(filter: IAttributeFilter, attributesMapping) {
+    const elements = (filter as IPositiveAttributeFilter).in || (filter as INegativeAttributeFilter).notIn;
 
     if (isEmpty(elements)) {
         return null;
     }
 
     const id = getAttributeByDisplayForm(attributesMapping, filter.id);
-    const inExpr = (filter as INegativeFilter).notIn ? 'NOT IN' : 'IN';
+    const inExpr = (filter as INegativeAttributeFilter).notIn ? 'NOT IN' : 'IN';
     const elementsForQuery = elements.map(e => isUri(id) ? `[${id}/elements?id=${e}]` : `{${id}?${e}}`);
 
     return `${wrapId(id)} ${inExpr} (${elementsForQuery.join(',')})`;
-};
+}
 
-const getFiltersExpression = (filters: IMeasureAttributeFilter[] = [], attributesMapping) => {
-    const filterExpressions = filters.map(filter => getFilterExpression(filter, attributesMapping));
+function isAttributeFilter(filter: IFilter): filter is IAttributeFilter {
+    return filter.type === 'attribute';
+}
+
+function getFiltersExpression(filters: IFilter[] = [], attributesMapping) {
+    const filterExpressions = filters.map((filter) => {
+        if (isAttributeFilter(filter)) {
+            return getAttributeFilterExpression(filter, attributesMapping);
+        }
+
+        return null;
+    });
 
     return compact(filterExpressions).join(' AND ');
-};
+}
 
 const wrapId = (id: string) => isUri(id) ? `[${id}]` : `{${id}}`;
 

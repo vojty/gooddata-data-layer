@@ -4,6 +4,8 @@ import {
     empty,
     simpleMeasure,
     filteredMeasure,
+    measureWithAbsoluteDate,
+    measureWithRelativeDate,
     popMeasure,
     popMeasureWithSorting,
     showInPercent,
@@ -182,6 +184,20 @@ describe('converters', () => {
         it('should convert filtered measures', () => {
             expect(toAFM(charts.bar.filteredMeasure, attributesMap)).toEqual({
                 ...filteredMeasure,
+                type: 'bar'
+            });
+        });
+
+        it('should convert relative date filtered measures', () => {
+            expect(toAFM(charts.bar.measureWithRelativeDate, attributesMap)).toEqual({
+                ...measureWithRelativeDate,
+                type: 'bar'
+            });
+        });
+
+        it('should convert absolute date filtered measures', () => {
+            expect(toAFM(charts.bar.measureWithAbsoluteDate, attributesMap)).toEqual({
+                ...measureWithAbsoluteDate,
                 type: 'bar'
             });
         });

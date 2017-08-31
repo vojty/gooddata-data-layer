@@ -12,6 +12,7 @@ export const empty: IFixture = {
     transformation: {}
 };
 
+export const METRIC_ID_URI = '/gdc/md/project/obj/metric.id';
 export const ATTRIBUTE_DISPLAY_FORM_URI = '/gdc/md/project/obj/1';
 export const ATTRIBUTE_URI = '/gdc/md/project/obj/11';
 export const ATTRIBUTE_DISPLAY_FORM_URI_2 = '/gdc/md/project/obj/2';
@@ -27,7 +28,7 @@ export const simpleMeasure: IFixture = {
                 id: 'm1',
                 definition: {
                     baseObject: {
-                        id: '/gdc/md/project/obj/metric.id'
+                        id: METRIC_ID_URI
                     }
                 }
             }
@@ -51,11 +52,92 @@ export const filteredMeasure: IFixture = {
                 id: 'm1',
                 definition: {
                     baseObject: {
-                        id: '/gdc/md/project/obj/metric.id'
+                        id: METRIC_ID_URI
                     },
                     filters: [
                         {
                             id: ATTRIBUTE_DISPLAY_FORM_URI,
+                            type: 'attribute',
+                            in: [
+                                '1', '2'
+                            ]
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+
+    transformation: {
+        measures: [
+            {
+                id: 'm1',
+                title: 'Measure M1'
+            }
+        ]
+    }
+};
+
+export const measureWithRelativeDate: IFixture = {
+    afm: {
+        measures: [
+            {
+                id: 'm1',
+                definition: {
+                    baseObject: {
+                        id: METRIC_ID_URI
+                    },
+                    filters: [
+                        {
+                            id: DATE_DATA_SET_URI,
+                            type: 'date',
+                            intervalType: 'relative',
+                            granularity: 'date',
+                            between: [-89, 0]
+                        },
+                        {
+                            id: ATTRIBUTE_DISPLAY_FORM_URI,
+                            type: 'attribute',
+                            in: [
+                                '1', '2'
+                            ]
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+
+    transformation: {
+        measures: [
+            {
+                id: 'm1',
+                title: 'Measure M1'
+            }
+        ]
+    }
+};
+
+export const measureWithAbsoluteDate: IFixture = {
+    afm: {
+        measures: [
+            {
+                id: 'm1',
+                definition: {
+                    baseObject: {
+                        id: METRIC_ID_URI
+                    },
+                    filters: [
+                        {
+                            id: DATE_DATA_SET_URI,
+                            type: 'date',
+                            intervalType: 'absolute',
+                            granularity: 'date',
+                            between: ['2016-01-01', '2017-01-01']
+                        },
+                        {
+                            id: ATTRIBUTE_DISPLAY_FORM_URI,
+                            type: 'attribute',
                             in: [
                                 '1', '2'
                             ]
@@ -94,7 +176,7 @@ export const popMeasure: IFixture = {
                 id: 'm1',
                 definition: {
                     baseObject: {
-                        id: '/gdc/md/project/obj/metric.id'
+                        id: METRIC_ID_URI
                     }
                 }
             }
@@ -143,7 +225,7 @@ export const popMeasureWithSorting: IFixture = {
                 id: 'm1',
                 definition: {
                     baseObject: {
-                        id: '/gdc/md/project/obj/metric.id'
+                        id: METRIC_ID_URI
                     }
                 }
             }
@@ -184,7 +266,7 @@ export const showInPercent: IFixture = {
                 id: 'm1',
                 definition: {
                     baseObject: {
-                        id: '/gdc/md/project/obj/metric.id'
+                        id: METRIC_ID_URI
                     },
                     showInPercent: true
                 }
@@ -217,7 +299,7 @@ export const showInPercentWithDate: IFixture = {
                 id: 'm1',
                 definition: {
                     baseObject: {
-                        id: '/gdc/md/project/obj/metric.id'
+                        id: METRIC_ID_URI
                     },
                     showInPercent: true
                 }
@@ -250,7 +332,7 @@ export const measureWithSorting: IFixture = {
                 id: 'm1',
                 definition: {
                     baseObject: {
-                        id: '/gdc/md/project/obj/metric.id'
+                        id: METRIC_ID_URI
                     }
                 }
             }
@@ -348,7 +430,7 @@ export const stackingAttribute: IFixture = {
                 definition: {
                     aggregation: 'sum',
                     baseObject: {
-                        id: '/gdc/md/project/obj/metric.id'
+                        id: METRIC_ID_URI
                     }
                 }
             }
@@ -366,6 +448,7 @@ export const stackingAttribute: IFixture = {
         filters: [
             {
                 id: DATE_DATA_SET_URI,
+                intervalType: 'relative',
                 between: [-3, 0],
                 granularity: 'quarter',
                 type: 'date'
@@ -428,6 +511,7 @@ export const dateFilter: IFixture = {
         filters: [{
             id: DATE_DATA_SET_URI,
             type: 'date',
+            intervalType: 'relative',
             between: [-89, 0],
             granularity: 'date'
         }]
@@ -440,6 +524,7 @@ export const dateFilterWithoutInterval: IFixture = {
         filters: [{
             id: DATE_DATA_SET_URI,
             type: 'date',
+            intervalType: 'relative',
             between: [undefined, undefined],
             granularity: 'date'
         }]

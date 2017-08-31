@@ -14,21 +14,10 @@ export interface INegativeAttributeFilter extends IBaseAttributeFilter {
 export interface IDateFilter {
     id: string; // dateDataSet URI
     type: 'date';
+    intervalType: 'absolute' | 'relative';
     between: [string, string] | [number, number];
     granularity: string;
 }
-
-export interface IPositiveFilter {
-    id: string; // attribute displayForm URI
-    in: string[]; // attribute elements IDs
-}
-
-export interface INegativeFilter {
-    id: string; // attribute displayForm URI
-    notIn: string[]; // attribute elements IDs
-}
-
-export type IMeasureAttributeFilter = INegativeFilter | IPositiveFilter;
 
 export interface ISpecificObject {
     id: string;
@@ -40,7 +29,7 @@ export interface ILookupObject {
 
 export interface IMeasureDefinition {
     baseObject: ILookupObject | ISpecificObject;
-    filters?: IMeasureAttributeFilter[];
+    filters?: IFilter[];
     aggregation?: string;
     popAttribute?: {
         id: string // attribute displayForm URI
