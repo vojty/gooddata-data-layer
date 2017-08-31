@@ -59,6 +59,87 @@ const filteredMeasure: IVisualizationObject = {
     }
 };
 
+const measureWithRelativeDate: IVisualizationObject = {
+    type: 'bar',
+
+    buckets: {
+        measures: [{
+            measure: {
+                measureFilters: [{
+                    dateFilter: {
+                        attribute: DATE_URI,
+                        dataset: DATE_DATA_SET_URI,
+                        from: -89,
+                        granularity: 'GDC.time.date',
+                        to: 0,
+                        type: 'relative'
+                    }
+                }, {
+                    listAttributeFilter: {
+                        attribute: ATTRIBUTE_URI,
+                        displayForm: ATTRIBUTE_DISPLAY_FORM_URI,
+                        default: {
+                            negativeSelection: false,
+                            attributeElements: [
+                                `${ATTRIBUTE_URI}?id=1`,
+                                `${ATTRIBUTE_URI}?id=2`
+                            ]
+                        }
+                    }
+                }],
+                objectUri: '/gdc/md/project/obj/metric.id',
+                showInPercent: false,
+                showPoP: false,
+                title: 'Measure M1',
+                type: 'metric'
+            }
+        }],
+        categories: [],
+        filters: []
+    }
+};
+
+const measureWithAbsoluteDate: IVisualizationObject = {
+    type: 'bar',
+
+    buckets: {
+        measures: [{
+            measure: {
+                measureFilters: [{
+                    dateFilter: {
+                        attribute: DATE_URI,
+                        dataset: DATE_DATA_SET_URI,
+                        from: '2016-01-01',
+                        granularity: 'GDC.time.date',
+                        to: '2017-01-01',
+                        type: 'absolute'
+                    }
+                }, {
+                    listAttributeFilter: {
+                        attribute: ATTRIBUTE_URI,
+                        displayForm: ATTRIBUTE_DISPLAY_FORM_URI,
+                        default: {
+                            negativeSelection: false,
+                            attributeElements: [
+                                `${ATTRIBUTE_URI}?id=1`,
+                                `${ATTRIBUTE_URI}?id=2`
+                            ]
+                        }
+                    }
+                }],
+                objectUri: '/gdc/md/project/obj/metric.id',
+                showInPercent: false,
+                showPoP: false,
+                title: 'Measure M1',
+                type: 'metric'
+            }
+        }],
+        categories: [],
+        filters: []
+    }
+};
+
+
 const factBasedMeasure: IVisualizationObject = {
     type: 'bar',
 
@@ -442,6 +523,8 @@ export const charts = {
     bar: {
         simpleMeasure,
         filteredMeasure,
+        measureWithRelativeDate,
+        measureWithAbsoluteDate,
         factBasedMeasure,
         attributeBasedMeasure,
         showInPercent,

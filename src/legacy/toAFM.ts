@@ -27,6 +27,7 @@ function convertBaseAttributeFilter(filter) {
         const selectionType = filter.listAttributeFilter.default.negativeSelection ? 'notIn' : 'in';
         return {
             id: filter.listAttributeFilter.displayForm,
+            type: 'attribute',
             [selectionType]: items
         };
     }
@@ -34,14 +35,14 @@ function convertBaseAttributeFilter(filter) {
     return null;
 }
 
-function convertMeasureAttributeFilters(measure: VisObj.IMeasure): Afm.IMeasureAttributeFilter[] {
-    return measure.measure.measureFilters.map(convertBaseAttributeFilter) as Afm.IMeasureAttributeFilter[];
+function convertMeasureFilters(measure: VisObj.IMeasure): Afm.IFilter[] {
+    return measure.measure.measureFilters.map(convertFilter) as Afm.IFilter[];
 }
 
 function convertMeasureAfm(measure: VisObj.IMeasure, index: number, popAttribute?: string): Afm.IMeasure[] {
     const showInPercent = measure.measure.showInPercent ? { showInPercent: true } : {};
     const aggregation = measure.measure.aggregation ? { aggregation: measure.measure.aggregation } : {};
-    const filters = compact(convertMeasureAttributeFilters(measure));
+    const filters = compact(convertMeasureFilters(measure));
     const filtersProp = filters.length ? { filters } : {};
     const measures: Afm.IMeasure[] = [
         {
@@ -87,6 +88,7 @@ function convertDateFilter(filter: VisObj.IEmbeddedDateFilter): Afm.IDateFilter 
     const retVal = {
         type: 'date',
         id: filter.dateFilter.dataset,
+        intervalType: filter.dateFilter.type,
         between: [
             filter.dateFilter.from,
             filter.dateFilter.to

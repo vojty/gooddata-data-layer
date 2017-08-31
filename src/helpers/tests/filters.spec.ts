@@ -6,6 +6,7 @@ describe('isNotEmptyFilter', () => {
         const dateFilter: Afm.IDateFilter = {
             id: 'date filter',
             type: 'date',
+            intervalType: 'relative',
             between: [0, 0],
             granularity: 'month'
         };

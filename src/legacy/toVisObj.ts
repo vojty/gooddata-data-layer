@@ -197,7 +197,7 @@ function convertFilter(filter: Afm.IFilter): VisObj.EmbeddedFilter {
 
         return {
             dateFilter: {
-                type: 'relative',
+                type: filter.intervalType,
                 from,
                 to,
                 dataset: filter.id,

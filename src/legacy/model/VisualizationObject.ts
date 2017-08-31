@@ -58,7 +58,7 @@ export interface IMeasure {
         showInPercent: boolean;
         showPoP: boolean;
         title: string;
-        measureFilters: IEmbeddedListAttributeFilter[];
+        measureFilters: EmbeddedFilter[];
         format?: string;
         sort?: IMeasureSort;
         styles?: IVisualizationStyle[];

@@ -81,6 +81,7 @@ describe('lookupAttributes', () => {
                         },
                         filters: [{
                             id: '/gdc/md/attr_display_form',
+                            type: 'attribute',
                             in: [
                                 '/gdc/md/attr?id=1',
                                 '/gdc/md/attr?id=2'
@@ -107,6 +108,7 @@ describe('lookupAttributes', () => {
                         },
                         filters: [{
                             id: '/gdc/md/filter_attr_display_form',
+                            type: 'attribute',
                             in: [
                                 '/gdc/md/attr?id=1',
                                 '/gdc/md/attr?id=2'
@@ -212,6 +214,7 @@ describe('normalizeAfm', () => {
                 {
                     id: '1',
                     type: 'date',
+                    intervalType: 'relative',
                     between: [0, 1],
                     granularity: 'year'
                 }
@@ -223,6 +226,7 @@ describe('normalizeAfm', () => {
                 {
                     id: '1',
                     type: 'date',
+                    intervalType: 'relative',
                     between: [0, 1],
                     granularity: 'year'
                 }
@@ -277,6 +281,7 @@ describe('generateMetricExpressionn', () => {
                     filters: [
                         {
                             id: '/uri',
+                            type: 'attribute',
                             in: []
                         }
                     ]
@@ -299,6 +304,7 @@ describe('generateMetricExpressionn', () => {
                     filters: [
                         {
                             id: '/uri',
+                            type: 'attribute',
                             in: []
                         }
                     ]
@@ -321,12 +327,14 @@ describe('generateMetricExpressionn', () => {
                         },
                         filters: [{
                             id: '/gdc/md/filter_attr_display_form1/obj/1',
+                            type: 'attribute',
                             in: [
                                 '1',
                                 '2'
                             ]
                         }, {
                             id: '/gdc/md/filter_attr_display_form2/obj/1',
+                            type: 'attribute',
                             in: [
                                 '1',
                                 '2'
@@ -366,12 +374,14 @@ describe('generateMetricExpressionn', () => {
                         },
                         filters: [{
                             id: 'attribute_display_form_identifier_1',
+                            type: 'attribute',
                             in: [
                                 '1',
                                 '2'
                             ]
                         }, {
                             id: 'attribute_display_form_identifier_2',
+                            type: 'attribute',
                             in: [
                                 '1',
                                 '2'
@@ -555,6 +565,7 @@ describe('generateMetricExpressionn', () => {
                         },
                         filters: [{
                             id: '/gdc/md/filter_attr_display_form/obj/1',
+                            type: 'attribute',
                             in: [
                                 '1',
                                 '2'
@@ -607,6 +618,7 @@ describe('generateMetricExpressionn', () => {
                         },
                         filters: [{
                             id: 'filter_attr_display_form_identifier',
+                            type: 'attribute',
                             in: [
                                 '1',
                                 '2'
@@ -898,6 +910,7 @@ describe('generateFilters', () => {
                 {
                     id: '/gdc/md/datefilter/obj/1',
                     type: 'date',
+                    intervalType: 'relative',
                     between: [0, 12],
                     granularity: 'year'
                 },

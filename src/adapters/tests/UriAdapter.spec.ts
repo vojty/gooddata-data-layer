@@ -66,7 +66,7 @@ describe('UriAdapter', () => {
             expect(DummySDK.xhr.get).toHaveBeenCalledTimes(1);
             adapter.createDataSource({ uri }).then((dataSource) => {
                 expect(DummySDK.xhr.get).toHaveBeenCalledTimes(1);
-                adapter.createDataSource({ uri2 }).then((dataSource) => {
+                adapter.createDataSource({ uri: uri2 }).then((dataSource) => {
                     expect(DummySDK.xhr.get).toHaveBeenCalledTimes(2);
                     done();
                 });
