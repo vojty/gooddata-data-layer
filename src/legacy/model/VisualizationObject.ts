@@ -29,7 +29,7 @@ export interface IEmbeddedListAttributeFilter {
 
 export interface IMeasureSort {
     direction: SortDirection;
-    sortByPoP: boolean;
+    sortByPoP?: boolean;
 }
 export type VisualizationStyleType = 'common' | 'table' | 'line' | 'column' | 'bar';
 
