@@ -12,13 +12,13 @@ export interface IMeasure extends IObject {
     format?: string;
 }
 
-export interface IBucket {
+export interface IDimension {
     name: string;
     attributes: IObject[];
 }
 
 /**
- * "buckets" are in fact dimensions which can group bunch
+ * Dimensions group bunch
  * of attributes belonging together.
  * E.g.:
  * - for pivot table we split attributes between "columns" and "rows"
@@ -29,5 +29,5 @@ export interface IBucket {
 export interface ITransformation {
     sorting?: ISort[];
     measures?: IMeasure[];
-    buckets?: IBucket[];
+    dimensions?: IDimension[];
 }

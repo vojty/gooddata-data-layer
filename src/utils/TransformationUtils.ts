@@ -1,5 +1,9 @@
-import { uniqBy, omitBy, isUndefined, get } from 'lodash';
-import { ITransformation, ISort, IMeasure, IBucket } from '../interfaces/Transformation';
+import uniqBy = require('lodash/uniqBy');
+import omitBy = require('lodash/omitBy');
+import isUndefined = require('lodash/isUndefined');
+import get = require('lodash/get');
+
+import { ITransformation, ISort, IMeasure, IDimension } from '../interfaces/Transformation';
 
 /**
  * Merge two transformations into one, second one has higher priority
@@ -7,7 +11,7 @@ import { ITransformation, ISort, IMeasure, IBucket } from '../interfaces/Transfo
 export function combineTransformations(first: ITransformation = {}, second: ITransformation = {}): ITransformation {
     let measures;
     let sorting;
-    let buckets;
+    let dimensions;
 
     // merge exsting properties
     if (first.measures || second.measures) {
@@ -20,10 +24,10 @@ export function combineTransformations(first: ITransformation = {}, second: ITra
             ...get(second, 'sorting', []),
             ...get(first, 'sorting', [])], 'column') as ISort[];
     }
-    if (first.buckets || second.buckets) {
-        buckets = uniqBy([
-            ...get(second, 'buckets', []),
-            ...get(first, 'buckets', [])], 'name') as IBucket[];
+    if (first.dimensions || second.dimensions) {
+        dimensions = uniqBy([
+            ...get(second, 'dimensions', []),
+            ...get(first, 'dimensions', [])], 'name') as IDimension[];
     }
 
     // clear properties if empty in the second transformation
@@ -33,13 +37,13 @@ export function combineTransformations(first: ITransformation = {}, second: ITra
     if (second.sorting && second.sorting.length === 0) {
         sorting = [];
     }
-    if (second.buckets && second.buckets.length === 0) {
-        buckets = [];
+    if (second.dimensions && second.dimensions.length === 0) {
+        dimensions = [];
     }
 
     return omitBy({
         sorting,
         measures,
-        buckets
+        dimensions
     }, isUndefined);
 }

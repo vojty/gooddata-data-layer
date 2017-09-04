@@ -465,7 +465,7 @@ export const stackingAttribute: IFixture = {
         measures: [
             { id: 'm1', title: 'Sum of Bundle cost', format: '#,##0.00' }
         ],
-        buckets: [
+        dimensions: [
             {
                 name: 'stacks',
                 attributes: [

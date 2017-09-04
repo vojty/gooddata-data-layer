@@ -139,9 +139,9 @@ function convertMeasure(
 }
 
 function isStacking(transformation: Transformation.ITransformation, attribute: Afm.IAttribute): boolean {
-    return get(transformation, 'buckets', []).some((bucket) => {
-        return bucket.name === 'stacks' &&
-            (bucket.attributes || []).some(attr => attr.id === attribute.id);
+    return get(transformation, 'dimensions', []).some((dimension) => {
+        return dimension.name === 'stacks' &&
+            (dimension.attributes || []).some(attr => attr.id === attribute.id);
     });
 }
 

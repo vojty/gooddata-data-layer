@@ -239,7 +239,7 @@ function convertTransformation(
             id: category.category.displayForm
         }));
     const stackingProp = stackingAttributes.length ?
-        { buckets: [{ attributes: stackingAttributes, name: 'stacks' }] } :
+        { dimensions: [{ attributes: stackingAttributes, name: 'stacks' }] } :
         {};
 
     return {
