@@ -19,7 +19,7 @@ import {
     INegativeAttributeFilter
 } from '../interfaces/Afm';
 import invariant = require('invariant');
-import { SHOW_IN_PERCENT_MEASURE_FORMAT } from '../constants/formats';
+import { SHOW_IN_PERCENT_MEASURE_FORMAT, DEFAULT_METRIC_FORMAT } from '../constants/formats';
 
 export type ObjectUri = string;
 
@@ -257,20 +257,19 @@ export function loadAttributesMap(afm: IAfm, sdk, projectId: string): Promise<At
     return Promise.resolve([]);
 }
 
-export const getMeasureFormat = (item: IMeasure, defaultFormat: string, afm: IAfm) => {
+export const getMeasureFormat = (item: IMeasure, afm: IAfm, format: string = DEFAULT_METRIC_FORMAT) => {
     if (isPoP(item)) {
         const baseObject = item.definition.baseObject as any;
 
         // baseObject defined by lookupId can define eg. showInPercent
         if (baseObject.lookupId) {
             const base = afm.measures.find(measure => measure.id === baseObject.lookupId);
-            return getMeasureFormat(base, defaultFormat, afm);
+            return getMeasureFormat(base, afm, format);
         }
         // baseObject defined by URL have to use default format
-        return defaultFormat;
-
+        return format;
     }
-    return (item.definition.showInPercent ? SHOW_IN_PERCENT_MEASURE_FORMAT : defaultFormat);
+    return (item.definition.showInPercent ? SHOW_IN_PERCENT_MEASURE_FORMAT : format);
 };
 
 export const generateMetricDefinition = (
@@ -285,6 +284,6 @@ export const generateMetricDefinition = (
         expression: generateMetricExpression(item, afm, attributesMapping),
         identifier: item.id,
         title,
-        format: getMeasureFormat(item, format, afm)
+        format: getMeasureFormat(item, afm, format)
     };
 };

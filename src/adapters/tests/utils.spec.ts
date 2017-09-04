@@ -9,7 +9,7 @@ import {
     generateMetricDefinition,
     getMeasureFormat
 } from '../utils';
-import { SHOW_IN_PERCENT_MEASURE_FORMAT } from '../../constants/formats';
+import { SHOW_IN_PERCENT_MEASURE_FORMAT, DEFAULT_METRIC_FORMAT } from '../../constants/formats';
 import { IAfm, IMeasure } from '../../interfaces/Afm';
 import { ITransformation } from '../../interfaces/Transformation';
 
@@ -1112,7 +1112,31 @@ describe('getMeasureFormat', () => {
 
         const measure: IMeasure = afm.measures[0];
         const defaultFormat = '#,##0.00000';
-        expect(getMeasureFormat(measure, defaultFormat, afm)).toEqual('#,##0.00000');
+        expect(getMeasureFormat(measure, afm, defaultFormat)).toEqual('#,##0.00000');
+    });
+
+    it('should return default format if no format provided', () => {
+        const afm: IAfm = {
+            measures: [
+                {
+                    id: 'close_bop',
+                    definition: {
+                        baseObject: {
+                            id: '/gdc/md/measure/obj/2'
+                        }
+                    }
+                }
+            ],
+            attributes: [
+                {
+                    id: '/gdc/md/attribute_display_form/obj/1',
+                    type: 'attribute'
+                }
+            ]
+        };
+
+        const measure: IMeasure = afm.measures[0];
+        expect(getMeasureFormat(measure, afm)).toEqual(DEFAULT_METRIC_FORMAT);
     });
 
     it('should return default format for PoP metric', () => {
@@ -1148,7 +1172,7 @@ describe('getMeasureFormat', () => {
 
         const measure: IMeasure = afm.measures[1];
         const defaultFormat = '#,##0.00000';
-        expect(getMeasureFormat(measure, defaultFormat, afm)).toEqual('#,##0.00000');
+        expect(getMeasureFormat(measure, afm, defaultFormat)).toEqual('#,##0.00000');
     });
 
     it('should return % format for metric with showInPercent: true', () => {
@@ -1174,7 +1198,7 @@ describe('getMeasureFormat', () => {
 
         const measure: IMeasure = afm.measures[0];
         const defaultFormat = '#,##0.00000';
-        expect(getMeasureFormat(measure, defaultFormat, afm)).toEqual(SHOW_IN_PERCENT_MEASURE_FORMAT);
+        expect(getMeasureFormat(measure, afm, defaultFormat)).toEqual(SHOW_IN_PERCENT_MEASURE_FORMAT);
     });
 
     it('should return % format for PoP derived from metric with showInPercent: true', () => {
@@ -1211,6 +1235,6 @@ describe('getMeasureFormat', () => {
 
         const measure: IMeasure = afm.measures[1];
         const defaultFormat = '#,##0.00000';
-        expect(getMeasureFormat(measure, defaultFormat, afm)).toEqual(SHOW_IN_PERCENT_MEASURE_FORMAT);
+        expect(getMeasureFormat(measure, afm, defaultFormat)).toEqual(SHOW_IN_PERCENT_MEASURE_FORMAT);
     });
 });
