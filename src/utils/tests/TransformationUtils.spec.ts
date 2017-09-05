@@ -1,11 +1,13 @@
 import { combineTransformations } from '../TransformationUtils';
+import { ITransformation } from '../../interfaces/Transformation';
+
 
 describe('combineTransformations', () => {
     const emptyTransformation = {};
-    const emptyValues = {
+    const emptyValues: ITransformation = {
         measures: [],
         sorting: [],
-        buckets: []
+        dimensions: []
     };
     const t1 = {
         measures: [{
@@ -59,7 +61,7 @@ describe('combineTransformations', () => {
             {
                 measures: [],
                 sorting: [],
-                buckets: []
+                dimensions: []
             }
         );
     });
@@ -106,7 +108,7 @@ describe('combineTransformations', () => {
         expect(result).toEqual({
             measures: [],
             sorting: [],
-            buckets: []
+            dimensions: []
         });
     });
 });
