@@ -1,9 +1,8 @@
-const dummyDataSource = {};
 jest.mock('../SimpleExecutorAdapter', () => {
     class DummySimpleExecutorAdapter {
         constructor() {}
         createDataSource() {
-            return Promise.resolve(dummyDataSource);
+            return Promise.resolve({});
         }
     }
 
@@ -21,21 +20,22 @@ describe('UriAdapter', () => {
     const projectId = 'FoodMartDemo';
     const uri = '/gdc/md/FoodMartDemo/1';
     const uri2 = '/gdc/md/FoodMartDemo/2';
-
-    let DummySDK;
-    beforeEach(() => {
+    const dummyDataSource = {};
+    
+    function createDummySDK() {
         const visualizationObject = {
             visualization: { content: charts.bar.simpleMeasure }
         };
 
-        DummySDK = {
+        return {
             xhr: {
-                get: jest.fn().mockReturnValue(Promise.resolve(visualizationObject))
+                get: jest.fn(() => Promise.resolve(visualizationObject))
             }
         };
-    });
+    }
 
     it('should fetch visualization object when creating data source', (done) => {
+        const DummySDK = createDummySDK();
         const adapter = new UriAdapter(DummySDK, projectId);
         adapter.createDataSource({ uri }).then((dataSource) => {
             expect(DummySDK.xhr.get).toBeCalledWith(uri);
@@ -44,6 +44,7 @@ describe('UriAdapter', () => {
     });
 
     it('should retrieve datasource when requested', (done) => {
+        const DummySDK = createDummySDK();
         const adapter = new UriAdapter(DummySDK, projectId);
         adapter.createDataSource({ uri }).then((dataSource) => {
             expect(dataSource).toEqual(dummyDataSource);
@@ -52,8 +53,9 @@ describe('UriAdapter', () => {
     });
 
     it('should handle fail of vis. obj. fetch', (done) => {
+        const DummySDK = createDummySDK();
         const adapter = new UriAdapter(DummySDK, projectId);
-        DummySDK.xhr.get.mockImplementationOnce(() => Promise.reject('invalid URI'));
+        DummySDK.xhr.get = jest.fn(() => Promise.reject('invalid URI'));
         adapter.createDataSource({ uri }).catch((error) => {
             expect(error).toBe('invalid URI');
             done();
@@ -61,6 +63,7 @@ describe('UriAdapter', () => {
     });
 
     it('should request visualization object for consecutive createDataSource call only when uri changes', (done) => {
+        const DummySDK = createDummySDK();
         const adapter = new UriAdapter(DummySDK, projectId);
         adapter.createDataSource({ uri }).then((dataSource) => {
             expect(DummySDK.xhr.get).toHaveBeenCalledTimes(1);
