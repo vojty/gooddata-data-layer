@@ -1,6 +1,33 @@
-import { combineTransformations } from '../TransformationUtils';
+import { combineTransformations, getSorting } from '../TransformationUtils';
 import { ITransformation } from '../../interfaces/Transformation';
 
+
+describe('getSorting', () => {
+    it('should generate sorting from transformation', () => {
+        const transformation: ITransformation = {
+            sorting: [
+                {
+                    column: '/gdc/md/column1',
+                    direction: 'desc'
+                },
+                {
+                    column: '/gdc/md/column2',
+                    direction: 'asc'
+                }
+            ]
+        };
+
+        expect(getSorting(transformation)).toEqual([
+            {
+                column: '/gdc/md/column1',
+                direction: 'desc'
+            }, {
+                column: '/gdc/md/column2',
+                direction: 'asc'
+            }
+        ]);
+    });
+});
 
 describe('combineTransformations', () => {
     const emptyTransformation = {};

@@ -1,5 +1,97 @@
-import { appendFilters, isAfmExecutable } from '../AfmUtils';
-import { IAttributeFilter, IDateFilter } from '../../interfaces/Afm';
+import { appendFilters, hasMetricDateFilters, isAfmExecutable, normalizeAfm } from '../AfmUtils';
+import { IAfm, IAttributeFilter, IDateFilter } from '../../interfaces/Afm';
+import * as AfmFixture from '../../fixtures/Afm.fixtures';
+
+describe('hasMetricDateFilters', () => {
+    it('TRUE if contains at least one metric date filter', () => {
+        const result = hasMetricDateFilters(AfmFixture.afmWithMetricDateFilter);
+        expect(result).toEqual(true);
+    });
+
+    it('FALSE if does not contain any metric date filter', () => {
+        const result = hasMetricDateFilters(AfmFixture.afmWithoutMetricDateFilters);
+        expect(result).toEqual(false);
+    });
+});
+
+describe('normalizeAfm', () => {
+    it('should add optional arrays', () => {
+        const afm: IAfm = {};
+        expect(normalizeAfm(afm)).toEqual({
+            measures: [],
+            attributes: [],
+            filters: []
+        });
+
+        expect(normalizeAfm({
+            attributes: [
+                {
+                    id: '1',
+                    type: 'date'
+                }
+            ]
+        })).toEqual({
+            attributes: [
+                {
+                    id: '1',
+                    type: 'date'
+                }
+            ],
+            measures: [],
+            filters: []
+        });
+
+        expect(normalizeAfm({
+            measures: [
+                {
+                    id: '1',
+                    definition: {
+                        baseObject: {
+                            id: '/uri'
+                        }
+                    }
+                }
+            ]
+        })).toEqual({
+            measures: [
+                {
+                    id: '1',
+                    definition: {
+                        baseObject: {
+                            id: '/uri'
+                        }
+                    }
+                }
+            ],
+            attributes: [],
+            filters: []
+        });
+
+        expect(normalizeAfm({
+            filters: [
+                {
+                    id: '1',
+                    type: 'date',
+                    intervalType: 'relative',
+                    between: [0, 1],
+                    granularity: 'year'
+                }
+            ]
+        })).toEqual({
+            attributes: [],
+            measures: [],
+            filters: [
+                {
+                    id: '1',
+                    type: 'date',
+                    intervalType: 'relative',
+                    between: [0, 1],
+                    granularity: 'year'
+                }
+            ]
+        });
+    });
+});
 
 describe('AFM utils', () => {
     const af1 = {

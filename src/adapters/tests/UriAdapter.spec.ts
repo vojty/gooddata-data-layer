@@ -1,3 +1,9 @@
+import { IGoodDataSDK } from '../../interfaces/GoodDataSDK';
+import { charts } from '../../legacy/tests/fixtures/VisObj.fixtures';
+import {
+    UriAdapter
+} from '../UriAdapter';
+
 jest.mock('../SimpleExecutorAdapter', () => {
     class DummySimpleExecutorAdapter {
         constructor() {}
@@ -11,23 +17,26 @@ jest.mock('../SimpleExecutorAdapter', () => {
     };
 });
 
-import { charts } from '../../legacy/tests/fixtures/VisObj.fixtures';
-import {
-    UriAdapter
-} from '../UriAdapter';
-
 describe('UriAdapter', () => {
     const projectId = 'FoodMartDemo';
     const uri = '/gdc/md/FoodMartDemo/1';
     const uri2 = '/gdc/md/FoodMartDemo/2';
     const dummyDataSource = {};
     
-    function createDummySDK() {
+    function createDummySDK(): IGoodDataSDK {
         const visualizationObject = {
             visualization: { content: charts.bar.simpleMeasure }
         };
 
         return {
+            md: {
+                getObjects: null,
+                getUrisFromIdentifiers: null,
+                translateElementLabelsToUris: null
+            },
+            execution: {
+                getData: null
+            },
             xhr: {
                 get: jest.fn(() => Promise.resolve(visualizationObject))
             }
