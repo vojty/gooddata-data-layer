@@ -1,16 +1,14 @@
 import { IAdapter } from '../interfaces/Adapter';
 import { IDataSource } from '../interfaces/DataSource';
 import { DataSource } from '../dataSources/DataSource';
-import {
-    AttributeMap,
-    generateFilters,
-    generateMetricDefinition,
-    getSorting,
-    loadAttributesMap,
-    normalizeAfm
-} from './utils';
 import { IAfm } from '../interfaces/Afm';
-import { ITransformation } from '../interfaces/Transformation';
+import { AfmMapBuilder } from '../afmMap/AfmMapBuilder';
+import { AfmMap } from '../afmMap/AfmMap';
+import { AttributeMap } from '../afmMap/AttributeMap';
+import { DateFilterMap } from '../afmMap/DateFilterMap';
+import { buildRequest } from '../execution/ExecutionRequestBuilder';
+import { getInsightDateFilter, hasInsightDateFilter, hasMetricDateFilters, normalizeAfm } from '../utils/AfmUtils';
+import { IGoodDataSDK } from '../interfaces/GoodDataSDK';
 
 export class SimpleExecutorAdapter implements IAdapter {
 
@@ -18,7 +16,7 @@ export class SimpleExecutorAdapter implements IAdapter {
     private settings;
     private sdk;
 
-    constructor(sdk, projectId: string, settings = {}) {
+    constructor(sdk: IGoodDataSDK, projectId: string, settings = {}) {
         this.sdk = sdk;
         this.projectId = projectId;
         // settings for gooddata SDK
@@ -26,54 +24,27 @@ export class SimpleExecutorAdapter implements IAdapter {
         this.settings = settings;
     }
 
-    public createDataSource(afm): Promise<IDataSource> {
+    public createDataSource(afm: IAfm): Promise<IDataSource> {
         const normalizedAfm = normalizeAfm(afm);
+
+        const afmMapDataBuilder = new AfmMapBuilder(this.sdk, this.projectId);
         const execFactory = (transformation) => {
-            return loadAttributesMap(normalizedAfm, this.sdk, this.projectId)
-                .then((attributesMapping) => {
-                    // dump('AttributesMapping', attributesMapping);
-                    const { columns, executionConfiguration } =
-                        this.convertData(normalizedAfm, transformation, attributesMapping);
-                    // dump('Columns', columns);
-                    // dump('ExecutionConfiguration', executionConfiguration);
-                    return this.sdk.execution.getData(this.projectId, columns, executionConfiguration, this.settings);
+            return afmMapDataBuilder.build(normalizedAfm)
+                .then((results: [AttributeMap, DateFilterMap]) => {
+                    let insightDateFilter = null;
+                    if (hasMetricDateFilters(normalizedAfm) && hasInsightDateFilter(normalizedAfm)) {
+                        insightDateFilter = getInsightDateFilter(normalizedAfm);
+                    }
+
+                    const afmDataMap = new AfmMap(results, insightDateFilter);
+
+                    const executionRequest = buildRequest(normalizedAfm, transformation, afmDataMap);
+
+                    return this.sdk.execution.getData(this.projectId, executionRequest.execution.columns,
+                        executionRequest.execution, this.settings);
                 });
         };
 
         return Promise.resolve(new DataSource(execFactory, normalizedAfm));
-    }
-
-    private convertData(afm: IAfm, transformation: ITransformation, attributesMapping: AttributeMap) {
-        const columns = [];
-        const definitions = [];
-
-        /*
-            we should use here 'transformation' to organize better attributes
-            in exec request but /simpleexecutor is not able to handle it and also
-            is not able to provide "well transformed" result data
-         */
-        columns.push(...afm.attributes.map(attribute => attribute.id));
-
-        // Get columns
-        columns.push(...afm.measures.map((item) => {
-            const metricDefinition =
-                generateMetricDefinition(afm, transformation, attributesMapping, item);
-
-            definitions.push({ metricDefinition });
-
-            return item.id;
-        }));
-
-        const orderBy = getSorting(transformation);
-        const where = generateFilters(afm);
-
-        return {
-            columns,
-            executionConfiguration: {
-                orderBy,
-                where,
-                definitions
-            }
-        };
     }
 }

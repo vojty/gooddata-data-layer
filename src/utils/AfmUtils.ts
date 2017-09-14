@@ -1,5 +1,71 @@
-import { get, compact } from 'lodash';
-import { IAfm, IDateFilter, IFilter, IAttributeFilter } from '../interfaces/Afm';
+import get = require('lodash/get');
+import compact = require('lodash/compact');
+import {
+    IAfm, IDateFilter, IFilter, IAttributeFilter, IMeasure, IPositiveAttributeFilter,
+    INegativeAttributeFilter
+} from '../interfaces/Afm';
+
+export function normalizeAfm(afm: IAfm): IAfm {
+    return {
+        attributes: afm.attributes || [],
+        measures: afm.measures || [],
+        filters: afm.filters || []
+    };
+}
+
+export function hasMetricDateFilters(afm: IAfm): boolean {
+    const normalizedAfm = normalizeAfm(afm);
+    return normalizedAfm.measures.some((measure) => {
+        if (!isPoP(measure)) {
+            return !!measure.definition.filters && measure.definition.filters.some(isDateFilter);
+        }
+        return false;
+    });
+}
+
+export function getInsightDateFilter(afm: IAfm): IDateFilter {
+    if (afm.filters) {
+        return <IDateFilter>afm.filters.find(isDateFilter);
+    }
+    return null;
+}
+
+export const isPoP = (item: IMeasure): boolean => {
+    return !!(item.definition && item.definition.popAttribute);
+};
+
+export const isShowInPercent = (item: IMeasure): boolean => {
+    return item.definition && item.definition.showInPercent;
+};
+
+export const hasFilters = (item: IMeasure): boolean => {
+    return !!(item.definition && item.definition.filters);
+};
+
+export function isAttributeFilter(filter: IFilter): filter is IAttributeFilter {
+    return filter.type === 'attribute';
+}
+
+export function isDateFilter(filter: IFilter): filter is IDateFilter {
+    return filter.type === 'date' && filter.between[0] !== undefined &&
+        filter.between[1] !== undefined;
+}
+
+export function isAbsoluteDateFilter(filter: IDateFilter) {
+    return filter.intervalType === 'absolute';
+}
+
+export function isPositiveAttributeFilter(filter: IAttributeFilter): filter is IPositiveAttributeFilter {
+    return (<IPositiveAttributeFilter>filter).in !== undefined;
+}
+
+export function isNegativeAttributeFilter(filter: IAttributeFilter): filter is INegativeAttributeFilter {
+    return (<INegativeAttributeFilter>filter).notIn !== undefined;
+}
+
+export function hasInsightDateFilter(afm: IAfm): boolean {
+    return afm.filters.some(isDateFilter);
+}
 
 /**
  * Append attribute filters and date filter to afm

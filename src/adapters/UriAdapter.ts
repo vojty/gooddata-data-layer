@@ -6,28 +6,29 @@ import { toAFM } from '../legacy/converters';
 import { appendFilters } from '../utils/AfmUtils';
 import { getAttributesMap } from '../helpers/metadata';
 import { IDataSourceParams } from '../interfaces/DataSourceParams';
+import { IGoodDataSDK } from '../interfaces/GoodDataSDK';
 
 export class UriAdapter implements IAdapter {
     private projectId: string;
-    private sdk;
+    private sdk: IGoodDataSDK;
     private uri;
     private visObject;
 
-    constructor(sdk, projectId: string) {
+    constructor(sdk: IGoodDataSDK, projectId: string) {
         this.sdk = sdk;
         this.projectId = projectId;
     }
 
-    public createDataSource(dataSourceParams: IDataSourceParams): Promise<IDataSource> {
-        return this.fetchVisualizationObject(dataSourceParams.uri)
+    public createDataSource(sourceParams: IDataSourceParams): Promise<IDataSource> {
+        return this.fetchVisualizationObject(sourceParams.uri)
             .then((visObject) => {
                 return getAttributesMap(this.sdk, this.projectId, visObject.visualization)
                     .then((attributesMap = {}) => {
                         const content = visObject.visualization.content;
                         const { afm } = toAFM(content, attributesMap);
                         const afmWithAttributeFilters: IAfm = appendFilters(afm,
-                            dataSourceParams.attributeFilters,
-                            dataSourceParams.dateFilter);
+                            sourceParams.attributeFilters,
+                            sourceParams.dateFilter);
                         const simpleAdapter = new SimpleExecutorAdapter(this.sdk, this.projectId);
 
                         return simpleAdapter.createDataSource(afmWithAttributeFilters);
