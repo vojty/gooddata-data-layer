@@ -1,7 +1,7 @@
 import * as Afm from '../../../interfaces/Afm';
 import * as Transformation from '../../../interfaces/Transformation';
 
-interface IFixture {
+export interface IFixture {
     afm: Afm.IAfm;
     transformation: Transformation.ITransformation;
 }

@@ -1,9 +1,11 @@
-import { IAfm } from './interfaces/Afm';
-import { DataTable } from './DataTable';
-import { DummyAdapter } from './utils/DummyAdapter';
+import { IAfm } from '../interfaces/Afm';
+import { DataTable } from '../DataTable';
+import { DummyAdapter } from '../utils/DummyAdapter';
+import { ISimpleExecutorResult } from '../interfaces/ExecutorResult';
+import { IDataSource } from '../interfaces/DataSource';
 
 describe('DataTable', () => {
-    const dataResponse = { rawData: [1, 2, 3] };
+    const dataResponse: ISimpleExecutorResult = { rawData: [['1', '2', '3']] };
     const afm: IAfm = {
         measures: [
             {
@@ -99,7 +101,7 @@ describe('DataTable', () => {
         it('should return data', () => {
             const dt = new DataTable(new DummyAdapter(dataResponse));
 
-            return dt.execute(afm, transformation).then((data) => {
+            return dt.execute(afm, transformation).then((data: ISimpleExecutorResult) => {
                 expect(data).toEqual(dataResponse);
             });
         });
@@ -107,7 +109,7 @@ describe('DataTable', () => {
         it('should return null for invalid AFM', () => {
             const dt = new DataTable(new DummyAdapter(dataResponse));
 
-            return dt.execute(nonExecutableAfm, transformation).then((data) => {
+            return dt.execute(nonExecutableAfm, transformation).then((data: ISimpleExecutorResult) => {
                 expect(data).toEqual(null);
             });
         });
@@ -121,11 +123,17 @@ describe('DataTable', () => {
         });
 
         it('should be canceled when repeating request', () => {
-            const asyncDataSource = {
+            const asyncDataSource: IDataSource<ISimpleExecutorResult> = {
                 getData() {
                     return new Promise((resolve) => {
                         setTimeout(resolve, 0, dataResponse);
                     });
+                },
+                getAfm() {
+                    return {};
+                },
+                getFingerprint() {
+                    return '';
                 }
             };
             const dt = new DataTable(new DummyAdapter(dataResponse, true, asyncDataSource));
@@ -141,7 +149,7 @@ describe('DataTable', () => {
                     });
 
                     return promise.then(
-                        value => expect(value).toEqual(dataResponse),
+                        (value: ISimpleExecutorResult) => expect(value).toEqual(dataResponse),
                         () => expect(true).toBeFalsy() // fail
                     );
                 }

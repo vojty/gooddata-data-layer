@@ -1,4 +1,4 @@
-import { IVisualizationObject } from '../../model/VisualizationObject';
+import { IVisualizationObjectContent } from '../../model/VisualizationObject';
 import {
     ATTRIBUTE_DISPLAY_FORM_URI,
     ATTRIBUTE_URI,
@@ -9,7 +9,7 @@ import {
     DATE_URI
 } from './Afm.fixtures';
 
-const simpleMeasure: IVisualizationObject = {
+const simpleMeasure: IVisualizationObjectContent = {
     type: 'bar',
 
     buckets: {
@@ -28,7 +28,7 @@ const simpleMeasure: IVisualizationObject = {
     }
 };
 
-const filteredMeasure: IVisualizationObject = {
+const filteredMeasure: IVisualizationObjectContent = {
     type: 'bar',
 
     buckets: {
@@ -59,7 +59,7 @@ const filteredMeasure: IVisualizationObject = {
     }
 };
 
-const measureWithRelativeDate: IVisualizationObject = {
+const measureWithRelativeDate: IVisualizationObjectContent = {
     type: 'bar',
 
     buckets: {
@@ -99,7 +99,7 @@ const measureWithRelativeDate: IVisualizationObject = {
     }
 };
 
-const measureWithAbsoluteDate: IVisualizationObject = {
+const measureWithAbsoluteDate: IVisualizationObjectContent = {
     type: 'bar',
 
     buckets: {
@@ -139,8 +139,7 @@ const measureWithAbsoluteDate: IVisualizationObject = {
     }
 };
 
-
-const factBasedMeasure: IVisualizationObject = {
+const factBasedMeasure: IVisualizationObjectContent = {
     type: 'bar',
 
     buckets: {
@@ -160,7 +159,7 @@ const factBasedMeasure: IVisualizationObject = {
     }
 };
 
-const attributeBasedMeasure: IVisualizationObject = {
+const attributeBasedMeasure: IVisualizationObjectContent = {
     type: 'bar',
 
     buckets: {
@@ -180,7 +179,7 @@ const attributeBasedMeasure: IVisualizationObject = {
     }
 };
 
-const showInPercent: IVisualizationObject = {
+const showInPercent: IVisualizationObjectContent = {
     type: 'bar',
 
     buckets: {
@@ -206,7 +205,7 @@ const showInPercent: IVisualizationObject = {
     }
 };
 
-const showInPercentWithDate: IVisualizationObject = {
+const showInPercentWithDate: IVisualizationObjectContent = {
     type: 'bar',
 
     buckets: {
@@ -232,7 +231,7 @@ const showInPercentWithDate: IVisualizationObject = {
     }
 };
 
-const measureWithSorting: IVisualizationObject = {
+const measureWithSorting: IVisualizationObjectContent = {
     type: 'bar',
 
     buckets: {
@@ -255,7 +254,7 @@ const measureWithSorting: IVisualizationObject = {
     }
 };
 
-const popMeasure: IVisualizationObject = {
+const popMeasure: IVisualizationObjectContent = {
     type: 'bar',
     buckets: {
         measures: [
@@ -288,7 +287,7 @@ const popMeasure: IVisualizationObject = {
     }
 };
 
-const popMeasureWithSorting: IVisualizationObject = {
+const popMeasureWithSorting: IVisualizationObjectContent = {
     type: 'bar',
     buckets: {
         measures: [
@@ -321,7 +320,7 @@ const popMeasureWithSorting: IVisualizationObject = {
     }
 };
 
-const categoryWithSorting: IVisualizationObject = {
+const categoryWithSorting: IVisualizationObjectContent = {
     type: 'bar',
     buckets: {
         measures: [],
@@ -337,7 +336,7 @@ const categoryWithSorting: IVisualizationObject = {
     }
 };
 
-const dateFilter: IVisualizationObject = {
+const dateFilter: IVisualizationObjectContent = {
     type: 'bar',
     buckets: {
         measures: [],
@@ -355,7 +354,7 @@ const dateFilter: IVisualizationObject = {
     }
 };
 
-const dateFilterWithStrings: IVisualizationObject = {
+const dateFilterWithStrings: IVisualizationObjectContent = {
     type: 'bar',
     buckets: {
         measures: [],
@@ -373,7 +372,7 @@ const dateFilterWithStrings: IVisualizationObject = {
     }
 };
 
-const dateFilterWithUndefs: IVisualizationObject = {
+const dateFilterWithUndefs: IVisualizationObjectContent = {
     type: 'bar',
     buckets: {
         measures: [],
@@ -389,7 +388,7 @@ const dateFilterWithUndefs: IVisualizationObject = {
     }
 };
 
-const attributeFilter: IVisualizationObject = {
+const attributeFilter: IVisualizationObjectContent = {
     type: 'bar',
     buckets: {
         measures: [],
@@ -425,7 +424,7 @@ const attributeFilter: IVisualizationObject = {
     }
 };
 
-const attributeFilterWithAll: IVisualizationObject = {
+const attributeFilterWithAll: IVisualizationObjectContent = {
     type: 'bar',
     buckets: {
         measures: [],
@@ -457,7 +456,7 @@ const attributeFilterWithAll: IVisualizationObject = {
     }
 };
 
-const stackingAttribute: IVisualizationObject = {
+const stackingAttribute: IVisualizationObjectContent = {
     type: 'bar',
     buckets: {
         measures: [

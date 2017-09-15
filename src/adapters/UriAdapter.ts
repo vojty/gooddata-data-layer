@@ -2,24 +2,25 @@ import { IAdapter } from '../interfaces/Adapter';
 import { IDataSource } from '../interfaces/DataSource';
 import { IAfm } from '../interfaces/Afm';
 import { SimpleExecutorAdapter } from './SimpleExecutorAdapter';
-import { toAFM } from '../legacy/converters';
+import { toAFM } from '../legacy/toAFM';
 import { appendFilters } from '../utils/AfmUtils';
 import { getAttributesMap } from '../helpers/metadata';
 import { IDataSourceParams } from '../interfaces/DataSourceParams';
 import { IGoodDataSDK } from '../interfaces/GoodDataSDK';
+import { IVisualizationObject } from '../legacy/model/VisualizationObject';
 
 export class UriAdapter implements IAdapter {
     private projectId: string;
     private sdk: IGoodDataSDK;
-    private uri;
-    private visObject;
+    private uri: string;
+    private visObject: IVisualizationObject;
 
     constructor(sdk: IGoodDataSDK, projectId: string) {
         this.sdk = sdk;
         this.projectId = projectId;
     }
 
-    public createDataSource(sourceParams: IDataSourceParams): Promise<IDataSource> {
+    public createDataSource<T>(sourceParams: IDataSourceParams): Promise<IDataSource<T>> {
         return this.fetchVisualizationObject(sourceParams.uri)
             .then((visObject) => {
                 return getAttributesMap(this.sdk, this.projectId, visObject.visualization)
@@ -31,7 +32,7 @@ export class UriAdapter implements IAdapter {
                             sourceParams.dateFilter);
                         const simpleAdapter = new SimpleExecutorAdapter(this.sdk, this.projectId);
 
-                        return simpleAdapter.createDataSource(afmWithAttributeFilters);
+                        return simpleAdapter.createDataSource<T>(afmWithAttributeFilters);
                     });
             });
     }

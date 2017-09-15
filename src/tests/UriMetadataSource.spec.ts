@@ -1,13 +1,14 @@
 import { UriMetadataSource } from '../UriMetadataSource';
+import { IGoodDataSDK } from '../interfaces/GoodDataSDK';
+import { empty } from '../fixtures/VisualizationObject.fixtures';
 
 describe('UriMetadataSource', () => {
-    const uri = '/gdc/md/FoodMartDemo/1';
-    const visualization = { content: {} };
-    const md = { visualization };
+    const uri: string = '/gdc/md/FoodMartDemo/1';
 
-    let sdk;
-    beforeEach(() => {
-        sdk = {
+    function createGooddataSDK(): IGoodDataSDK {
+        const md = { visualization: empty };
+
+        return {
             md: {
                 getObjects: jest.fn().mockReturnValue(Promise.resolve([]))
             },
@@ -15,23 +16,23 @@ describe('UriMetadataSource', () => {
                 get: jest.fn().mockReturnValue(Promise.resolve(md))
             }
         };
-    });
+    }
 
-    it('should request metadataobject on getData if not cached', (done) => {
-        const source = new UriMetadataSource(sdk, uri);
-        source.getVisualizationMetadata().then((result) => {
-            expect(result.metadata).toEqual(visualization);
-            done();
+    it('should request metadataobject on getData if not cached', () => {
+        const source = new UriMetadataSource(createGooddataSDK(), uri);
+        return source.getVisualizationMetadata().then((result) => {
+            expect(result.metadata).toEqual(empty);
         });
     });
 
-    it('should take md object from cache if already fetched', (done) => {
+    it('should take md object from cache if already fetched', () => {
+        const sdk = createGooddataSDK();
+
         const source = new UriMetadataSource(sdk, uri);
-        source.getVisualizationMetadata().then((first) => {
-            source.getVisualizationMetadata().then((second) => {
+        return source.getVisualizationMetadata().then((first) => {
+            return source.getVisualizationMetadata().then((second) => {
                 expect(first.metadata).toEqual(second.metadata);
-                expect(sdk.xhr.get.mock.calls.length).toEqual(1);
-                done();
+                expect(sdk.xhr.get).toHaveBeenCalledTimes(1);
             });
         });
     });

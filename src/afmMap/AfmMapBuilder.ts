@@ -1,10 +1,11 @@
+import first = require('lodash/first');
 import compact = require('lodash/compact');
 import flatMap = require('lodash/flatMap');
 import flow = require('lodash/flow');
 import isEmpty = require('lodash/isEmpty');
 import uniq = require('lodash/uniq');
 import flatten = require('lodash/flatten');
-import { IAfm, IDateFilter } from '../interfaces/Afm';
+import * as AFM from '../interfaces/Afm';
 import { areUris } from '../helpers/uri';
 import { DateFilterMap, IAttributeElement, IDateFilterRefData } from './DateFilterMap';
 import { AttributeMap } from './AttributeMap';
@@ -14,17 +15,20 @@ import {
     isDateFilter, isPoP, isShowInPercent
 } from '../utils/AfmUtils';
 import { IGoodDataSDK } from '../interfaces/GoodDataSDK';
+import { IAttributeDisplayForm } from './model/gooddata/AttributeDisplayForm';
+import { IAttribute } from './model/gooddata/Attribute';
+import { IDataSet } from './model/gooddata/DataSet';
 
 export class AfmMapBuilder {
-    sdk: IGoodDataSDK;
-    projectId: string;
+    private sdk: IGoodDataSDK;
+    private projectId: string;
 
     constructor(sdk: IGoodDataSDK, projectId: string) {
         this.sdk = sdk;
         this.projectId = projectId;
     }
 
-    public build(afm: IAfm): Promise<[AttributeMap, DateFilterMap]> {
+    public build(afm: AFM.IAfm): Promise<[AttributeMap, DateFilterMap]> {
         const promises: [Promise<AttributeMap>, Promise<DateFilterMap>] = [
             this.buildAttributeMap(afm),
             this.buildDateFilterMap(afm)
@@ -33,7 +37,7 @@ export class AfmMapBuilder {
         return Promise.all(promises);
     }
 
-    public buildAttributeMap(afm: IAfm): Promise<AttributeMap> {
+    public buildAttributeMap(afm: AFM.IAfm): Promise<AttributeMap> {
         const attributes = lookupAttributes(afm);
 
         if (isEmpty(attributes)) {
@@ -43,11 +47,11 @@ export class AfmMapBuilder {
         const loadAttributeUris = areUris(attributes)
             ? Promise.resolve(attributes)
             : this.sdk.md.getUrisFromIdentifiers(this.projectId, attributes)
-                .then(pairs => pairs.map(pair => pair.uri));
+                .then(pairs => pairs.map((pair: { uri: string }) => pair.uri));
 
         return loadAttributeUris.then((objectUris) => {
             return this.sdk.md.getObjects(this.projectId, objectUris)
-                .then(items => items.map(item => ({
+                .then(items => items.map((item: IAttributeDisplayForm) => ({
                     attribute: item.attributeDisplayForm.content.formOf,
                     attributeDisplayForm: areUris(attributes) ?
                         item.attributeDisplayForm.meta.uri :
@@ -56,33 +60,36 @@ export class AfmMapBuilder {
         });
     }
 
-    public buildDateFilterMap(afm: IAfm): Promise<DateFilterMap> {
+    public buildDateFilterMap(afm: AFM.IAfm): Promise<DateFilterMap> {
         const dateFilters = getMeasureDateFilters(afm);
         if (isEmpty(dateFilters)) {
             return Promise.resolve([]);
         }
-        
+
         const insightDateFilter = getInsightDateFilter(afm);
         if (insightDateFilter) {
             dateFilters.push(insightDateFilter);
         }
 
-        const dataSetUri = (<IDateFilter> dateFilters[0]).id;
+        const dataSetUri = (dateFilters[0] as AFM.IDateFilter).id;
 
         return this.sdk.md.getObjects(this.projectId, [dataSetUri])
             .then((dataSetObjects) => {
-                const dateAttributes = dataSetObjects[0].dataSet.content.attributes;
+                const dateAttributes = first<IDataSet>(dataSetObjects).dataSet.content.attributes;
                 return this.sdk.md.getObjects(this.projectId, dateAttributes);
             })
-            .then((dateAttributeObjects) => {
-                const dateRefDataPromises: Promise<IDateFilterRefData>[] = dateAttributeObjects
-                    .map(dateAttribute => this.buildDateRefData(dateAttribute, dateFilters));
+            .then((dateAttributeObjects: IAttribute[]) => {
+                const dateRefDataPromises: Array<Promise<IDateFilterRefData>> = dateAttributeObjects
+                    .map(dateAttribute  => this.buildDateRefData(dateAttribute, dateFilters));
 
                 return Promise.all(dateRefDataPromises);
             });
     }
 
-    public buildDateRefData(dateAttribute, dateFilters: IDateFilter[]): Promise<IDateFilterRefData> {
+    public buildDateRefData(
+        dateAttribute: IAttribute,
+        dateFilters: AFM.IDateFilter[]
+    ): Promise<IDateFilterRefData> {
         const refData: IDateFilterRefData = {
             dateAttributeType: dateAttribute.attribute.content.type,
             dateAttributeUri: dateAttribute.attribute.meta.uri,
@@ -114,7 +121,8 @@ export class AfmMapBuilder {
             .then((elementLabelUri) => {
                 const results = elementLabelUri[0].result;
                 const attributeElements = elementsLabels.map((elementLabel): IAttributeElement => {
-                    const elementResult = results.find(result => result.pattern === elementLabel);
+                    const elementResult = results
+                        .find((result: { pattern: string }) => result.pattern === elementLabel);
                     return {
                         label: elementResult.elementLabels[0].elementLabel,
                         uri: elementResult.elementLabels[0].uri
@@ -126,21 +134,21 @@ export class AfmMapBuilder {
     }
 }
 
-export function getMeasureDateFilters(normalizedAfm: IAfm): IDateFilter[] {
+export function getMeasureDateFilters(normalizedAfm: AFM.IAfm): AFM.IDateFilter[] {
     return flatMap(normalizedAfm.measures, (measure) => {
         return hasFilters(measure) ? measure.definition.filters.filter(isDateFilter) : [];
     });
 }
 
-export function lookupAttributes(afm) {
-    const attributes = afm.measures.map((measure) => {
+export function lookupAttributes(afm: AFM.IAfm) {
+    const attributes = afm.measures.map((measure: AFM.IMeasure) => {
         const ids = [];
         if (isPoP(measure)) { // MAQL - FOR PREVIOUS ([attributeUri]) OR ({attributeId})
             ids.push(measure.definition.popAttribute.id);
         }
 
         if (isShowInPercent(measure)) { // MAQL - BY ALL [attributeUri1], ALL [attributeUri2] OR ALL {attributeId2}
-            ids.push(...afm.attributes.map(attribute => attribute.id));
+            ids.push(...afm.attributes.map((attribute: AFM.IAttribute) => attribute.id));
         }
 
         if (hasFilters(measure)) {
@@ -159,13 +167,14 @@ export function lookupAttributes(afm) {
     )(attributes);
 }
 
-function getDefaultDateDisplayForm(dateAttribute): string {
+function getDefaultDateDisplayForm(dateAttribute: IAttribute): string {
     const defaultDisplayForm = dateAttribute.attribute.content.displayForms
         .find(displayForm => displayForm.content.type === 'GDC.time.day');
     return (defaultDisplayForm) ? defaultDisplayForm.meta.uri : null;
 }
 
-function getAbsoluteFiltersElementsLabels(dateFilters: IDateFilter[], displayFormUri: string): string[] {
+// tslint:disable-next-line:variable-name
+function getAbsoluteFiltersElementsLabels(dateFilters: AFM.IDateFilter[], _displayFormUri: string): string[] {
     const betweenStrings = dateFilters.filter(isAbsoluteDateFilter)
         .map((filter) => {
             return filter.between as [string, string];

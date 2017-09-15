@@ -37,8 +37,12 @@ export function buildRequest(afm: IAfm, transformation: ITransformation, afmData
     };
 }
 
-export function generateMetricDefinition(afm: IAfm, transformation: ITransformation, afmDataMap: AfmMap,
-    item: IMeasure): IDefinition {
+export function generateMetricDefinition(
+    afm: IAfm,
+    transformation: ITransformation,
+    afmDataMap: AfmMap,
+    item: IMeasure
+): IDefinition {
     const { title, format } = getMeasureAdditionalInfo(transformation, item.id);
 
     return {
@@ -51,7 +55,7 @@ export function generateMetricDefinition(afm: IAfm, transformation: ITransformat
     };
 }
 
-export function generateMetricExpression(item: IMeasure, afm: IAfm, afmDataMap: AfmMap) {
+export function generateMetricExpression(item: IMeasure, afm: IAfm, afmDataMap: AfmMap): string {
     if (isPoP(item)) {
         return createPoPMetric(item, afm, afmDataMap);
     }
@@ -84,8 +88,8 @@ function getDateFilterExpression(filter: IDateFilter, afmDataMap: AfmMap): strin
 
     let dateRange;
     if (isAbsoluteDateFilter(filter)) {
-        const fromUri = getDateElementUri(dateFilterRefData, filter.between[0]);
-        const toUri = getDateElementUri(dateFilterRefData, filter.between[1]);
+        const fromUri = getDateElementUri(dateFilterRefData, filter.between[0] as string);
+        const toUri = getDateElementUri(dateFilterRefData, filter.between[1] as string);
 
         dateRange = `${wrapId(fromUri)} AND ${wrapId(toUri)}`;
     } else {
@@ -131,13 +135,13 @@ function getGeneratedMetricExpression(item: IMeasure, afmDataMap: AfmMap, includ
     return `SELECT ${getSimpleMetricExpression(item, afmDataMap, includeFilters)}`;
 }
 
-function getPercentMetricExpression(item: IMeasure, afmDataMap: AfmMap, attributesUris) {
+function getPercentMetricExpression(item: IMeasure, afmDataMap: AfmMap, attributesUris: string[]) {
     const metricExpressionWithoutFilters = getGeneratedMetricExpression(item, afmDataMap, false);
 
     const filterExpression = getFiltersExpression(item, afmDataMap);
     const whereExpression = filterExpression ? ` WHERE ${filterExpression}` : '';
 
-    const byAllExpression = attributesUris.map(attributeUri => `ALL ${wrapId(attributeUri)}`).join(',');
+    const byAllExpression = attributesUris.map((attributeUri: string) => `ALL ${wrapId(attributeUri)}`).join(',');
 
     return `SELECT (${metricExpressionWithoutFilters}${whereExpression}) ` +
         `/ (${metricExpressionWithoutFilters} BY ${byAllExpression}${whereExpression})`;
@@ -157,7 +161,7 @@ function createPoPMetric(item: IMeasure, afm: IAfm, afmDataMap: AfmMap) {
     return `${generatedMetricExpression} FOR PREVIOUS (${wrapId(attributeUri)})`;
 }
 
-export function getMeasureFormat(item: IMeasure, afm: IAfm, format: string = DEFAULT_METRIC_FORMAT) {
+export function getMeasureFormat(item: IMeasure, afm: IAfm, format: string = DEFAULT_METRIC_FORMAT): string {
     if (isPoP(item)) {
         const baseObject = item.definition.baseObject as any;
 
@@ -239,5 +243,3 @@ export function getMeasureAdditionalInfo(transformation: ITransformation, id: st
     const info = get(transformation, 'measures', []).find(measure => measure.id === id);
     return pick<IAdditionalInfo, {}>(info, ['title', 'format']);
 }
-
-

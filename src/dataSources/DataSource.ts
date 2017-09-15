@@ -1,21 +1,22 @@
 import * as stringify from 'json-stable-stringify';
 import { IDataSource } from '../interfaces/DataSource';
 import { IAfm } from '../interfaces/Afm';
+import { ITransformation } from '../interfaces/Transformation';
 
 export {
     IDataSource
 };
 
-export type execFactory = (transformation) => Promise<any>;
+export type ExecFactory<T> = (transformation: ITransformation) => Promise<T>;
 
-export class DataSource implements IDataSource {
+export class DataSource<T> implements IDataSource<T> {
     constructor(
-        private execFactory: execFactory,
+        private execFactory: ExecFactory<T>,
         private afm?: IAfm,
         private fingerprint?: string
     ) {}
 
-    public getData(transformation): Promise<any> {
+    public getData(transformation: ITransformation): Promise<T> {
         return this.execFactory(transformation);
     }
 

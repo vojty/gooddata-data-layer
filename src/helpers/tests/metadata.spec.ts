@@ -1,9 +1,17 @@
 import {
     fetchMeasures,
     getAttributesMap
-} from '../../helpers/metadata';
+} from '../metadata';
 
-import * as VisObj from '../../legacy/model/VisualizationObject';
+import {
+    CategoryCollection,
+    CategoryType,
+    EmbeddedDateFilterType, IAttributesMap,
+    IMeasuresMap, IVisualizationObject, MeasureType,
+    VisualizationType
+} from '../../legacy/model/VisualizationObject';
+
+import { empty } from '../../fixtures/VisualizationObject.fixtures';
 
 describe('metadataHelpers', () => {
     const projectId = 'projectId';
@@ -11,18 +19,6 @@ describe('metadataHelpers', () => {
     const m2Uri = '/m/2';
     const m1Format = { format: '#.##1' };
     const m2Format = { format: '#.##2' };
-
-    const emptyVisualizationObject = {
-        meta: {},
-        content: {
-            type: 'column' as VisObj.VisualizationType,
-            buckets: {
-                measures: [],
-                categories: [],
-                filters: []
-            }
-        }
-    };
 
     describe('fetchMeasures', () => {
         const sdkMockMetrics = {
@@ -41,22 +37,23 @@ describe('metadataHelpers', () => {
             }
         };
 
-        it('should return empty object if there are no measures', (done) => {
-            fetchMeasures(sdkMockMetrics, projectId, emptyVisualizationObject).then((result) => {
+        it('should return empty object if there are no measures', () => {
+            return fetchMeasures(sdkMockMetrics, projectId, empty).then((result: IMeasuresMap) => {
                 expect(result).toEqual({});
-                done();
             });
         });
 
-        it('should prepare mapping with formats for measures in md object', (done) => {
-            const visualizationObject = {
-                meta: {},
+        it('should prepare mapping with formats for measures in md object', () => {
+            const visualizationObject: IVisualizationObject = {
+                meta: {
+                    title: 'My vis. object'
+                },
                 content: {
-                    type: 'column' as VisObj.VisualizationType,
+                    type: 'column' as VisualizationType,
                     buckets: {
                         measures: [{
                             measure: {
-                                type: 'metric' as VisObj.MeasureType,
+                                type: 'metric' as MeasureType,
                                 objectUri: m1Uri,
                                 showInPercent: false,
                                 showPoP: false,
@@ -65,7 +62,7 @@ describe('metadataHelpers', () => {
                             }
                         }, {
                             measure: {
-                                type: 'metric' as VisObj.MeasureType,
+                                type: 'metric' as MeasureType,
                                 objectUri: m2Uri,
                                 showInPercent: false,
                                 showPoP: false,
@@ -79,12 +76,11 @@ describe('metadataHelpers', () => {
                 }
             };
 
-            fetchMeasures(sdkMockMetrics, projectId, visualizationObject).then((result) => {
+            return fetchMeasures(sdkMockMetrics, projectId, visualizationObject).then((result: IMeasuresMap) => {
                 expect(result).toEqual({
                     '/m/1': { measure: m1Format },
                     '/m/2': { measure: m2Format }
                 });
-                done();
             });
         });
     });
@@ -107,18 +103,19 @@ describe('metadataHelpers', () => {
             }
         };
 
-        it('should return empty if no date filter present', (done) => {
-            getAttributesMap(sdkMockAttributes, projectId, emptyVisualizationObject).then((result) => {
+        it('should return empty if no date filter present', () => {
+            return getAttributesMap(sdkMockAttributes, projectId, empty).then((result: IAttributesMap) => {
                 expect(result).toEqual({});
-                done();
             });
         });
 
-        it('should return empty if date filter in filter bucket', (done) => {
-            const visualizationObject = {
-                meta: {},
+        it('should return empty if date filter in filter bucket', () => {
+            const visualizationObject: IVisualizationObject = {
+                meta: {
+                    title: 'vis obj. with date filter'
+                },
                 content: {
-                    type: 'column' as VisObj.VisualizationType,
+                    type: 'column' as VisualizationType,
                     buckets: {
                         measures: [],
                         categories: [],
@@ -126,7 +123,7 @@ describe('metadataHelpers', () => {
                             {
                                 dateFilter: {
                                     attribute: dateUri,
-                                    type: 'relative' as VisObj.EmbeddedDateFilterType,
+                                    type: 'relative' as EmbeddedDateFilterType,
                                     granularity: 'year'
                                 }
                             }
@@ -135,27 +132,26 @@ describe('metadataHelpers', () => {
                 }
             };
 
-            getAttributesMap(sdkMockAttributes, projectId, visualizationObject).then((result) => {
-                expect(result).toEqual({
-                    [dateUri]: yearUri
+            return getAttributesMap(sdkMockAttributes, projectId, visualizationObject)
+                .then((result: IAttributesMap) => {
+                    expect(result).toEqual({ [dateUri]: yearUri });
                 });
-
-                done();
-            });
         });
 
-        it('should return empty if date filter in categories', (done) => {
-            const visualizationObject = {
-                meta:{},
+        it('should return empty if date filter in categories', () => {
+            const visualizationObject: IVisualizationObject = {
+                meta: {
+                    title: 'Vis obj. with date category'
+                },
                 content: {
-                    type: 'column' as VisObj.VisualizationType,
+                    type: 'column' as VisualizationType,
                     buckets: {
                         measures: [],
                         categories: [{
                             category: {
-                                type: 'date' as VisObj.CategoryType,
+                                type: 'date' as CategoryType,
                                 attribute: dateUri,
-                                collection: 'view' as VisObj.CategoryCollection,
+                                collection: 'view' as CategoryCollection,
                                 displayForm: 'df/uri'
                             }
                         }],
@@ -164,13 +160,12 @@ describe('metadataHelpers', () => {
                 }
             };
 
-            getAttributesMap(sdkMockAttributes, projectId, visualizationObject).then((result) => {
-                expect(result).toEqual({
-                    [dateUri]: yearUri
+            return getAttributesMap(sdkMockAttributes, projectId, visualizationObject)
+                .then((result: IAttributesMap) => {
+                    expect(result).toEqual({
+                        [dateUri]: yearUri
+                    });
                 });
-
-                done();
-            });
         });
     });
 });

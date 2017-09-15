@@ -1,6 +1,6 @@
 import invariant = require('invariant');
 import { DateFilterMap, IDateFilterRefData } from './DateFilterMap';
-import { AttributeMap } from './AttributeMap';
+import { AttributeMap, ObjectUri } from './AttributeMap';
 import { IDateFilter } from '../interfaces/Afm';
 
 export class AfmMap {
@@ -8,13 +8,13 @@ export class AfmMap {
     private dateFilterMap: DateFilterMap = [];
     private attributeMap: AttributeMap = [];
 
-    constructor(results: [AttributeMap, DateFilterMap] = [[],[]], insightDateFilter: IDateFilter = null) {
+    constructor(results: [AttributeMap, DateFilterMap] = [[], []], insightDateFilter: IDateFilter = null) {
         this.attributeMap = results[0];
         this.dateFilterMap = results[1];
         this.insightDateFilter = insightDateFilter;
     }
 
-    public getAttributeByDisplayForm(displayForm): string {
+    public getAttributeByDisplayForm(displayForm: ObjectUri): string {
         const item = this.attributeMap.find(i => i.attributeDisplayForm === displayForm);
         invariant(item, `${displayForm} not found in ${JSON.stringify(this.attributeMap)}`);
         return item.attribute;
@@ -31,8 +31,7 @@ export class AfmMap {
     }
 }
 
-export function getDateElementUri(dateFilterRefData: IDateFilterRefData, elementValue): string {
+export function getDateElementUri(dateFilterRefData: IDateFilterRefData, elementValue: string): string {
     const element = dateFilterRefData.attributeElements.find(item => item.label === elementValue);
     return element.uri;
 }
-

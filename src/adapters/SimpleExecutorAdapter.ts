@@ -9,12 +9,13 @@ import { DateFilterMap } from '../afmMap/DateFilterMap';
 import { buildRequest } from '../execution/ExecutionRequestBuilder';
 import { getInsightDateFilter, hasInsightDateFilter, hasMetricDateFilters, normalizeAfm } from '../utils/AfmUtils';
 import { IGoodDataSDK } from '../interfaces/GoodDataSDK';
+import { ITransformation } from '../interfaces/Transformation';
 
 export class SimpleExecutorAdapter implements IAdapter {
 
     private projectId: string;
-    private settings;
-    private sdk;
+    private settings: Object;
+    private sdk: IGoodDataSDK;
 
     constructor(sdk: IGoodDataSDK, projectId: string, settings = {}) {
         this.sdk = sdk;
@@ -24,11 +25,11 @@ export class SimpleExecutorAdapter implements IAdapter {
         this.settings = settings;
     }
 
-    public createDataSource(afm: IAfm, fingerprint?: string): Promise<IDataSource> {
+    public createDataSource<T>(afm: IAfm, fingerprint?: string): Promise<IDataSource<T>> {
         const normalizedAfm = normalizeAfm(afm);
 
         const afmMapDataBuilder = new AfmMapBuilder(this.sdk, this.projectId);
-        const execFactory = (transformation) => {
+        const execFactory = (transformation: ITransformation) => {
             return afmMapDataBuilder.build(normalizedAfm)
                 .then((results: [AttributeMap, DateFilterMap]) => {
                     let insightDateFilter = null;
@@ -45,6 +46,6 @@ export class SimpleExecutorAdapter implements IAdapter {
                 });
         };
 
-        return Promise.resolve(new DataSource(execFactory, normalizedAfm, fingerprint));
+        return Promise.resolve(new DataSource<T>(execFactory, normalizedAfm, fingerprint));
     }
 }

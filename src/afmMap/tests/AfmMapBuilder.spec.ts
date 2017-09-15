@@ -4,6 +4,7 @@ import { AfmMapBuilder, getMeasureDateFilters, lookupAttributes } from '../AfmMa
 import * as AfmFixtures from '../../fixtures/Afm.fixtures';
 import { normalizeAfm } from '../../utils/AfmUtils';
 import { IGoodDataSDK } from '../../interfaces/GoodDataSDK';
+import { IAttribute } from '../model/gooddata/Attribute';
 
 const defaultObjectsResponse = {
     attributeDisplayForm: {
@@ -17,24 +18,30 @@ const defaultObjectsResponse = {
     }
 };
 
-
-const dateAttribute = {
+const dateAttribute: IAttribute = {
     attribute: {
         content: {
             type: 'GDC.time.date',
             displayForms : [
                 {
                     content: {
-                        type: 'GDC.time.day'
+                        type: 'GDC.time.day',
+                        expression: 'xyz',
+                        formOf: '/gdc/md/project/obj/15200',
+                    },
+                    links: {
+                        elements: '/gdc/md/project/obj/15200/elements'
                     },
                     meta: {
-                        uri: '/gdc/md/project/obj/15202'
+                        uri: '/gdc/md/project/obj/15202',
+                        title: 'Date DF'
                     }
                 }
             ]
         },
         meta: {
-            uri: '/gdc/md/project/obj/15200'
+            uri: '/gdc/md/project/obj/15200',
+            title: 'Date'
         }
     }
 };
@@ -84,7 +91,8 @@ const getElementLabelsToUrisResponse = [
 
 const projectId = 'project';
 
-const getObjectsResponse = (projectId, uris) => {
+ // tslint:disable-next-line:variable-name
+const getObjectsResponse = (_projectId: string, uris: string[]) => {
     const results = flatMap(uris, (uri) => {
         switch (uri) {
             case '/gdc/md/datefilter/obj/1': {
@@ -98,7 +106,6 @@ const getObjectsResponse = (projectId, uris) => {
                 return defaultObjectsResponse;
             }
             default: {
-                debugger;
                 return null;
             }
         }
@@ -107,7 +114,7 @@ const getObjectsResponse = (projectId, uris) => {
     return Promise.resolve(results);
 };
 
-function createSdkMock(): IGoodDataSDK {
+const createSdkMock = (): IGoodDataSDK => {
     return {
         md: {
             getUrisFromIdentifiers: jest.fn(() => Promise.resolve(getUrisFromIdentifiersResponse)),
@@ -122,7 +129,7 @@ function createSdkMock(): IGoodDataSDK {
             get: null
         }
     };
-}
+};
 
 describe('buildAttributeMap', () => {
     it('should return array with attributes and display forms for AFM with uris', () => {
@@ -243,8 +250,8 @@ describe('buildDateFilterMap', () => {
     it('should return dateFilterMap', () => {
         const afm: IAfm = {
             measures: [
-                AfmFixtures.metric_sum,
-                AfmFixtures.metric4_sun
+                AfmFixtures.metricSum,
+                AfmFixtures.metricSum4
             ]
         };
         const sdk = createSdkMock();
@@ -273,7 +280,7 @@ describe('buildDateFilterMap', () => {
     it('afmMap with only insight date filter data', () => {
         const afm: IAfm = {
             measures: [
-                AfmFixtures.metric_sum
+                AfmFixtures.metricSum
             ],
             filters: [
                 AfmFixtures.absoluteDateFilter1

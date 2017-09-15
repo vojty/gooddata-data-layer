@@ -8,7 +8,7 @@ describe('SimpleExecutorAdapter', () => {
     const projectId = 'abc';
     const afm = {};
 
-    it('should request data via provided sdk', (done) => {
+    it('should request data via provided sdk', () => {
         const getDataStub = jest.fn().mockReturnValue(Promise.resolve());
         const DummySDK: IGoodDataSDK = {
             md: {
@@ -25,10 +25,9 @@ describe('SimpleExecutorAdapter', () => {
         };
 
         const adapter = new SimpleExecutorAdapter(DummySDK, projectId);
-        adapter.createDataSource(afm).then((dataSource) => {
-            dataSource.getData(transformation).then(() => {
+        return adapter.createDataSource(afm).then((dataSource) => {
+            return dataSource.getData(transformation).then(() => {
                 expect(getDataStub).toBeCalled();
-                done();
             });
         });
     });

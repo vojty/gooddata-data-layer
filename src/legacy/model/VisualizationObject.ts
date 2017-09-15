@@ -18,7 +18,7 @@ export interface IEmbeddedDateFilter {
 
 export interface IEmbeddedListAttributeFilter {
     listAttributeFilter: {
-        attribute: string;
+        attribute?: string;
         displayForm: string;
         'default': {
             negativeSelection: boolean;
@@ -83,9 +83,9 @@ export type CategoryCollection = 'attribute' | 'stack' | 'view' | 'trend' | 'seg
 
 export type VisualizationType = 'table' | 'line' | 'column' | 'bar' | 'pie' | 'doughnut' | 'combo';
 
-export interface IVisualizationObjectMetadata {
-    meta;
-    content: IVisualizationObject;
+export interface IVisualizationObject {
+    meta: IVisualizationObjectMeta;
+    content: IVisualizationObjectContent;
 }
 
 export interface IBuckets {
@@ -94,7 +94,26 @@ export interface IBuckets {
     filters: EmbeddedFilter[];
 }
 
-export interface IVisualizationObject {
+export interface IVisualizationObjectMeta {
+    author?: string;
+    category?: string;
+    contributor?: string;
+    created?: Date;
+    deprecated?: boolean;
+    identifier?: string;
+    isProduction?: boolean;
+    locked?: boolean;
+    projectTemplate?: string;
+    sharedWithSomeone?: boolean;
+    summary?: string;
+    tags?: string;
+    title: string;
+    unlisted?: boolean;
+    updated?: Date;
+    uri?: string;
+}
+
+export interface IVisualizationObjectContent {
     type: VisualizationType;
     buckets: IBuckets;
 }
@@ -108,6 +127,10 @@ export interface IMeasuresMap {
 }
 
 export interface IVisualizationMetadataResult {
-    metadata: IVisualizationObjectMetadata;
+    metadata: IVisualizationObject;
     measuresMap: IMeasuresMap;
+}
+
+export function isEmbeddedDateFilter(dateFilter: EmbeddedFilter): dateFilter is IEmbeddedDateFilter {
+    return (dateFilter as IEmbeddedDateFilter).dateFilter !== undefined;
 }
