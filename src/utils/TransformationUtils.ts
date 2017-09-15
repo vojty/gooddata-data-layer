@@ -5,6 +5,10 @@ import get = require('lodash/get');
 
 import { ITransformation, ISort, IMeasure, IDimension } from '../interfaces/Transformation';
 
+export function getSorting(transformation: ITransformation): ISort[] {
+    return get(transformation, 'sorting', []);
+}
+
 /**
  * Merge two transformations into one, second one has higher priority
  */

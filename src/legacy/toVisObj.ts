@@ -1,6 +1,8 @@
 import partial = require('lodash/partial');
 import get = require('lodash/get');
-import * as AdapterUtils from '../adapters/utils';
+import * as AfmUtils from '../utils/AfmUtils';
+import * as TransformationUtils from '../utils/TransformationUtils';
+import * as ExecutionRequestBuilder from '../execution/ExecutionRequestBuilder';
 import * as Afm from '../interfaces/Afm';
 import * as Transformation from '../interfaces/Transformation';
 import { isUri } from '../helpers/uri';
@@ -38,7 +40,7 @@ const EmptyMeasure: Afm.IMeasure = {
 function getMeasureTitle(transformation: Transformation.ITransformation, measure: Afm.IMeasure): string {
     const id = getLookupId(measure) || measure.id;
 
-    const { title } = AdapterUtils.getMeasureAdditionalInfo(transformation, id);
+    const { title } = ExecutionRequestBuilder.getMeasureAdditionalInfo(transformation, id);
 
     return title || measure.id;
 }
@@ -47,7 +49,7 @@ function getAttributeSorting(
     transformation: Transformation.ITransformation,
     attribute: Afm.IAttribute
 ): { sort: VisObj.SortDirection } {
-    const sorting = AdapterUtils.getSorting(transformation).find(s => s.column === attribute.id);
+    const sorting = TransformationUtils.getSorting(transformation).find(s => s.column === attribute.id);
 
     if (!sorting) {
         return null;
@@ -60,7 +62,7 @@ function getMeasureSorting(
     transformation: Transformation.ITransformation,
     measure: Afm.IMeasure
 ): { sort: VisObj.IMeasureSort } {
-    const sorting = AdapterUtils.getSorting(transformation)
+    const sorting = TransformationUtils.getSorting(transformation)
         .find(s => (s.column === getLookupId(measure) || s.column === measure.id));
 
     if (!sorting) {
@@ -78,7 +80,7 @@ function getMeasureSorting(
 function getMeasureFormat(transformation: Transformation.ITransformation, measure: Afm.IMeasure): { format?: string } {
     const id = getLookupId(measure) || measure.id;
 
-    const { format } = AdapterUtils.getMeasureAdditionalInfo(transformation, id);
+    const { format } = ExecutionRequestBuilder.getMeasureAdditionalInfo(transformation, id);
 
     return format ? { format } : {};
 }
@@ -242,7 +244,7 @@ export function toVisObj(
     transformation: Transformation.ITransformation,
     resultHeaders: IHeader[] = []
 ): VisObj.IVisualizationObject {
-    const normalized = AdapterUtils.normalizeAfm(Afm);
+    const normalized = AfmUtils.normalizeAfm(Afm);
 
     return {
         type,

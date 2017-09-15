@@ -1,6 +1,7 @@
 import {
     SimpleExecutorAdapter
 } from '../SimpleExecutorAdapter';
+import { IGoodDataSDK } from '../../interfaces/GoodDataSDK';
 
 describe('SimpleExecutorAdapter', () => {
     const transformation = {};
@@ -9,9 +10,17 @@ describe('SimpleExecutorAdapter', () => {
 
     it('should request data via provided sdk', (done) => {
         const getDataStub = jest.fn().mockReturnValue(Promise.resolve());
-        const DummySDK = {
+        const DummySDK: IGoodDataSDK = {
+            md: {
+                getObjects: null,
+                getUrisFromIdentifiers: null,
+                translateElementLabelsToUris: null
+            },
             execution: {
                 getData: getDataStub
+            },
+            xhr: {
+                get: null
             }
         };
 

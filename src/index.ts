@@ -2,7 +2,6 @@ import * as Afm from './interfaces/Afm';
 import * as MetadataSource from './interfaces/MetadataSource';
 import * as ExecutorResult from './interfaces/ExecutorResult';
 import * as Transformation from './interfaces/Transformation';
-import * as AdapterUtils from './adapters/utils';
 import * as DataSourceUtils from './dataSources/utils';
 import * as DataSource from './dataSources/DataSource';
 import * as Filters from './helpers/filters';
@@ -29,7 +28,6 @@ export {
     UriMetadataSource,
     ErrorCodes,
 
-    AdapterUtils,
     AfmUtils,
     DataSourceUtils,
     Afm,

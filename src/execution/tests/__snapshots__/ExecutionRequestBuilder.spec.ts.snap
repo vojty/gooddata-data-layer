@@ -1,0 +1,204 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`buildRequest build config for pop metric with insight and date filter 1`] = `
+Object {
+  "execution": Object {
+    "columns": Array [
+      "measure_in_percent",
+      "measure_pop",
+    ],
+    "definitions": Array [
+      Object {
+        "metricDefinition": Object {
+          "expression": "SELECT (SELECT {measure_identifier} WHERE [/gdc/md/dateAttributeUriYEAR/obj/1] BETWEEN THIS + (-10) AND THIS + (-9)) / (SELECT {measure_identifier} BY  WHERE [/gdc/md/dateAttributeUriYEAR/obj/1] BETWEEN THIS + (-10) AND THIS + (-9))",
+          "format": "#,##0.00%",
+          "identifier": "measure_in_percent",
+          "title": undefined,
+        },
+      },
+      Object {
+        "metricDefinition": Object {
+          "expression": "SELECT (SELECT (SELECT {measure_identifier} WHERE [/gdc/md/dateAttributeUriYEAR/obj/1] BETWEEN THIS + (-10) AND THIS + (-9)) / (SELECT {measure_identifier} BY  WHERE [/gdc/md/dateAttributeUriYEAR/obj/1] BETWEEN THIS + (-10) AND THIS + (-9))) FOR PREVIOUS ({attribute_identifier})",
+          "format": "#,##0.00%",
+          "identifier": "measure_pop",
+          "title": undefined,
+        },
+      },
+    ],
+    "orderBy": Array [],
+    "where": Object {
+      "$and": Array [],
+    },
+  },
+}
+`;
+
+exports[`buildRequest build config one simple metric 1`] = `
+Object {
+  "execution": Object {
+    "columns": Array [
+      "metric_sum",
+    ],
+    "definitions": Array [
+      Object {
+        "metricDefinition": Object {
+          "expression": "SELECT SUM([/gdc/md/measure/obj/1])",
+          "format": "#,##0.00",
+          "identifier": "metric_sum",
+          "title": undefined,
+        },
+      },
+    ],
+    "orderBy": Array [],
+    "where": Object {
+      "$and": Array [],
+    },
+  },
+}
+`;
+
+exports[`buildRequest build config with metric and absolute global date filter 1`] = `
+Object {
+  "execution": Object {
+    "columns": Array [
+      "metric_sum",
+    ],
+    "definitions": Array [
+      Object {
+        "metricDefinition": Object {
+          "expression": "SELECT SUM([/gdc/md/measure/obj/1])",
+          "format": "#,##0.00",
+          "identifier": "metric_sum",
+          "title": undefined,
+        },
+      },
+    ],
+    "orderBy": Array [],
+    "where": Object {
+      "$and": Array [],
+      "/gdc/md/datefilter/obj/1": Object {
+        "$between": Array [
+          "2014-01-01",
+          "2016-01-01",
+        ],
+        "$granularity": "GDC.time.date",
+      },
+    },
+  },
+}
+`;
+
+exports[`buildRequest build config with metric and relative global date filter 1`] = `
+Object {
+  "execution": Object {
+    "columns": Array [
+      "metric_sum",
+    ],
+    "definitions": Array [
+      Object {
+        "metricDefinition": Object {
+          "expression": "SELECT SUM([/gdc/md/measure/obj/1])",
+          "format": "#,##0.00",
+          "identifier": "metric_sum",
+          "title": undefined,
+        },
+      },
+    ],
+    "orderBy": Array [],
+    "where": Object {
+      "$and": Array [],
+      "/gdc/md/datefilter/obj/1": Object {
+        "$between": Array [
+          -10,
+          -9,
+        ],
+        "$granularity": "GDC.time.year",
+      },
+    },
+  },
+}
+`;
+
+exports[`buildRequest build config with metrics and different date filters 1`] = `
+Object {
+  "execution": Object {
+    "columns": Array [
+      "metric_sum",
+      "metric2_sum",
+      "metric3_sum",
+    ],
+    "definitions": Array [
+      Object {
+        "metricDefinition": Object {
+          "expression": "SELECT SUM([/gdc/md/measure/obj/1]) WHERE [/gdc/md/dateAttributeUri/obj/1] BETWEEN [/gdc/md/2014-01-01URI/obj/1] AND [/gdc/md/2016-01-01URI/obj/1]",
+          "format": "#,##0.00",
+          "identifier": "metric_sum",
+          "title": undefined,
+        },
+      },
+      Object {
+        "metricDefinition": Object {
+          "expression": "SELECT SUM([/gdc/md/measure/obj/2]) WHERE [/gdc/md/dateAttributeUriYEAR/obj/1] BETWEEN THIS + (-10) AND THIS + (-9)",
+          "format": "#,##0.00",
+          "identifier": "metric2_sum",
+          "title": undefined,
+        },
+      },
+      Object {
+        "metricDefinition": Object {
+          "expression": "SELECT SUM([/gdc/md/measure/obj/3]) WHERE [/gdc/md/dateAttributeUri/obj/1] BETWEEN [/gdc/md/2017-01-01URI/obj/1] AND [/gdc/md/2018-01-01URI/obj/1]",
+          "format": "#,##0.00",
+          "identifier": "metric3_sum",
+          "title": undefined,
+        },
+      },
+    ],
+    "orderBy": Array [],
+    "where": Object {
+      "$and": Array [],
+    },
+  },
+}
+`;
+
+exports[`buildRequest build config without insight date filter 1`] = `
+Object {
+  "execution": Object {
+    "columns": Array [
+      "metric_sum",
+      "metric2_sum",
+      "metric3_sum",
+    ],
+    "definitions": Array [
+      Object {
+        "metricDefinition": Object {
+          "expression": "SELECT SUM([/gdc/md/measure/obj/1])",
+          "format": "#,##0.00",
+          "identifier": "metric_sum",
+          "title": undefined,
+        },
+      },
+      Object {
+        "metricDefinition": Object {
+          "expression": "SELECT SUM([/gdc/md/measure/obj/2]) WHERE [/gdc/md/dateAttributeUriYEAR/obj/1] BETWEEN THIS + (-10) AND THIS + (-9)",
+          "format": "#,##0.00",
+          "identifier": "metric2_sum",
+          "title": undefined,
+        },
+      },
+      Object {
+        "metricDefinition": Object {
+          "expression": "SELECT SUM([/gdc/md/measure/obj/3]) WHERE [/gdc/md/dateAttributeUri/obj/1] BETWEEN [/gdc/md/2017-01-01URI/obj/1] AND [/gdc/md/2018-01-01URI/obj/1]",
+          "format": "#,##0.00",
+          "identifier": "metric3_sum",
+          "title": undefined,
+        },
+      },
+    ],
+    "orderBy": Array [],
+    "where": Object {
+      "$and": Array [],
+    },
+  },
+}
+`;
