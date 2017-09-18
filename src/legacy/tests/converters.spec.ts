@@ -315,7 +315,7 @@ describe('converters', () => {
             });
         });
 
-        it('should do nothing when date filter from/to is undefined for relative (alltime)', () => {
+        it('should skip filter when date filter from/to is undefined for relative (alltime)', () => {
             expect(toAFM(charts.bar.dateFilterWithUndefs, attributesMap)).toEqual({
                 ...dateFilterWithoutInterval,
                 type: 'bar'

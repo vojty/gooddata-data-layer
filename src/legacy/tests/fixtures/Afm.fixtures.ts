@@ -520,15 +520,7 @@ export const dateFilter: IFixture = {
 };
 
 export const dateFilterWithoutInterval: IFixture = {
-    afm: {
-        filters: [{
-            id: DATE_DATA_SET_URI,
-            type: 'date',
-            intervalType: 'relative',
-            between: [undefined, undefined],
-            granularity: 'date'
-        }]
-    },
+    afm: {},
     transformation: {}
 };
 
