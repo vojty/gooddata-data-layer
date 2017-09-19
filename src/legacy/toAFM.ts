@@ -85,6 +85,11 @@ function convertAttribute(attribute: VisObj.ICategory): Afm.IAttribute {
 }
 
 function convertDateFilter(filter: VisObj.IEmbeddedDateFilter): Afm.IDateFilter {
+    // skip All time date filters or broken filters with one of from/to undefined
+    if (filter.dateFilter.from === undefined ||
+        filter.dateFilter.to === undefined) {
+        return null;
+    }
     const retVal = {
         type: 'date',
         id: filter.dateFilter.dataset,
@@ -96,10 +101,7 @@ function convertDateFilter(filter: VisObj.IEmbeddedDateFilter): Afm.IDateFilter 
         granularity: filter.dateFilter.granularity.split('.')[2]
     } as Afm.IDateFilter;
 
-    if (filter.dateFilter.type === 'relative' &&
-        filter.dateFilter.from !== undefined &&
-        filter.dateFilter.to !== undefined
-    ) {
+    if (filter.dateFilter.type === 'relative') {
         retVal.between = [
             parseInt(filter.dateFilter.from as string, 10),
             parseInt(filter.dateFilter.to as string, 10)
