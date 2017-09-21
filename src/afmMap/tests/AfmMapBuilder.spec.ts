@@ -221,7 +221,7 @@ describe('buildAttributeElements', () => {
     it('should return 2 element attributes', () => {
         const sdk = createSdkMock();
         const afmMapBuilder = new AfmMapBuilder(sdk, projectId);
-        afmMapBuilder.buildAttributeElements(['2014-01-01', '2016-01-01'],
+        return afmMapBuilder.buildAttributeElements(['2014-01-01', '2016-01-01'],
             '/gdc/md/project/obj/15202')
             .then((attributeElements) => {
                 expect(sdk.md.translateElementLabelsToUris).toHaveBeenCalled();
@@ -249,7 +249,7 @@ describe('buildDateFilterMap', () => {
         };
         const sdk = createSdkMock();
         const afmMapBuilder = new AfmMapBuilder(sdk, projectId);
-        afmMapBuilder.buildDateFilterMap(afm)
+        return afmMapBuilder.buildDateFilterMap(afm)
             .then((dateFilterMap) => {
                 expect(dateFilterMap).toEqual([
                     {
@@ -282,24 +282,9 @@ describe('buildDateFilterMap', () => {
 
         const sdk = createSdkMock();
         const afmMapBuilder = new AfmMapBuilder(sdk, projectId);
-        afmMapBuilder.buildDateFilterMap(afm)
+        return afmMapBuilder.buildDateFilterMap(afm)
             .then((dateFilterMap) => {
-                expect(dateFilterMap).toEqual([
-                    {
-                        attributeElements: [
-                            {
-                                label: '2014-01-01',
-                                uri: '/gdc/md/project/obj/15200/elements?id=41639'
-                            },
-                            {
-                                label: '2016-01-01',
-                                uri: '/gdc/md/project/obj/15200/elements?id=42004'
-                            }
-                        ],
-                        dateAttributeType: 'GDC.time.date',
-                        dateAttributeUri: '/gdc/md/project/obj/15200',
-                        dateDisplayFormUri: '/gdc/md/project/obj/15202'
-                    }]);
+                expect(dateFilterMap).toEqual([]);
             });
     });
 });
@@ -308,7 +293,7 @@ describe('buildDateRefData', () => {
     it('should build correct dateRefData', () => {
         const sdk = createSdkMock();
         const afmMapBuilder = new AfmMapBuilder(sdk, projectId);
-        afmMapBuilder.buildDateRefData(dateAttribute, [AfmFixtures.absoluteDateFilter1])
+        return afmMapBuilder.buildDateRefData(dateAttribute, [AfmFixtures.absoluteDateFilter1])
             .then((dateRefData) => {
                 expect(sdk.md.translateElementLabelsToUris).toHaveBeenCalled();
                 expect(dateRefData).toEqual({
