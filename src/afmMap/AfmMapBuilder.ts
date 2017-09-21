@@ -58,12 +58,13 @@ export class AfmMapBuilder {
 
     public buildDateFilterMap(afm: IAfm): Promise<DateFilterMap> {
         const dateFilters = getMeasureDateFilters(afm);
+        if (isEmpty(dateFilters)) {
+            return Promise.resolve([]);
+        }
+        
         const insightDateFilter = getInsightDateFilter(afm);
         if (insightDateFilter) {
             dateFilters.push(insightDateFilter);
-        }
-        if (isEmpty(dateFilters)) {
-            return Promise.resolve([]);
         }
 
         const dataSetUri = (<IDateFilter> dateFilters[0]).id;
