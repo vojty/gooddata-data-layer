@@ -24,7 +24,7 @@ export class SimpleExecutorAdapter implements IAdapter {
         this.settings = settings;
     }
 
-    public createDataSource(afm: IAfm): Promise<IDataSource> {
+    public createDataSource(afm: IAfm, fingerprint?: string): Promise<IDataSource> {
         const normalizedAfm = normalizeAfm(afm);
 
         const afmMapDataBuilder = new AfmMapBuilder(this.sdk, this.projectId);
@@ -45,6 +45,6 @@ export class SimpleExecutorAdapter implements IAdapter {
                 });
         };
 
-        return Promise.resolve(new DataSource(execFactory, normalizedAfm));
+        return Promise.resolve(new DataSource(execFactory, normalizedAfm, fingerprint));
     }
 }

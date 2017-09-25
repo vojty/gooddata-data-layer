@@ -26,4 +26,11 @@ describe('DataSource', () => {
 
         expect(dataSource.getFingerprint()).toEqual(stringify(afm));
     });
+
+    it('should return explicit fingerprint when provided', () => {
+        const execFactory = () => Promise.resolve({});
+        const dataSource = new DataSource(execFactory, afm, 'myFingeprint');
+
+        expect(dataSource.getFingerprint()).toEqual('myFingeprint');
+    });
 });

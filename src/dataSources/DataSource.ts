@@ -9,7 +9,11 @@ export {
 export type execFactory = (transformation) => Promise<any>;
 
 export class DataSource implements IDataSource {
-    constructor(private execFactory: execFactory, private afm?: IAfm) {}
+    constructor(
+        private execFactory: execFactory,
+        private afm?: IAfm,
+        private fingerprint?: string
+    ) {}
 
     public getData(transformation): Promise<any> {
         return this.execFactory(transformation);
@@ -20,6 +24,6 @@ export class DataSource implements IDataSource {
     }
 
     public getFingerprint(): string {
-        return stringify(this.afm);
+        return this.fingerprint ? this.fingerprint : stringify(this.afm);
     }
 }

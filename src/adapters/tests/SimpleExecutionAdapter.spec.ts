@@ -32,4 +32,27 @@ describe('SimpleExecutorAdapter', () => {
             });
         });
     });
+
+    it('should pass provided fingerprint to new dataSource', (done) => {
+        const getDataStub = jest.fn().mockReturnValue(Promise.resolve());
+        const DummySDK: IGoodDataSDK = {
+            md: {
+                getObjects: null,
+                getUrisFromIdentifiers: null,
+                translateElementLabelsToUris: null
+            },
+            execution: {
+                getData: getDataStub
+            },
+            xhr: {
+                get: null
+            }
+        };
+
+        const adapter = new SimpleExecutorAdapter(DummySDK, projectId);
+        adapter.createDataSource(afm, 'myFingerprint').then((dataSource) => {
+            expect(dataSource.getFingerprint()).toEqual('myFingerprint');
+            done();
+        });
+    });
 });
