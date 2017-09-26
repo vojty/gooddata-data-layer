@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "files": [
     "dist",
-    "src"
+    "src",
+    "LICENSE"
   ],
   "typings": "dist/index.d.ts",
   "dependencies": {
@@ -35,7 +36,7 @@
     "validate-ci": "tsc -p tsconfig.base.json --noEmit && yarn tslint-ci"
   },
   "author": "GoodData",
-  "license": "SEE LICENSE IN LICENSE.txt",
+  "license": "BSD-3-Clause",
   "jest": {
     "transform": {
       ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
