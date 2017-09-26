@@ -3,10 +3,10 @@ import * as VisObj from './legacy/model/VisualizationObject';
 import { IMetadataSource } from './interfaces/MetadataSource';
 
 export class SimpleMetadataSource implements IMetadataSource {
-    private fingerprint;
+    private fingerprint: string;
 
     constructor(
-        private visualizationObjectContent: VisObj.IVisualizationObject,
+        private visualizationObjectContent: VisObj.IVisualizationObjectContent,
         private measuresMap: VisObj.IMeasuresMap
     ) {
         this.fingerprint = stringify(this.visualizationObjectContent);
@@ -16,7 +16,9 @@ export class SimpleMetadataSource implements IMetadataSource {
         return Promise.resolve({
             metadata: {
                 content: this.visualizationObjectContent,
-                meta: {}
+                meta: {
+                    title: 'Test'
+                }
             },
             measuresMap: this.measuresMap
         });

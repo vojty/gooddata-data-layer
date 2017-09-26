@@ -1,15 +1,15 @@
 import { IDataSource } from '../interfaces/DataSource';
 
-export class DummyDataSource implements IDataSource {
-    private data;
-    private resolve;
+export class DummyDataSource<T> implements IDataSource<T> {
+    private data: T;
+    private resolve: boolean;
 
-    constructor(data, resolve = true) {
+    constructor(data: T, resolve: boolean = true) {
         this.data = data;
         this.resolve = resolve;
     }
 
-    public getData(transformation: any): Promise<any> {
+    public getData(_transformation: any): Promise<T> { // tslint:disable-line:variable-name
         if (this.resolve) {
             return Promise.resolve(this.data);
         }

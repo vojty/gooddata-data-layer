@@ -1,7 +1,6 @@
 import { combineTransformations, getSorting } from '../TransformationUtils';
 import { ITransformation } from '../../interfaces/Transformation';
 
-
 describe('getSorting', () => {
     it('should generate sorting from transformation', () => {
         const transformation: ITransformation = {

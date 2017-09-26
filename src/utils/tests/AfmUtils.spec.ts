@@ -94,31 +94,38 @@ describe('normalizeAfm', () => {
 });
 
 describe('AFM utils', () => {
-    const af1 = {
+    const af1: IAttributeFilter = {
         id: '1',
         type: 'attribute',
         in: []
-    } as IAttributeFilter;
-    const af2 = {
+    };
+    const af2: IAttributeFilter = {
         id: '2',
         type: 'attribute',
         notIn: []
-    } as IAttributeFilter;
+    };
 
-    const df1 = {
+    const df1: IDateFilter = {
         id: 'd1',
         type: 'date',
-        granularity: 'GDC.time.year'
-    } as IDateFilter;
-    const df2 = {
+        intervalType: 'relative',
+        granularity: 'GDC.time.year',
+        between: [-1, -1]
+    };
+    const df2: IDateFilter = {
         id: 'd2',
         type: 'date',
-        granularity: 'GDC.time.year'
-    } as IDateFilter;
-    const df1AllTime = {
+        intervalType: 'relative',
+        granularity: 'GDC.time.year',
+        between: [-1, -1]
+    };
+    const df1AllTime: IDateFilter = {
         id: 'd1',
-        type: 'date'
-    } as IDateFilter;
+        type: 'date',
+        intervalType: 'relative',
+        granularity: '',
+        between: [0, 0]
+    };
 
     describe('appendFilters', () => {
         it('should concatenate filters when all different', () => {
@@ -142,7 +149,7 @@ describe('AFM utils', () => {
                     af1, df1
                 ]
             };
-            const attributeFilters = [];
+            const attributeFilters: IAttributeFilter[] = [];
             const dateFilter = df1;
 
             const enriched = appendFilters(afm, attributeFilters, dateFilter);
@@ -157,7 +164,7 @@ describe('AFM utils', () => {
                     df1
                 ]
             };
-            const attributeFilters = [];
+            const attributeFilters: IAttributeFilter[] = [];
             const dateFilter = df2;
 
             const enriched = appendFilters(afm, attributeFilters, dateFilter);
@@ -172,7 +179,7 @@ describe('AFM utils', () => {
                     df1
                 ]
             };
-            const attributeFilters = [];
+            const attributeFilters: IAttributeFilter[] = [];
             const dateFilter = df1AllTime;
 
             const enriched = appendFilters(afm, attributeFilters, dateFilter);
@@ -210,7 +217,7 @@ describe('AFM utils', () => {
         });
 
         it('should be true for at least one attribute', () => {
-            const afm = {
+            const afm: IAfm = {
                 attributes: [
                     {
                         id: '/gdc/project/dsdf1',

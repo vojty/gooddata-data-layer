@@ -124,8 +124,8 @@ Object {
   "execution": Object {
     "columns": Array [
       "metric_sum",
-      "metric2_sum",
-      "metric3_sum",
+      "metric_sum_2",
+      "metric_sum_3",
     ],
     "definitions": Array [
       Object {
@@ -140,7 +140,7 @@ Object {
         "metricDefinition": Object {
           "expression": "SELECT SUM([/gdc/md/measure/obj/2]) WHERE [/gdc/md/dateAttributeUriYEAR/obj/1] BETWEEN THIS + (-10) AND THIS + (-9)",
           "format": "#,##0.00",
-          "identifier": "metric2_sum",
+          "identifier": "metric_sum_2",
           "title": undefined,
         },
       },
@@ -148,7 +148,7 @@ Object {
         "metricDefinition": Object {
           "expression": "SELECT SUM([/gdc/md/measure/obj/3]) WHERE [/gdc/md/dateAttributeUri/obj/1] BETWEEN [/gdc/md/2017-01-01URI/obj/1] AND [/gdc/md/2018-01-01URI/obj/1]",
           "format": "#,##0.00",
-          "identifier": "metric3_sum",
+          "identifier": "metric_sum_3",
           "title": undefined,
         },
       },
@@ -166,8 +166,8 @@ Object {
   "execution": Object {
     "columns": Array [
       "metric_sum",
-      "metric2_sum",
-      "metric3_sum",
+      "metric_sum_2",
+      "metric_sum_3",
     ],
     "definitions": Array [
       Object {
@@ -182,7 +182,7 @@ Object {
         "metricDefinition": Object {
           "expression": "SELECT SUM([/gdc/md/measure/obj/2]) WHERE [/gdc/md/dateAttributeUriYEAR/obj/1] BETWEEN THIS + (-10) AND THIS + (-9)",
           "format": "#,##0.00",
-          "identifier": "metric2_sum",
+          "identifier": "metric_sum_2",
           "title": undefined,
         },
       },
@@ -190,7 +190,7 @@ Object {
         "metricDefinition": Object {
           "expression": "SELECT SUM([/gdc/md/measure/obj/3]) WHERE [/gdc/md/dateAttributeUri/obj/1] BETWEEN [/gdc/md/2017-01-01URI/obj/1] AND [/gdc/md/2018-01-01URI/obj/1]",
           "format": "#,##0.00",
-          "identifier": "metric3_sum",
+          "identifier": "metric_sum_3",
           "title": undefined,
         },
       },

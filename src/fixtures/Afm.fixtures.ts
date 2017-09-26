@@ -24,7 +24,7 @@ export const relativeDateFilter: IDateFilter = {
     granularity: 'year'
 };
 
-export const metric_sum: IMeasure = {
+export const metricSum: IMeasure = {
     id: 'metric_sum',
     definition: {
         baseObject: {
@@ -34,8 +34,8 @@ export const metric_sum: IMeasure = {
     }
 };
 
-export const metric2_sum: IMeasure = {
-    id: 'metric2_sum',
+export const metricSum2: IMeasure = {
+    id: 'metric_sum_2',
     definition: {
         baseObject: {
             id: '/gdc/md/measure/obj/2'
@@ -45,8 +45,8 @@ export const metric2_sum: IMeasure = {
     }
 };
 
-export const metric3_sum: IMeasure = {
-    id: 'metric3_sum',
+export const metricSum3: IMeasure = {
+    id: 'metric_sum_3',
     definition: {
         baseObject: {
             id: '/gdc/md/measure/obj/3'
@@ -56,8 +56,8 @@ export const metric3_sum: IMeasure = {
     }
 };
 
-export const metric4_sun: IMeasure = {
-    id: 'metric4_sum',
+export const metricSum4: IMeasure = {
+    id: 'metric_sum_4',
     definition: {
         baseObject: {
             id: '/gdc/md/measure/obj/4'
@@ -67,7 +67,7 @@ export const metric4_sun: IMeasure = {
     }
 };
 
-export const metric_in_percent: IMeasure = {
+export const metricInPercent: IMeasure = {
     id: 'measure_in_percent',
     definition: {
         baseObject: {
@@ -80,7 +80,7 @@ export const metric_in_percent: IMeasure = {
     }
 };
 
-export const metric_in_percent_pop: IMeasure = {
+export const metricInPercentPop: IMeasure = {
     id: 'measure_pop',
     definition: {
         baseObject: {
@@ -94,8 +94,8 @@ export const metric_in_percent_pop: IMeasure = {
 
 export const afmWithMetricDateFilter: IAfm = {
     measures: [
-        metric_sum,
-        metric2_sum
+        metricSum,
+        metricSum2
     ],
     filters: [
         absoluteDateFilter1
@@ -104,9 +104,9 @@ export const afmWithMetricDateFilter: IAfm = {
 
 export const afmWithMetricDateFilters: IAfm = {
     measures: [
-        metric_sum,
-        metric2_sum,
-        metric3_sum
+        metricSum,
+        metricSum2,
+        metricSum3
     ],
     filters: [
         absoluteDateFilter1
@@ -115,7 +115,7 @@ export const afmWithMetricDateFilters: IAfm = {
 
 export const afmWithoutMetricDateFilters: IAfm = {
     measures: [
-        metric_sum,
+        metricSum,
         {
             id: 'metric4_sum',
             definition: {

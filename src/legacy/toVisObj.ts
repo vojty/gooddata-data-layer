@@ -8,7 +8,7 @@ import * as Transformation from '../interfaces/Transformation';
 import { isUri } from '../helpers/uri';
 
 import * as VisObj from './model/VisualizationObject';
-import { IHeader } from '../interfaces/Header';
+import { Header } from '../interfaces/Header';
 
 // Now ignores attribute elements, will be added in ONE-2706
 function convertMeasureFilter(): VisObj.IEmbeddedListAttributeFilter {
@@ -143,18 +143,22 @@ function convertMeasure(
 function isStacking(transformation: Transformation.ITransformation, attribute: Afm.IAttribute): boolean {
     return get(transformation, 'dimensions', []).some((dimension) => {
         return dimension.name === 'stacks' &&
-            (dimension.attributes || []).some(attr => attr.id === attribute.id);
+            (dimension.attributes || []).some((attr: Afm.IAttribute) => attr.id === attribute.id);
     });
 }
 
-function getAttributeDisplayForm(attribute, headers: IHeader[]) {
+function getAttributeDisplayForm(attribute: Afm.IAttribute, headers: Header[]) {
     if (isUri(attribute.id)) {
         return attribute.id;
     }
     return headers.find(header => header.id === attribute.id).uri;
 }
 
-function convertAttribute(transformation, headers: IHeader[] = [], attribute: Afm.IAttribute): VisObj.ICategory {
+function convertAttribute(
+    transformation: Transformation.ITransformation,
+    headers: Header[] = [],
+    attribute: Afm.IAttribute
+): VisObj.ICategory {
     const sorting = getAttributeSorting(transformation, attribute) || {};
 
     const collection = isStacking(transformation, attribute) ? 'stack' : 'attribute';
@@ -197,7 +201,7 @@ function convertFilter(filter: Afm.IFilter): VisObj.EmbeddedFilter {
     if (isDateFilter(filter)) {
         const [from, to] = filter.between;
 
-        return {
+        const dateFilter: VisObj.IEmbeddedDateFilter = {
             dateFilter: {
                 type: filter.intervalType,
                 from,
@@ -205,13 +209,15 @@ function convertFilter(filter: Afm.IFilter): VisObj.EmbeddedFilter {
                 dataset: filter.id,
                 granularity: `GDC.time.${filter.granularity}`
             }
-        } as VisObj.IEmbeddedDateFilter;
+        };
+
+        return dateFilter;
     }
 
     if (isPositiveAttributeFilter(filter)) {
         const attributeFilter: Afm.IPositiveAttributeFilter = filter;
 
-        return {
+        const listAttributeFilter: VisObj.IEmbeddedListAttributeFilter = {
             listAttributeFilter: {
                 displayForm: attributeFilter.id,
                 default: {
@@ -220,13 +226,15 @@ function convertFilter(filter: Afm.IFilter): VisObj.EmbeddedFilter {
                     attributeElements: toUris(attributeFilter.in, attributeFilter.id)
                 }
             }
-        } as VisObj.IEmbeddedListAttributeFilter;
+        };
+
+        return listAttributeFilter;
     }
 
     if (isNegativeAttributeFilter(filter)) {
         const attributeFilter: Afm.INegativeAttributeFilter = filter;
 
-        return {
+        const listAttributeFilter: VisObj.IEmbeddedListAttributeFilter = {
             listAttributeFilter: {
                 displayForm: attributeFilter.id,
                 default: {
@@ -234,7 +242,9 @@ function convertFilter(filter: Afm.IFilter): VisObj.EmbeddedFilter {
                     attributeElements: toUris(attributeFilter.notIn, attributeFilter.id)
                 }
             }
-        } as VisObj.IEmbeddedListAttributeFilter;
+        };
+
+        return listAttributeFilter;
     }
 }
 
@@ -242,8 +252,8 @@ export function toVisObj(
     type: VisObj.VisualizationType,
     Afm: Afm.IAfm,
     transformation: Transformation.ITransformation,
-    resultHeaders: IHeader[] = []
-): VisObj.IVisualizationObject {
+    resultHeaders: Header[] = []
+): VisObj.IVisualizationObjectContent {
     const normalized = AfmUtils.normalizeAfm(Afm);
 
     return {

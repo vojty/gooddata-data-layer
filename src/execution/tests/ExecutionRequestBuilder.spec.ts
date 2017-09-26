@@ -10,8 +10,8 @@ import {
 import { AfmMap } from '../../afmMap/AfmMap';
 import { normalizeAfm } from '../../utils/AfmUtils';
 import {
-    absoluteDateFilter1, afmWithMetricDateFilters, metric2_sum, metric3_sum, metric_in_percent, metric_in_percent_pop,
-    metric_sum,
+    absoluteDateFilter1, afmWithMetricDateFilters, metricSum2, metricSum3, metricInPercent, metricInPercentPop,
+    metricSum,
     relativeDateFilter
 } from '../../fixtures/Afm.fixtures';
 import { afmDataMap1, afmDataMap2 } from '../../fixtures/AfmMap.fixtures';
@@ -20,7 +20,7 @@ describe('buildRequest', () => {
     it('build config one simple metric', () => {
         const afm: IAfm = {
             measures: [
-                metric_sum
+                metricSum
             ]
         };
 
@@ -31,7 +31,7 @@ describe('buildRequest', () => {
     it('build config with metric and relative global date filter', () => {
         const afm: IAfm = {
             measures: [
-                metric_sum
+                metricSum
             ],
             filters: [
                 relativeDateFilter
@@ -45,7 +45,7 @@ describe('buildRequest', () => {
     it('build config with metric and absolute global date filter', () => {
         const afm: IAfm = {
             measures: [
-                metric_sum
+                metricSum
             ],
             filters: [
                 absoluteDateFilter1
@@ -64,9 +64,9 @@ describe('buildRequest', () => {
     it('build config without insight date filter', () => {
         const afm: IAfm = {
             measures: [
-                metric_sum,
-                metric2_sum,
-                metric3_sum
+                metricSum,
+                metricSum2,
+                metricSum3
             ]
         };
 
@@ -77,8 +77,8 @@ describe('buildRequest', () => {
     it('build config for pop metric with insight and date filter', () => {
         const afm: IAfm = {
             measures: [
-                metric_in_percent,
-                metric_in_percent_pop
+                metricInPercent,
+                metricInPercentPop
             ],
             filters: [
                 absoluteDateFilter1
@@ -94,7 +94,7 @@ describe('generateMetricExpression', () => {
     it('should generate metric with aggregation and uri', () => {
         const afm: IAfm = {
             measures: [{
-                id: 'metric_sum',
+                id: 'metricSum',
                 definition: {
                     baseObject: {
                         id: '/gdc/md/measure/obj/1'
@@ -111,7 +111,7 @@ describe('generateMetricExpression', () => {
     it('should generate metric with aggregation and identifier', () => {
         const afm: IAfm = {
             measures: [{
-                id: 'metric_sum',
+                id: 'metricSum',
                 definition: {
                     baseObject: {
                         id: 'identifier'
@@ -799,7 +799,7 @@ describe('generateFilters', () => {
 
         expect(generateFilters(afm)).toEqual(
             {
-                $and: [{
+                '$and': [{
                     '/gdc/md/attribute1/obj/1': {
                         $in: [{
                             id: 'a'

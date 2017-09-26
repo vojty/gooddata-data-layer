@@ -17,22 +17,40 @@ const getMeasureId = (n: number, isPoP?: boolean, measure?: VisObj.IMeasure): st
     return `m${n + 1}${isPoP ? '_pop' : ''}`;
 };
 
-function convertBaseAttributeFilter(filter) {
+function convertBaseAttributeFilter(filter: VisObj.IEmbeddedListAttributeFilter): Afm.IAttributeFilter {
     const items = filter.listAttributeFilter.default.attributeElements.map((el) => {
         return el.split('=')[1]; // pick ID from URL: /gdc/md/obj/1/elements?id=1
     });
 
     // skip filters with ALL
     if (items.length > 0) {
-        const selectionType = filter.listAttributeFilter.default.negativeSelection ? 'notIn' : 'in';
+        if (filter.listAttributeFilter.default.negativeSelection) {
+            // Negative filter
+            return {
+                id: filter.listAttributeFilter.displayForm,
+                type: 'attribute',
+                notIn: items
+            };
+        }
+
+        // Positive filter
         return {
             id: filter.listAttributeFilter.displayForm,
             type: 'attribute',
-            [selectionType]: items
+            in: items
         };
     }
 
     return null;
+}
+
+function convertAttributeFilter(filter: VisObj.IEmbeddedListAttributeFilter): Afm.IAttributeFilter {
+    const baseFilter = convertBaseAttributeFilter(filter);
+    if (!baseFilter) {
+        return null;
+    }
+
+    return baseFilter;
 }
 
 function convertMeasureFilters(measure: VisObj.IMeasure): Afm.IFilter[] {
@@ -90,16 +108,16 @@ function convertDateFilter(filter: VisObj.IEmbeddedDateFilter): Afm.IDateFilter 
         filter.dateFilter.to === undefined) {
         return null;
     }
-    const retVal = {
+    const retVal: Afm.IDateFilter = {
         type: 'date',
         id: filter.dateFilter.dataset,
         intervalType: filter.dateFilter.type,
         between: [
-            filter.dateFilter.from,
-            filter.dateFilter.to
+            String(filter.dateFilter.from),
+            String(filter.dateFilter.to)
         ],
         granularity: filter.dateFilter.granularity.split('.')[2]
-    } as Afm.IDateFilter;
+    };
 
     if (filter.dateFilter.type === 'relative') {
         retVal.between = [
@@ -108,18 +126,6 @@ function convertDateFilter(filter: VisObj.IEmbeddedDateFilter): Afm.IDateFilter 
         ];
     }
     return retVal;
-}
-
-function convertAttributeFilter(filter: VisObj.IEmbeddedListAttributeFilter): Afm.IAttributeFilter {
-    const baseFilter = convertBaseAttributeFilter(filter);
-    if (!baseFilter) {
-        return null;
-    }
-
-    return {
-        type: 'attribute',
-        ...baseFilter
-    } as Afm.IAttributeFilter;
 }
 
 function convertFilter(filter: VisObj.EmbeddedFilter): Afm.IFilter {
@@ -139,7 +145,7 @@ function convertMeasureTransformation(
     const measureFromMap = get(measuresMap, measureUri);
     const measureFromMapFormat = get(measureFromMap, 'measure.format');
     const itemFormat = measure.measure.format || measureFromMapFormat;
-    const format = (measure.measure.showInPercent ? SHOW_IN_PERCENT_MEASURE_FORMAT : itemFormat);
+    const format = (measure.measure.showInPercent ? SHOW_IN_PERCENT_MEASURE_FORMAT : itemFormat) as string;
 
     const measures: Transformation.IMeasure[] = [
         omitBy({
@@ -149,16 +155,18 @@ function convertMeasureTransformation(
         }, isUndefined) as Transformation.IMeasure
     ];
     if (measure.measure.showPoP) {
-        measures.push({
+        const transformationMeasure: Transformation.IMeasure = {
             id: getMeasureId(index, true),
             title: `${measure.measure.title} - previous year`,
             format
-        } as Transformation.IMeasure);
+        };
+
+        measures.push(transformationMeasure);
     }
     return measures;
 }
 
-function convertSortingTransformation(visObj: VisObj.IVisualizationObject): Transformation.ISort[] {
+function convertSortingTransformation(visObj: VisObj.IVisualizationObjectContent): Transformation.ISort[] {
     const measureSorting = visObj.buckets.measures.map((measure, index) => {
         if (!measure.measure.sort) {
             return null;
@@ -184,7 +192,7 @@ function convertSortingTransformation(visObj: VisObj.IVisualizationObject): Tran
     return compact([...measureSorting, ...attributesSorting]);
 }
 
-function getPoPAttribute(resolver: DisplayFormResolver, visObj: VisObj.IVisualizationObject) {
+function getPoPAttribute(resolver: DisplayFormResolver, visObj: VisObj.IVisualizationObjectContent) {
     const category = visObj.buckets.categories[0];
 
     if (category && category.category.type === 'date') {
@@ -203,7 +211,7 @@ function getPoPAttribute(resolver: DisplayFormResolver, visObj: VisObj.IVisualiz
     return null;
 }
 
-function convertAFM(visObj: VisObj.IVisualizationObject, resolver: DisplayFormResolver): Afm.IAfm {
+function convertAFM(visObj: VisObj.IVisualizationObjectContent, resolver: DisplayFormResolver): Afm.IAfm {
     const attributes = visObj.buckets.categories.map(convertAttribute);
     const attrProp = attributes.length ? { attributes } : {};
 
@@ -224,7 +232,7 @@ function convertAFM(visObj: VisObj.IVisualizationObject, resolver: DisplayFormRe
 }
 
 function convertTransformation(
-    visObj: VisObj.IVisualizationObject,
+    visObj: VisObj.IVisualizationObjectContent,
     measuresMap: VisObj.IMeasuresMap
 ): Transformation.ITransformation {
     const sorting = convertSortingTransformation(visObj);
@@ -266,7 +274,7 @@ function makeDisplayFormUriResolver(attributesMap: VisObj.IAttributesMap): Displ
 }
 
 export function toAFM(
-    visObj: VisObj.IVisualizationObject,
+    visObj: VisObj.IVisualizationObjectContent,
     attributesMap: VisObj.IAttributesMap,
     measuresMap?: VisObj.IMeasuresMap
 ): IConvertedAFM {

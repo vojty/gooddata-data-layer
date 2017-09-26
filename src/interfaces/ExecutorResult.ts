@@ -1,7 +1,26 @@
-import { IHeader } from './Header';
+import { Header } from './Header';
+
+export type WarningParameterType = boolean | number | string | null;
+
+export interface ISimpleExecutorWarning {
+    errorCode: string;
+    message: string;
+    parameters: WarningParameterType[];
+}
+
+export type MetricValue = string;
+
+export interface IAttributeValue {
+    id: string;
+    name: string;
+}
+
+export type ResultDataType = MetricValue | IAttributeValue;
 
 export interface ISimpleExecutorResult {
-    rawData?: string[][];
+    rawData?: ResultDataType[][];
     isEmpty?: boolean;
-    headers?: IHeader[];
+    headers?: Header[];
+    isLoaded?: boolean;
+    warnings?: ISimpleExecutorResult[];
 }

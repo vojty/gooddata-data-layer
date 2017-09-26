@@ -27,27 +27,33 @@ import {
 import { charts } from './fixtures/VisObj.fixtures';
 
 import { toVisObj, toAFM } from '../../legacy/converters';
-import { VisualizationType } from '../model/VisualizationObject';
-import { IHeader } from '../../interfaces/Header';
+import {
+    EmbeddedFilter,
+    ICategory,
+    VisualizationType,
+    IVisualizationObjectContent,
+    isEmbeddedDateFilter
+} from '../model/VisualizationObject';
+import { IAttributeHeader, HeaderType } from '../../interfaces/Header';
 
 const bar: VisualizationType = 'bar';
 
 describe('converters', () => {
-    describe('toVizObj', () => {
-        function removeAttribute(vizObj) {
+    describe('toVisObj', () => {
+        function removeAttribute(visObj: IVisualizationObjectContent) {
             return {
-                ...vizObj,
+                ...visObj,
                 buckets: {
-                    ...vizObj.buckets,
-                    categories: vizObj.buckets.categories.map((category) => {
+                    ...visObj.buckets,
+                    categories: visObj.buckets.categories.map((category: ICategory) => {
                         return {
                             category: {
                                 ...omit(category.category, ['attribute'])
                             }
                         };
                     }),
-                    filters: vizObj.buckets.filters.map((filter) => {
-                        if (filter.dateFilter) {
+                    filters: visObj.buckets.filters.map((filter: EmbeddedFilter) => {
+                        if (isEmbeddedDateFilter(filter)) {
                             return {
                                 dateFilter: {
                                     ...omit(filter.dateFilter, ['attribute'])
@@ -65,7 +71,7 @@ describe('converters', () => {
             };
         }
 
-        it('should convert empty AFM to empty viz. object', () => {
+        it('should convert empty AFM to empty vis. object', () => {
             const { afm, transformation } = empty;
 
             expect(toVisObj(bar, afm, transformation)).toEqual({
@@ -225,12 +231,12 @@ describe('converters', () => {
 
         it('should handle attribute with identifier', () => {
             const { afm, transformation } = attributeWithIdentifier;
-            const resultHeaders: IHeader[] = [
+            const resultHeaders: IAttributeHeader[] = [
                 {
                     id: 'bar',
                     title: 'Attribute Bar',
                     uri: ATTRIBUTE_DISPLAY_FORM_URI,
-                    type: 'attrLabel'
+                    type: HeaderType.Attribute
                 }
             ];
 

@@ -3,5 +3,5 @@ import { IAfm } from './Afm';
 import { IDataSourceParams } from './DataSourceParams';
 
 export interface IAdapter {
-    createDataSource(source: IAfm | IDataSourceParams): Promise<IDataSource>;
+    createDataSource<T>(source: IAfm | IDataSourceParams): Promise<IDataSource<T>>;
 }

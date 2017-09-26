@@ -13,6 +13,10 @@ export function normalizeAfm(afm: IAfm): IAfm {
     };
 }
 
+export const isPoP = (item: IMeasure): boolean => {
+    return !!(item.definition && item.definition.popAttribute);
+};
+
 export function hasMetricDateFilters(afm: IAfm): boolean {
     const normalizedAfm = normalizeAfm(afm);
     return normalizedAfm.measures.some((measure) => {
@@ -25,14 +29,10 @@ export function hasMetricDateFilters(afm: IAfm): boolean {
 
 export function getInsightDateFilter(afm: IAfm): IDateFilter {
     if (afm.filters) {
-        return <IDateFilter>afm.filters.find(isDateFilter);
+        return afm.filters.find(isDateFilter) as IDateFilter;
     }
     return null;
 }
-
-export const isPoP = (item: IMeasure): boolean => {
-    return !!(item.definition && item.definition.popAttribute);
-};
 
 export const isShowInPercent = (item: IMeasure): boolean => {
     return item.definition && item.definition.showInPercent;
@@ -56,11 +56,11 @@ export function isAbsoluteDateFilter(filter: IDateFilter) {
 }
 
 export function isPositiveAttributeFilter(filter: IAttributeFilter): filter is IPositiveAttributeFilter {
-    return (<IPositiveAttributeFilter>filter).in !== undefined;
+    return (filter as IPositiveAttributeFilter).in !== undefined;
 }
 
 export function isNegativeAttributeFilter(filter: IAttributeFilter): filter is INegativeAttributeFilter {
-    return (<INegativeAttributeFilter>filter).notIn !== undefined;
+    return (filter as INegativeAttributeFilter).notIn !== undefined;
 }
 
 export function hasInsightDateFilter(afm: IAfm): boolean {
@@ -97,9 +97,12 @@ export const appendFilters = (afm: IAfm, attributeFilters: IAttributeFilter[], d
         ...dateFilters
     ]) as IFilter[];
 
-    return Object.assign({}, afm, { filters });
+    return {
+        ...afm,
+        filters
+    };
 };
 
-export function isAfmExecutable(afm) {
+export function isAfmExecutable(afm: IAfm) {
     return get(afm, 'measures.length') > 0 || get(afm, 'attributes.length') > 0;
 }

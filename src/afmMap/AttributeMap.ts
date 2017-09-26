@@ -6,5 +6,3 @@ export interface IAttributeMapKeys {
     attribute: ObjectUri;
     attributeDisplayForm: ObjectUri;
 }
-
-

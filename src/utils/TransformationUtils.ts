@@ -13,9 +13,9 @@ export function getSorting(transformation: ITransformation): ISort[] {
  * Merge two transformations into one, second one has higher priority
  */
 export function combineTransformations(first: ITransformation = {}, second: ITransformation = {}): ITransformation {
-    let measures;
-    let sorting;
-    let dimensions;
+    let measures: IMeasure[];
+    let sorting: ISort[];
+    let dimensions: IDimension[];
 
     // merge exsting properties
     if (first.measures || second.measures) {
