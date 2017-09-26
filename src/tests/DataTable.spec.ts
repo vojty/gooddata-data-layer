@@ -2,7 +2,6 @@ import { IAfm } from '../interfaces/Afm';
 import { DataTable } from '../DataTable';
 import { DummyAdapter } from '../utils/DummyAdapter';
 import { ISimpleExecutorResult } from '../interfaces/ExecutorResult';
-import { IDataSource } from '../interfaces/DataSource';
 
 describe('DataTable', () => {
     const dataResponse: ISimpleExecutorResult = { rawData: [['1', '2', '3']] };
@@ -13,6 +12,18 @@ describe('DataTable', () => {
                 definition: {
                     baseObject: {
                         id: 'b'
+                    }
+                }
+            }
+        ]
+    };
+    const afm2: IAfm = {
+        measures: [
+            {
+                id: 'c',
+                definition: {
+                    baseObject: {
+                        id: 'd'
                     }
                 }
             }
@@ -95,65 +106,23 @@ describe('DataTable', () => {
                 done();
             }, 0);
         });
-    });
 
-    describe('Promise', () => {
-        it('should return data', () => {
-            const dt = new DataTable(new DummyAdapter(dataResponse));
+        it('should call handler only once', (done) => {
+            const { dt, errCb, dataCb } = setupDataTable();
 
-            return dt.execute(afm, transformation).then((data: ISimpleExecutorResult) => {
-                expect(data).toEqual(dataResponse);
-            });
-        });
+            dt.getData(afm, transformation);
+            dt.getData(afm2, transformation);
 
-        it('should return null for invalid AFM', () => {
-            const dt = new DataTable(new DummyAdapter(dataResponse));
+            setTimeout(() => {
+                try {
+                    expect(dataCb).toHaveBeenCalledTimes(1);
+                    expect(errCb).not.toHaveBeenCalled();
 
-            return dt.execute(nonExecutableAfm, transformation).then((data: ISimpleExecutorResult) => {
-                expect(data).toEqual(null);
-            });
-        });
-
-        it('should reject promise for error', (done) => {
-            const dt = new DataTable(new DummyAdapter(dataResponse, false));
-            dt.execute(afm, transformation).catch(() => {
-                expect(true).toEqual(true);
-                done();
-            });
-        });
-
-        it('should be canceled when repeating request', () => {
-            const asyncDataSource: IDataSource<ISimpleExecutorResult> = {
-                getData() {
-                    return new Promise((resolve) => {
-                        setTimeout(resolve, 0, dataResponse);
-                    });
-                },
-                getAfm() {
-                    return {};
-                },
-                getFingerprint() {
-                    return '';
+                    done();
+                } catch (error) {
+                    done(error);
                 }
-            };
-            const dt = new DataTable(new DummyAdapter(dataResponse, true, asyncDataSource));
-
-            const promiseToBeCancelled = dt.execute(afm, transformation);
-            const promise = dt.execute(afm, transformation); // call next execution to cancel "promiseToBeCancelled"
-
-            return promiseToBeCancelled.then(
-                () => expect(true).toBeFalsy(), // fail
-                (reason) => {
-                    expect(reason).toEqual({
-                        isCancelled: true
-                    });
-
-                    return promise.then(
-                        (value: ISimpleExecutorResult) => expect(value).toEqual(dataResponse),
-                        () => expect(true).toBeFalsy() // fail
-                    );
-                }
-            );
+            }, 0);
         });
     });
 });
