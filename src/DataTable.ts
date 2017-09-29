@@ -15,7 +15,7 @@ export type IDataSubscriber = (data: any) => void;
 export type IErrorSubscriber = (error: any) => void;
 
 export class DataTable<T> {
-    private adapter: IAdapter;
+    private adapter: IAdapter<T>;
 
     private dataSubscribers: IDataSubscriber[] = [];
     private errorSubscribers: IErrorSubscriber[] = [];
@@ -27,7 +27,7 @@ export class DataTable<T> {
     private subject: Subject<Promise<T>>;
     private subscription: Subscription;
 
-    constructor(adapter: IAdapter) {
+    constructor(adapter: IAdapter<T>) {
         this.adapter = adapter;
 
         this.subject = new Subject<Promise<T>>();
@@ -46,7 +46,7 @@ export class DataTable<T> {
 
         if (!isEqual(afm, this.afm)) {
             this.afm = afm;
-            this.adapter.createDataSource<T>(afm)
+            this.adapter.createDataSource(afm)
                 .then((dataSource) => {
                     this.dataSource = dataSource;
                     this.fetchData(transformation);

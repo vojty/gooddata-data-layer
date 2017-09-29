@@ -6,21 +6,18 @@ import { toAFM } from '../legacy/toAFM';
 import { appendFilters } from '../utils/AfmUtils';
 import { getAttributesMap } from '../helpers/metadata';
 import { IDataSourceParams } from '../interfaces/DataSourceParams';
-import { IGoodDataSDK } from '../interfaces/GoodDataSDK';
-import { IVisualizationObject } from '../legacy/model/VisualizationObject';
+import * as GoodData from 'gooddata';
+// tslint:disable-next-line:no-duplicate-imports
+import { ISimpleExecutorResult } from 'gooddata';
+import { IVisualizationObjectResponse } from '../legacy/model/VisualizationObject';
 
-export class UriAdapter implements IAdapter {
-    private projectId: string;
-    private sdk: IGoodDataSDK;
+export class UriAdapter implements IAdapter<ISimpleExecutorResult> {
     private uri: string;
-    private visObject: IVisualizationObject;
+    private visObject: IVisualizationObjectResponse;
 
-    constructor(sdk: IGoodDataSDK, projectId: string) {
-        this.sdk = sdk;
-        this.projectId = projectId;
-    }
+    constructor(private sdk: typeof GoodData, private projectId: string) {}
 
-    public createDataSource<T>(sourceParams: IDataSourceParams): Promise<IDataSource<T>> {
+    public createDataSource(sourceParams: IDataSourceParams): Promise<IDataSource<ISimpleExecutorResult>> {
         return this.fetchVisualizationObject(sourceParams.uri)
             .then((visObject) => {
                 return getAttributesMap(this.sdk, this.projectId, visObject.visualization)
@@ -32,7 +29,7 @@ export class UriAdapter implements IAdapter {
                             sourceParams.dateFilter);
                         const simpleAdapter = new SimpleExecutorAdapter(this.sdk, this.projectId);
 
-                        return simpleAdapter.createDataSource<T>(afmWithAttributeFilters);
+                        return simpleAdapter.createDataSource(afmWithAttributeFilters);
                     });
             });
     }
@@ -41,7 +38,7 @@ export class UriAdapter implements IAdapter {
         if (uri === this.uri) {
             return Promise.resolve(this.visObject);
         }
-        return this.sdk.xhr.get(uri).then((visObject) => {
+        return this.sdk.xhr.get<IVisualizationObjectResponse>(uri).then((visObject) => {
             this.uri = uri;
             return this.visObject = visObject;
         });

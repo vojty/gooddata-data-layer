@@ -8,24 +8,20 @@ import { AttributeMap } from '../afmMap/AttributeMap';
 import { DateFilterMap } from '../afmMap/DateFilterMap';
 import { buildRequest } from '../execution/ExecutionRequestBuilder';
 import { getInsightDateFilter, hasInsightDateFilter, hasMetricDateFilters, normalizeAfm } from '../utils/AfmUtils';
-import { IGoodDataSDK } from '../interfaces/GoodDataSDK';
 import { ITransformation } from '../interfaces/Transformation';
+import * as GoodData from 'gooddata';
+// tslint:disable-next-line:no-duplicate-imports
+import { ISimpleExecutorResult } from 'gooddata';
 
-export class SimpleExecutorAdapter implements IAdapter {
+export class SimpleExecutorAdapter implements IAdapter<ISimpleExecutorResult> {
+    // settings for gooddata SDK
+    // @see https://github.com/gooddata/gooddata-js/blob/master/src/execution.js#L71
+    constructor(private sdk: typeof GoodData, private projectId: string, private settings = {}) {}
 
-    private projectId: string;
-    private settings: Object;
-    private sdk: IGoodDataSDK;
-
-    constructor(sdk: IGoodDataSDK, projectId: string, settings = {}) {
-        this.sdk = sdk;
-        this.projectId = projectId;
-        // settings for gooddata SDK
-        // @see https://github.com/gooddata/gooddata-js/blob/master/src/execution.js#L71
-        this.settings = settings;
-    }
-
-    public createDataSource<T>(afm: IAfm, fingerprint?: string): Promise<IDataSource<T>> {
+    public createDataSource(
+        afm: IAfm,
+        fingerprint?: string
+    ): Promise<IDataSource<ISimpleExecutorResult>> {
         const normalizedAfm = normalizeAfm(afm);
 
         const afmMapDataBuilder = new AfmMapBuilder(this.sdk, this.projectId);
@@ -46,6 +42,6 @@ export class SimpleExecutorAdapter implements IAdapter {
                 });
         };
 
-        return Promise.resolve(new DataSource<T>(execFactory, normalizedAfm, fingerprint));
+        return Promise.resolve(new DataSource<ISimpleExecutorResult>(execFactory, normalizedAfm, fingerprint));
     }
 }

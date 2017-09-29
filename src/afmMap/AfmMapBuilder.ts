@@ -1,10 +1,10 @@
-import first = require('lodash/first');
 import compact = require('lodash/compact');
 import flatMap = require('lodash/flatMap');
 import flow = require('lodash/flow');
 import isEmpty = require('lodash/isEmpty');
 import uniq = require('lodash/uniq');
 import flatten = require('lodash/flatten');
+import * as GoodData from 'gooddata';
 import * as AFM from '../interfaces/Afm';
 import { areUris } from '../helpers/uri';
 import { DateFilterMap, IAttributeElement, IDateFilterRefData } from './DateFilterMap';
@@ -14,18 +14,12 @@ import {
     hasFilters, isAbsoluteDateFilter, isAttributeFilter,
     isDateFilter, isPoP, isShowInPercent
 } from '../utils/AfmUtils';
-import { IGoodDataSDK } from '../interfaces/GoodDataSDK';
 import { IAttributeDisplayForm } from './model/gooddata/AttributeDisplayForm';
 import { IAttribute } from './model/gooddata/Attribute';
 import { IDataSet } from './model/gooddata/DataSet';
 
 export class AfmMapBuilder {
-    private sdk: IGoodDataSDK;
-    private projectId: string;
-
-    constructor(sdk: IGoodDataSDK, projectId: string) {
-        this.sdk = sdk;
-        this.projectId = projectId;
+    constructor(private sdk: typeof GoodData, private projectId: string) {
     }
 
     public build(afm: AFM.IAfm): Promise<[AttributeMap, DateFilterMap]> {
@@ -50,8 +44,8 @@ export class AfmMapBuilder {
                 .then(pairs => pairs.map((pair: { uri: string }) => pair.uri));
 
         return loadAttributeUris.then((objectUris) => {
-            return this.sdk.md.getObjects(this.projectId, objectUris)
-                .then(items => items.map((item: IAttributeDisplayForm) => ({
+            return this.sdk.md.getObjects<IAttributeDisplayForm[]>(this.projectId, objectUris)
+                .then(items => items.map(item => ({
                     attribute: item.attributeDisplayForm.content.formOf,
                     attributeDisplayForm: areUris(attributes) ?
                         item.attributeDisplayForm.meta.uri :
@@ -73,9 +67,9 @@ export class AfmMapBuilder {
 
         const dataSetUri = (dateFilters[0] as AFM.IDateFilter).id;
 
-        return this.sdk.md.getObjects(this.projectId, [dataSetUri])
-            .then((dataSetObjects) => {
-                const dateAttributes = first<IDataSet>(dataSetObjects).dataSet.content.attributes;
+        return this.sdk.md.getObjectDetails<IDataSet>(dataSetUri)
+            .then(({ dataSet }) => {
+                const dateAttributes = dataSet.content.attributes;
                 return this.sdk.md.getObjects(this.projectId, dateAttributes);
             })
             .then((dateAttributeObjects: IAttribute[]) => {
@@ -117,7 +111,7 @@ export class AfmMapBuilder {
         elementsLabels: string[],
         displayFormUri: string
     ): Promise<IAttributeElement[]> {
-        return this.sdk.md.translateElementLabelsToUris(this.projectId, displayFormUri, elementsLabels)
+        return this.sdk.md.translateElementLabelsToUris(this.projectId, displayFormUri, elementsLabels, 'EXACT')
             .then((elementLabelUri) => {
                 const results = elementLabelUri[0].result;
                 const attributeElements = elementsLabels.map((elementLabel): IAttributeElement => {

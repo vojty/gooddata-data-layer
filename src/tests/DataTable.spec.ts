@@ -1,7 +1,8 @@
+import { ISimpleExecutorResult } from 'gooddata';
+
 import { IAfm } from '../interfaces/Afm';
 import { DataTable } from '../DataTable';
 import { DummyAdapter } from '../utils/DummyAdapter';
-import { ISimpleExecutorResult } from '../interfaces/ExecutorResult';
 
 describe('DataTable', () => {
     const dataResponse: ISimpleExecutorResult = { rawData: [['1', '2', '3']] };
