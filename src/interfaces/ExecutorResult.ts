@@ -22,5 +22,5 @@ export interface ISimpleExecutorResult {
     isEmpty?: boolean;
     headers?: Header[];
     isLoaded?: boolean;
-    warnings?: ISimpleExecutorResult[];
+    warnings?: ISimpleExecutorWarning[];
 }

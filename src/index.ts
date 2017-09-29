@@ -1,6 +1,7 @@
 import * as Afm from './interfaces/Afm';
 import * as MetadataSource from './interfaces/MetadataSource';
 import * as ExecutorResult from './interfaces/ExecutorResult';
+import * as Header from './interfaces/Header';
 import * as Transformation from './interfaces/Transformation';
 import * as DataSourceUtils from './dataSources/utils';
 import * as DataSource from './dataSources/DataSource';
@@ -22,6 +23,7 @@ import { SimpleMetadataSource } from './SimpleMetadataSource';
 
 export {
     ExecutorResult,
+    Header,
     MetadataSource,
     SimpleMetadataSource,
     Transformation,
