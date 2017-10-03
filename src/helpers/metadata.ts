@@ -1,12 +1,11 @@
-import first = require('lodash/first');
 import get = require('lodash/get');
 import set = require('lodash/set');
+import * as GoodData from 'gooddata';
 import {
     IMeasuresMap,
     IAttributesMap,
     IVisualizationObject
 } from '../legacy/model/VisualizationObject';
-import { IGoodDataSDK } from '../interfaces/GoodDataSDK';
 import { IAttribute } from '../afmMap/model/gooddata/Attribute';
 import { IMeasure } from '../interfaces/Afm';
 
@@ -32,7 +31,8 @@ const getDateFilter = (visualizationObject: IVisualizationObject) => {
     return dateFilterItem ? dateFilterItem.dateFilter : undefined;
 };
 
-export const getAttributesMap = (sdk: IGoodDataSDK, projectId: string, visualizationObject: IVisualizationObject):
+// tslint:disable-next-line:variable-name
+export const getAttributesMap = (sdk: typeof GoodData, _projectId: string, visualizationObject: IVisualizationObject):
     Promise<IAttributesMap> => {
     const dateFilter = getDateFilter(visualizationObject);
     if (!dateFilter) {
@@ -40,14 +40,14 @@ export const getAttributesMap = (sdk: IGoodDataSDK, projectId: string, visualiza
     }
 
     const attrUri = get(dateFilter, 'attribute') as string;
-    return sdk.md.getObjects(projectId, [attrUri]).then((attr) => {
+    return sdk.md.getObjectDetails<IAttribute>(attrUri).then((attr) => {
         return {
-            [attrUri]: getYearAttributeDisplayForm(first(attr))
+            [attrUri]: getYearAttributeDisplayForm(attr)
         };
     });
 };
 
-export const fetchMeasures = (sdk: IGoodDataSDK, projectId: string, visualizationObject: IVisualizationObject):
+export const fetchMeasures = (sdk: typeof GoodData, projectId: string, visualizationObject: IVisualizationObject):
     Promise<IMeasuresMap> => {
     const measures = get(visualizationObject, 'content.buckets.measures', []);
     if (!measures.length) {
@@ -55,7 +55,7 @@ export const fetchMeasures = (sdk: IGoodDataSDK, projectId: string, visualizatio
     }
 
     const uris = measures.map(measure => measure.measure.objectUri);
-    return sdk.md.getObjects(projectId, uris).then((objects) => {
+    return sdk.md.getObjects<IMeasure[]>(projectId, uris).then((objects) => {
         return objects.reduce((acc: IMeasuresMap, metric: IMeasure) => {
             const uri = get(metric, 'metric.meta.uri');
             if (uri) {

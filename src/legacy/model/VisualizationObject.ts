@@ -88,6 +88,14 @@ export interface IVisualizationObject {
     content: IVisualizationObjectContent;
 }
 
+export interface IVisualization {
+    visualization: IVisualizationObject;
+}
+
+export interface IVisualizationObjectResponse {
+    visualization: IVisualizationObject;
+}
+
 export interface IBuckets {
     measures: IMeasure[];
     categories: ICategory[];

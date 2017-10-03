@@ -1,4 +1,4 @@
-import { IGoodDataSDK } from '../../interfaces/GoodDataSDK';
+import * as GoodData from 'gooddata';
 import { charts } from '../../legacy/tests/fixtures/VisObj.fixtures';
 import {
     UriAdapter
@@ -22,25 +22,20 @@ describe('UriAdapter', () => {
     const uri2 = '/gdc/md/FoodMartDemo/2';
     const dummyDataSource = {};
 
-    function createDummySDK(): IGoodDataSDK {
+    function createDummySDK(): typeof GoodData {
         const visualizationObject = {
             visualization: { content: charts.bar.simpleMeasure }
         };
 
-        return {
-            md: {
-                getObjects: null,
-                getUrisFromIdentifiers: null,
-                translateElementLabelsToUris: null
-            },
-            execution: {
-                getData: null
-            },
-            xhr: {
-                get: jest.fn(() => Promise.resolve(visualizationObject))
-            }
-        };
+        jest.spyOn(GoodData.xhr, 'get')
+            .mockImplementation(() => Promise.resolve(visualizationObject));
+
+        return GoodData;
     }
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
 
     it('should fetch visualization object when creating data source', () => {
         const DummySDK = createDummySDK();

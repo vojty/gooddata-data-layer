@@ -1,3 +1,4 @@
+import * as GoodData from 'gooddata';
 import {
     fetchMeasures,
     getAttributesMap
@@ -21,24 +22,23 @@ describe('metadataHelpers', () => {
     const m2Format = { format: '#.##2' };
 
     describe('fetchMeasures', () => {
-        const sdkMockMetrics = {
-            md: {
-                getObjects: () => Promise.resolve([{
-                    metric: {
-                        content: m1Format,
-                        meta: { uri: m1Uri }
-                    }
-                }, {
-                    metric: {
-                        content: m2Format,
-                        meta: { uri: m2Uri }
-                    }
-                }])
-            }
-        };
+        const getDataStub = jest.fn().mockReturnValue(Promise.resolve([{
+                metric: {
+                    content: m1Format,
+                    meta: { uri: m1Uri }
+                }
+            }, {
+                metric: {
+                    content: m2Format,
+                    meta: { uri: m2Uri }
+                }
+            }]));
 
         it('should return empty object if there are no measures', () => {
-            return fetchMeasures(sdkMockMetrics, projectId, empty).then((result: IMeasuresMap) => {
+            jest.spyOn(GoodData.md, 'getObjects')
+                .mockImplementationOnce(getDataStub);
+
+            return fetchMeasures(GoodData, projectId, empty).then((result: IMeasuresMap) => {
                 expect(result).toEqual({});
             });
         });
@@ -76,7 +76,10 @@ describe('metadataHelpers', () => {
                 }
             };
 
-            return fetchMeasures(sdkMockMetrics, projectId, visualizationObject).then((result: IMeasuresMap) => {
+            jest.spyOn(GoodData.md, 'getObjects')
+                .mockImplementationOnce(getDataStub);
+
+            return fetchMeasures(GoodData, projectId, visualizationObject).then((result: IMeasuresMap) => {
                 expect(result).toEqual({
                     '/m/1': { measure: m1Format },
                     '/m/2': { measure: m2Format }
@@ -88,9 +91,10 @@ describe('metadataHelpers', () => {
     describe('getAttributesMap', () => {
         const yearUri = '/gdc/md/1';
         const dateUri = '/gdc/md/2';
-        const sdkMockAttributes = {
-            md: {
-                getObjects: () => Promise.resolve([{
+
+        function createGoodDataMock() {
+            jest.spyOn(GoodData.md, 'getObjectDetails')
+                .mockImplementationOnce(() => Promise.resolve({
                     attribute: {
                         content: {
                             type: 'GDC.time.year',
@@ -99,12 +103,14 @@ describe('metadataHelpers', () => {
                             }]
                         }
                     }
-                }])
-            }
-        };
+                }));
+
+            return GoodData;
+
+        }
 
         it('should return empty if no date filter present', () => {
-            return getAttributesMap(sdkMockAttributes, projectId, empty).then((result: IAttributesMap) => {
+            return getAttributesMap(createGoodDataMock(), projectId, empty).then((result: IAttributesMap) => {
                 expect(result).toEqual({});
             });
         });
@@ -132,7 +138,7 @@ describe('metadataHelpers', () => {
                 }
             };
 
-            return getAttributesMap(sdkMockAttributes, projectId, visualizationObject)
+            return getAttributesMap(createGoodDataMock(), projectId, visualizationObject)
                 .then((result: IAttributesMap) => {
                     expect(result).toEqual({ [dateUri]: yearUri });
                 });
@@ -160,12 +166,16 @@ describe('metadataHelpers', () => {
                 }
             };
 
-            return getAttributesMap(sdkMockAttributes, projectId, visualizationObject)
+            return getAttributesMap(createGoodDataMock(), projectId, visualizationObject)
                 .then((result: IAttributesMap) => {
                     expect(result).toEqual({
                         [dateUri]: yearUri
                     });
                 });
         });
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
     });
 });

@@ -1,20 +1,20 @@
+import * as GoodData from 'gooddata';
 import * as VisObj from './legacy/model/VisualizationObject';
 import { IMetadataSource } from './interfaces/MetadataSource';
 import { REG_URI_OBJ } from './helpers/uri';
 import { fetchMeasures } from './helpers/metadata';
-import { IGoodDataSDK } from './interfaces/GoodDataSDK';
 
 export class UriMetadataSource implements IMetadataSource {
     private mdResult: VisObj.IVisualizationMetadataResult;
 
-    constructor(private sdk: IGoodDataSDK, private uri: string) {}
+    constructor(private sdk: typeof GoodData, private uri: string) {}
 
     public getVisualizationMetadata(): Promise<VisObj.IVisualizationMetadataResult> {
         if (this.mdResult) {
             return Promise.resolve(this.mdResult);
         }
 
-        return this.sdk.xhr.get(this.uri).then((visualizationObjectMetadata) => {
+        return this.sdk.xhr.get<VisObj.IVisualizationObjectResponse>(this.uri).then((visualizationObjectMetadata) => {
             const unwrapped = visualizationObjectMetadata.visualization;
 
             const uriSplit: string[] = REG_URI_OBJ.exec(this.uri) || [];

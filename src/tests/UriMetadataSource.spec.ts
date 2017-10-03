@@ -1,22 +1,25 @@
+import * as GoodData from 'gooddata';
 import { UriMetadataSource } from '../UriMetadataSource';
-import { IGoodDataSDK } from '../interfaces/GoodDataSDK';
 import { empty } from '../fixtures/VisualizationObject.fixtures';
 
 describe('UriMetadataSource', () => {
     const uri: string = '/gdc/md/FoodMartDemo/1';
 
-    function createGooddataSDK(): IGoodDataSDK {
+    function createGooddataSDK(): typeof GoodData {
         const md = { visualization: empty };
 
-        return {
-            md: {
-                getObjects: jest.fn().mockReturnValue(Promise.resolve([]))
-            },
-            xhr: {
-                get: jest.fn().mockReturnValue(Promise.resolve(md))
-            }
-        };
+        jest.spyOn(GoodData.md, 'getObjects')
+            .mockImplementation(() => Promise.resolve([]));
+
+        jest.spyOn(GoodData.xhr, 'get')
+            .mockImplementation(() => Promise.resolve(md));
+
+        return GoodData;
     }
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
 
     it('should request metadataobject on getData if not cached', () => {
         const source = new UriMetadataSource(createGooddataSDK(), uri);
