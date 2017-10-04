@@ -1,4 +1,6 @@
 import get = require('lodash/get');
+import flatMap = require('lodash/flatMap');
+import uniq = require('lodash/uniq');
 import compact = require('lodash/compact');
 import {
     IAfm, IDateFilter, IFilter, IAttributeFilter, IMeasure, IPositiveAttributeFilter,
@@ -13,8 +15,7 @@ export function normalizeAfm(afm: IAfm): IAfm {
     };
 }
 
-export function hasMetricDateFilters(afm: IAfm): boolean {
-    const normalizedAfm = normalizeAfm(afm);
+export function hasMetricDateFilters(normalizedAfm: IAfm): boolean {
     return normalizedAfm.measures.some((measure) => {
         if (!isPoP(measure)) {
             return !!measure.definition.filters && measure.definition.filters.some(isDateFilter);
@@ -23,16 +24,36 @@ export function hasMetricDateFilters(afm: IAfm): boolean {
     });
 }
 
-export function getInsightDateFilter(afm: IAfm): IDateFilter {
-    if (afm.filters) {
-        return <IDateFilter>afm.filters.find(isDateFilter);
-    }
-    return null;
+export function getGlobalDateFilters(normalizedAfm: IAfm): IDateFilter[] {
+    return normalizedAfm.filters.filter(isDateFilter);
 }
 
 export const isPoP = (item: IMeasure): boolean => {
     return !!(item.definition && item.definition.popAttribute);
 };
+
+export function getDateDatasetUris(normalizedAfm: IAfm): string[] {
+    const dataSets: string[] = [];
+
+    dataSets.push(...normalizedAfm.filters
+        .filter(isDateFilter)
+        .map(filter => filter.id));
+
+    normalizedAfm.measures.map((measure) => {
+        if (hasFilters(measure)) {
+            dataSets.push(...measure.definition.filters
+                .filter(isDateFilter)
+                .map(filter => filter.id));
+        }
+    });
+    return uniq(dataSets);
+}
+
+export function getMeasureDateFilters(normalizedAfm: IAfm): IDateFilter[] {
+    return flatMap(normalizedAfm.measures, (measure) => {
+        return hasFilters(measure) ? measure.definition.filters.filter(isDateFilter) : [];
+    });
+}
 
 export const isShowInPercent = (item: IMeasure): boolean => {
     return item.definition && item.definition.showInPercent;
@@ -63,7 +84,7 @@ export function isNegativeAttributeFilter(filter: IAttributeFilter): filter is I
     return (<INegativeAttributeFilter>filter).notIn !== undefined;
 }
 
-export function hasInsightDateFilter(afm: IAfm): boolean {
+export function hasGlobalDateFilter(afm: IAfm): boolean {
     return afm.filters.some(isDateFilter);
 }
 

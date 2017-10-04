@@ -4,14 +4,14 @@ import { AttributeMap } from './AttributeMap';
 import { IDateFilter } from '../interfaces/Afm';
 
 export class AfmMap {
-    private insightDateFilter: IDateFilter = null;
+    private globalDateFilters: IDateFilter[] = null;
     private dateFilterMap: DateFilterMap = [];
     private attributeMap: AttributeMap = [];
 
-    constructor(results: [AttributeMap, DateFilterMap] = [[],[]], insightDateFilter: IDateFilter = null) {
+    constructor(results: [AttributeMap, DateFilterMap] = [[], []], globalDateFilters: IDateFilter[] = null) {
         this.attributeMap = results[0];
         this.dateFilterMap = results[1];
-        this.insightDateFilter = insightDateFilter;
+        this.globalDateFilters = globalDateFilters;
     }
 
     public getAttributeByDisplayForm(displayForm): string {
@@ -22,12 +22,12 @@ export class AfmMap {
 
     public getDateAttribute(filter: IDateFilter): IDateFilterRefData {
         const dateType = `GDC.time.${filter.granularity}`;
-        const item = this.dateFilterMap.find(item => item.dateAttributeType === dateType);
-        return item;
+        return this.dateFilterMap.find(item => item.dateAttributeType === dateType &&
+            item.dateDataSetId === filter.id);
     }
 
-    public getInsightDateFilter() {
-        return this.insightDateFilter;
+    public getGlobalDateFilters() {
+        return this.globalDateFilters;
     }
 }
 

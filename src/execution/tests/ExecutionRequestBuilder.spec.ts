@@ -12,12 +12,13 @@ import { normalizeAfm } from '../../utils/AfmUtils';
 import {
     absoluteDateFilter1, afmWithMetricDateFilters, metric2_sum, metric3_sum, metric_in_percent, metric_in_percent_pop,
     metric_sum,
-    relativeDateFilter
+    relativeDateFilter, afmWithTwoDimensions
 } from '../../fixtures/Afm.fixtures';
-import { afmDataMap1, afmDataMap2 } from '../../fixtures/AfmMap.fixtures';
+import { afmDataMap1, afmDataMap2, afmDataMap3 } from '../../fixtures/AfmMap.fixtures';
+import {simpleTransformation} from '../../fixtures/Transformation.fixtures';
 
 describe('buildRequest', () => {
-    it('build config one simple metric', () => {
+    it('should build config one simple metric', () => {
         const afm: IAfm = {
             measures: [
                 metric_sum
@@ -28,7 +29,7 @@ describe('buildRequest', () => {
         expect(executionRequest).toMatchSnapshot();
     });
 
-    it('build config with metric and relative global date filter', () => {
+    it('should build config with metric and relative global date filter', () => {
         const afm: IAfm = {
             measures: [
                 metric_sum
@@ -42,7 +43,7 @@ describe('buildRequest', () => {
         expect(executionRequest).toMatchSnapshot();
     });
 
-    it('build config with metric and absolute global date filter', () => {
+    it('should build config with metric and absolute global date filter', () => {
         const afm: IAfm = {
             measures: [
                 metric_sum
@@ -56,12 +57,12 @@ describe('buildRequest', () => {
         expect(executionRequest).toMatchSnapshot();
     });
 
-    it('build config with metrics and different date filters', () => {
+    it('should build config with metrics and different date filters', () => {
         const executionRequest = buildRequest(normalizeAfm(afmWithMetricDateFilters), {}, afmDataMap2);
         expect(executionRequest).toMatchSnapshot();
     });
 
-    it('build config without insight date filter', () => {
+    it('should build config without global date filter', () => {
         const afm: IAfm = {
             measures: [
                 metric_sum,
@@ -74,7 +75,7 @@ describe('buildRequest', () => {
         expect(executionRequest).toMatchSnapshot();
     });
 
-    it('build config for pop metric with insight and date filter', () => {
+    it('should build config for pop metric with global and date filter', () => {
         const afm: IAfm = {
             measures: [
                 metric_in_percent,
@@ -86,6 +87,12 @@ describe('buildRequest', () => {
         };
 
         const executionRequest = buildRequest(normalizeAfm(afm), {}, afmDataMap2);
+        expect(executionRequest).toMatchSnapshot();
+    });
+
+    it('should build config with 2 date dimensions in one metric expression', () => {
+        const normalizedAfm: IAfm = normalizeAfm(afmWithTwoDimensions);
+        const executionRequest = buildRequest(normalizedAfm, simpleTransformation, afmDataMap3);
         expect(executionRequest).toMatchSnapshot();
     });
 });
@@ -797,7 +804,7 @@ describe('generateFilters', () => {
             ]
         };
 
-        expect(generateFilters(afm)).toEqual(
+        expect(generateFilters(normalizeAfm(afm))).toEqual(
             {
                 $and: [{
                     '/gdc/md/attribute1/obj/1': {

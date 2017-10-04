@@ -7,6 +7,7 @@ export interface IAttributeElement {
 }
 
 export interface IDateFilterRefData {
+    dateDataSetId: string;
     dateAttributeType: string;
     dateAttributeUri: string;
     dateDisplayFormUri: string;

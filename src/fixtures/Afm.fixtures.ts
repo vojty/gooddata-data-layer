@@ -1,7 +1,8 @@
 import { IAfm, IDateFilter, IMeasure } from '../interfaces/Afm';
+import * as DataSetFixtures from '../fixtures/DataSet.fixtures';
 
 export const absoluteDateFilter1: IDateFilter = {
-    id: '/gdc/md/datefilter/obj/1',
+    id: DataSetFixtures.activityDateDataSet.dataSet.meta.uri,
     type: 'date',
     intervalType: 'absolute',
     between: ['2014-01-01', '2016-01-01'],
@@ -9,7 +10,7 @@ export const absoluteDateFilter1: IDateFilter = {
 };
 
 export const absoluteDateFilter2: IDateFilter = {
-    id: '/gdc/md/datefilter/obj/1',
+    id: DataSetFixtures.activityDateDataSet.dataSet.meta.uri,
     type: 'date',
     intervalType: 'absolute',
     between: ['2017-01-01', '2018-01-01'],
@@ -17,7 +18,7 @@ export const absoluteDateFilter2: IDateFilter = {
 };
 
 export const relativeDateFilter: IDateFilter = {
-    id: '/gdc/md/datefilter/obj/1',
+    id: DataSetFixtures.activityDateDataSet.dataSet.meta.uri,
     type: 'date',
     intervalType: 'relative',
     between: [-10, -9],
@@ -137,5 +138,57 @@ export const afmWithoutMetricDateFilters: IAfm = {
         }],
     filters: [
         absoluteDateFilter1
+    ]
+};
+
+export const afmWithTwoDimensions: IAfm = {
+    attributes: [
+        {
+            id: '/gdc/md/project/obj/657',
+            type: 'date'
+        }
+    ],
+    measures: [
+        {
+            id: 'm1',
+            definition: {
+                baseObject: {
+                    id: '/gdc/md/project/obj/1507'
+                },
+                filters: [
+                    {
+                        type: 'date',
+                        id: '/gdc/md/project/obj/727',
+                        intervalType: 'relative',
+                        between: [-7, -7],
+                        granularity: 'quarter'
+                    }
+                ]
+            }
+        },
+        {
+            id: 'm2',
+            definition: {
+                baseObject: {
+                    id: '/gdc/md/project/obj/1507'
+                }
+            }
+        }
+    ],
+    filters: [
+        {
+            id: '/gdc/md/project/obj/727',
+            type: 'date',
+            intervalType: 'absolute',
+            between: ['2016-01-01', '2016-12-31'],
+            granularity: 'date'
+        },
+        {
+            id: '/gdc/md/project/obj/361',
+            type: 'date',
+            intervalType: 'relative',
+            between: [0, 0],
+            granularity: 'year'
+        }
     ]
 };

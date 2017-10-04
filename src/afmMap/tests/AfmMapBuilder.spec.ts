@@ -1,9 +1,11 @@
 import flatMap = require('lodash/flatMap');
 import { IAfm } from '../../interfaces/Afm';
-import { AfmMapBuilder, getMeasureDateFilters, lookupAttributes } from '../AfmMapBuilder';
+import { AfmMapBuilder, lookupAttributes } from '../AfmMapBuilder';
 import * as AfmFixtures from '../../fixtures/Afm.fixtures';
-import { normalizeAfm } from '../../utils/AfmUtils';
 import { IGoodDataSDK } from '../../interfaces/GoodDataSDK';
+import * as DataSetFixtures from '../../fixtures/DataSet.fixtures';
+import { normalizeAfm, getMeasureDateFilters } from '../../utils/AfmUtils';
+import { IDateFilterRefData } from '../DateFilterMap';
 
 const defaultObjectsResponse = {
     attributeDisplayForm: {
@@ -35,16 +37,6 @@ const dateAttribute = {
         },
         meta: {
             uri: '/gdc/md/project/obj/15200'
-        }
-    }
-};
-
-const dateDataSetResponse = {
-    dataSet: {
-        content: {
-            attributes: [
-                '/gdc/md/project/obj/15200'
-            ]
         }
     }
 };
@@ -87,8 +79,8 @@ const projectId = 'project';
 const getObjectsResponse = (projectId, uris) => {
     const results = flatMap(uris, (uri) => {
         switch (uri) {
-            case '/gdc/md/datefilter/obj/1': {
-                return dateDataSetResponse;
+            case DataSetFixtures.activityDateDataSet.dataSet.meta.uri: {
+                return DataSetFixtures.activityDateDataSet;
             }
             case '/gdc/md/project/obj/15200': {
                 return dateAttribute;
@@ -98,7 +90,6 @@ const getObjectsResponse = (projectId, uris) => {
                 return defaultObjectsResponse;
             }
             default: {
-                debugger;
                 return null;
             }
         }
@@ -249,28 +240,30 @@ describe('buildDateFilterMap', () => {
         };
         const sdk = createSdkMock();
         const afmMapBuilder = new AfmMapBuilder(sdk, projectId);
-        return afmMapBuilder.buildDateFilterMap(afm)
+        return afmMapBuilder.buildDateFilterMap(normalizeAfm(afm))
             .then((dateFilterMap) => {
-                expect(dateFilterMap).toEqual([
-                    {
-                        attributeElements: [
-                            {
-                                label: '2014-01-01',
-                                uri: '/gdc/md/project/obj/15200/elements?id=41639'
-                            },
-                            {
-                                label: '2016-01-01',
-                                uri: '/gdc/md/project/obj/15200/elements?id=42004'
-                            }
-                        ],
-                        dateAttributeType: 'GDC.time.date',
-                        dateAttributeUri: '/gdc/md/project/obj/15200',
-                        dateDisplayFormUri: '/gdc/md/project/obj/15202'
-                    }]);
+                const result: IDateFilterRefData = {
+                    attributeElements: [
+                        {
+                            label: '2014-01-01',
+                            uri: '/gdc/md/project/obj/15200/elements?id=41639'
+                        },
+                        {
+                            label: '2016-01-01',
+                            uri: '/gdc/md/project/obj/15200/elements?id=42004'
+                        }
+                    ],
+                    dateAttributeType: 'GDC.time.date',
+                    dateAttributeUri: '/gdc/md/project/obj/15200',
+                    dateDisplayFormUri: '/gdc/md/project/obj/15202',
+                    dateDataSetId: '/gdc/md/project/obj/727'
+                };
+
+                expect(dateFilterMap).toEqual([result]);
             });
     });
 
-    it('afmMap with only insight date filter data', () => {
+    it('should build afmMap with only insight date filter data', () => {
         const afm: IAfm = {
             measures: [
                 AfmFixtures.metric_sum
@@ -293,7 +286,8 @@ describe('buildDateRefData', () => {
     it('should build correct dateRefData', () => {
         const sdk = createSdkMock();
         const afmMapBuilder = new AfmMapBuilder(sdk, projectId);
-        return afmMapBuilder.buildDateRefData(dateAttribute, [AfmFixtures.absoluteDateFilter1])
+        return afmMapBuilder.buildDateRefData(dateAttribute, [AfmFixtures.absoluteDateFilter1],
+            DataSetFixtures.activityDateDataSet)
             .then((dateRefData) => {
                 expect(sdk.md.translateElementLabelsToUris).toHaveBeenCalled();
                 expect(dateRefData).toEqual({
@@ -309,7 +303,8 @@ describe('buildDateRefData', () => {
                     ],
                     dateAttributeType: 'GDC.time.date',
                     dateAttributeUri: '/gdc/md/project/obj/15200',
-                    dateDisplayFormUri: '/gdc/md/project/obj/15202'
+                    dateDisplayFormUri: '/gdc/md/project/obj/15202',
+                    dateDataSetId: '/gdc/md/project/obj/727'
                 });
             });
     });
@@ -322,14 +317,14 @@ describe('getMeasureDateFilters', () => {
             {
                 between: [-10, -9],
                 granularity: 'year',
-                id: '/gdc/md/datefilter/obj/1',
+                id: DataSetFixtures.activityDateDataSet.dataSet.meta.uri,
                 intervalType: 'relative',
                 type: 'date'
             },
             {
                 between: ['2017-01-01', '2018-01-01'],
                 granularity: 'date',
-                id: '/gdc/md/datefilter/obj/1',
+                id: DataSetFixtures.activityDateDataSet.dataSet.meta.uri,
                 intervalType: 'absolute',
                 type: 'date'
             }
