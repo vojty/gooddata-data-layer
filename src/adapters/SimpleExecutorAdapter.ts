@@ -7,13 +7,11 @@ import { AfmMap } from '../afmMap/AfmMap';
 import { AttributeMap } from '../afmMap/AttributeMap';
 import { DateFilterMap } from '../afmMap/DateFilterMap';
 import { buildRequest } from '../execution/ExecutionRequestBuilder';
-import { getInsightDateFilter, hasInsightDateFilter, hasMetricDateFilters, normalizeAfm } from '../utils/AfmUtils';
+import { getGlobalDateFilters, hasGlobalDateFilter, hasMetricDateFilters, normalizeAfm } from '../utils/AfmUtils';
 import { ITransformation } from '../interfaces/Transformation';
 import * as GoodData from 'gooddata';
-// tslint:disable-next-line:no-duplicate-imports
-import { ISimpleExecutorResult } from 'gooddata';
 
-export class SimpleExecutorAdapter implements IAdapter<ISimpleExecutorResult> {
+export class SimpleExecutorAdapter implements IAdapter<GoodData.ISimpleExecutorResult> {
     // settings for gooddata SDK
     // @see https://github.com/gooddata/gooddata-js/blob/master/src/execution.js#L71
     constructor(private sdk: typeof GoodData, private projectId: string, private settings = {}) {}
@@ -21,19 +19,19 @@ export class SimpleExecutorAdapter implements IAdapter<ISimpleExecutorResult> {
     public createDataSource(
         afm: IAfm,
         fingerprint?: string
-    ): Promise<IDataSource<ISimpleExecutorResult>> {
+    ): Promise<IDataSource<GoodData.ISimpleExecutorResult>> {
         const normalizedAfm = normalizeAfm(afm);
 
         const afmMapDataBuilder = new AfmMapBuilder(this.sdk, this.projectId);
         const execFactory = (transformation: ITransformation) => {
             return afmMapDataBuilder.build(normalizedAfm)
                 .then((results: [AttributeMap, DateFilterMap]) => {
-                    let insightDateFilter = null;
-                    if (hasMetricDateFilters(normalizedAfm) && hasInsightDateFilter(normalizedAfm)) {
-                        insightDateFilter = getInsightDateFilter(normalizedAfm);
+                    let globalDateFilters = null;
+                    if (hasMetricDateFilters(normalizedAfm) && hasGlobalDateFilter(normalizedAfm)) {
+                        globalDateFilters = getGlobalDateFilters(normalizedAfm);
                     }
 
-                    const afmDataMap = new AfmMap(results, insightDateFilter);
+                    const afmDataMap = new AfmMap(results, globalDateFilters);
 
                     const executionRequest = buildRequest(normalizedAfm, transformation, afmDataMap);
 
@@ -42,6 +40,6 @@ export class SimpleExecutorAdapter implements IAdapter<ISimpleExecutorResult> {
                 });
         };
 
-        return Promise.resolve(new DataSource<ISimpleExecutorResult>(execFactory, normalizedAfm, fingerprint));
+        return Promise.resolve(new DataSource<GoodData.ISimpleExecutorResult>(execFactory, normalizedAfm, fingerprint));
     }
 }

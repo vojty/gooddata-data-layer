@@ -96,7 +96,7 @@ function getDateFilterExpression(filter: IDateFilter, afmDataMap: AfmMap): strin
         dateRange = `THIS + (${filter.between[0]}) AND THIS + (${filter.between[1]})`;
     }
 
-    return `${wrapId(dateFilterRefData.dateAttributeUri)} BETWEEN ${dateRange}`;
+    return `(${wrapId(dateFilterRefData.dateAttributeUri)} BETWEEN ${dateRange})`;
 }
 
 function getFiltersExpression(item: IMeasure, afmDataMap: AfmMap) {
@@ -113,9 +113,10 @@ function getFiltersExpression(item: IMeasure, afmDataMap: AfmMap) {
         return null;
     });
 
-    const insightDateFilter = afmDataMap.getInsightDateFilter();
-    if (insightDateFilter && !filters.some(isDateFilter)) {
-        filterExpressions.push(getDateFilterExpression(insightDateFilter, afmDataMap));
+    const globalDateFilters = afmDataMap.getGlobalDateFilters();
+    if (!isEmpty(globalDateFilters) && !filters.some(isDateFilter)) {
+        filterExpressions.push(...globalDateFilters.map(
+            dateFilter => getDateFilterExpression(dateFilter, afmDataMap)));
     }
 
     return compact(filterExpressions).join(' AND ');
