@@ -41,7 +41,8 @@ describe('AfmMap', () => {
                 ],
                 dateAttributeType: 'GDC.time.date',
                 dateAttributeUri: '/gdc/md/dateAttributeUri/obj/1',
-                dateDisplayFormUri: '/gdc/md/dateDisplayFormUri/obj/1'
+                dateDisplayFormUri: '/gdc/md/dateDisplayFormUri/obj/1',
+                dateDataSetId: '/gdc/md/project/obj/727'
             });
         });
 
@@ -51,7 +52,8 @@ describe('AfmMap', () => {
                 attributeElements: [],
                 dateAttributeType: 'GDC.time.year',
                 dateAttributeUri: '/gdc/md/dateAttributeUriYEAR/obj/1',
-                dateDisplayFormUri: null
+                dateDisplayFormUri: null,
+                dateDataSetId: '/gdc/md/project/obj/727'
             });
         });
     });
