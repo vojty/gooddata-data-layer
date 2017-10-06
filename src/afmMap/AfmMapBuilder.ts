@@ -1,17 +1,17 @@
 import compact = require('lodash/compact');
-import flatMap = require('lodash/flatMap');
 import flow = require('lodash/flow');
 import isEmpty = require('lodash/isEmpty');
 import uniq = require('lodash/uniq');
+import flatMap = require('lodash/flatMap');
 import flatten = require('lodash/flatten');
 import { IAfm, IDateFilter } from '../interfaces/Afm';
 import { areUris } from '../helpers/uri';
 import { DateFilterMap, IAttributeElement, IDateFilterRefData } from './DateFilterMap';
 import { AttributeMap } from './AttributeMap';
 import {
-    getInsightDateFilter,
+    getGlobalDateFilters, getMeasureDateFilters, getDateDatasetUris,
     hasFilters, isAbsoluteDateFilter, isAttributeFilter,
-    isDateFilter, isPoP, isShowInPercent
+    isPoP, isShowInPercent
 } from '../utils/AfmUtils';
 import { IGoodDataSDK } from '../interfaces/GoodDataSDK';
 
@@ -61,29 +61,48 @@ export class AfmMapBuilder {
         if (isEmpty(dateFilters)) {
             return Promise.resolve([]);
         }
-        
-        const insightDateFilter = getInsightDateFilter(afm);
-        if (insightDateFilter) {
-            dateFilters.push(insightDateFilter);
+
+        const globalDateFilters = getGlobalDateFilters(afm);
+        if (!isEmpty(globalDateFilters)) {
+            dateFilters.push(...globalDateFilters);
         }
 
-        const dataSetUri = (<IDateFilter> dateFilters[0]).id;
+        const dataSetUris = getDateDatasetUris(afm);
 
-        return this.sdk.md.getObjects(this.projectId, [dataSetUri])
-            .then((dataSetObjects) => {
-                const dateAttributes = dataSetObjects[0].dataSet.content.attributes;
-                return this.sdk.md.getObjects(this.projectId, dateAttributes);
+        return this.sdk.md.getObjects(this.projectId, dataSetUris)
+            .then((dataSets) => {
+
+                const dateAttributesPromises = dataSets.map((dataSetObject) => {
+                    const dateAttributes = dataSetObject.dataSet.content.attributes;
+                    return Promise.all([
+                        this.sdk.md.getObjects(this.projectId, dateAttributes),
+                        Promise.resolve(dataSetObject)
+                    ]);
+                });
+
+                return Promise.all(dateAttributesPromises);
             })
-            .then((dateAttributeObjects) => {
-                const dateRefDataPromises: Promise<IDateFilterRefData>[] = dateAttributeObjects
-                    .map(dateAttribute => this.buildDateRefData(dateAttribute, dateFilters));
+            .then((results) => {
+                const dateRefDataPromises =
+                    flatMap(results, (result) => {
+                        const dateAttributeObjects = result[0];
+                        const dataSet = result[1];
+
+                        return dateAttributeObjects.map(dateAttribute =>
+                            this.buildDateRefData(dateAttribute, dateFilters, dataSet));
+                    });
 
                 return Promise.all(dateRefDataPromises);
             });
     }
 
-    public buildDateRefData(dateAttribute, dateFilters: IDateFilter[]): Promise<IDateFilterRefData> {
+    public buildDateRefData(
+        dateAttribute,
+        dateFilters: IDateFilter[],
+        dataSet
+    ): Promise<IDateFilterRefData> {
         const refData: IDateFilterRefData = {
+            dateDataSetId: dataSet.dataSet.meta.uri,
             dateAttributeType: dateAttribute.attribute.content.type,
             dateAttributeUri: dateAttribute.attribute.meta.uri,
             dateDisplayFormUri: null,
@@ -124,12 +143,6 @@ export class AfmMapBuilder {
                 return Promise.resolve(attributeElements);
             });
     }
-}
-
-export function getMeasureDateFilters(normalizedAfm: IAfm): IDateFilter[] {
-    return flatMap(normalizedAfm.measures, (measure) => {
-        return hasFilters(measure) ? measure.definition.filters.filter(isDateFilter) : [];
-    });
 }
 
 export function lookupAttributes(afm) {
