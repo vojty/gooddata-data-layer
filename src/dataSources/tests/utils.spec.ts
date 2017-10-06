@@ -1,28 +1,37 @@
+import { AFM } from '@gooddata/typings';
 import { DataSource } from '../DataSource';
 import { dataSourcesMatch } from '../utils';
 
 describe('dataSource utils', () => {
     describe('dataSourcesMatch', () => {
         const noop = () => Promise.resolve({});
-        const firstAfm = {
-            measures: [{
-                id: 'm0',
-                definition: {
-                    baseObject: {
-                        id: 'metric000'
+        const firstAfm: AFM.IAfm = {
+            measures: [
+                {
+                    localIdentifier: 'm0',
+                    definition: {
+                        measure: {
+                            item: {
+                                identifier: 'metric000'
+                            }
+                        }
                     }
                 }
-            }]
+            ]
         };
-        const secondAfm = {
-            measures: [{
-                id: 'm1',
-                definition: {
-                    baseObject: {
-                        id: 'metric001'
+        const secondAfm: AFM.IAfm = {
+            measures: [
+                {
+                    localIdentifier: 'm1',
+                    definition: {
+                        measure: {
+                            item: {
+                                identifier: 'metric001'
+                            }
+                        }
                     }
                 }
-            }]
+            ]
         };
 
         it('dataSources should match if they have identical fingerprint', () => {

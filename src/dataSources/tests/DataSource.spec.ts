@@ -1,16 +1,17 @@
 import * as stringify from 'json-stable-stringify';
+import { AFM } from '@gooddata/typings';
 import { DataSource } from '../DataSource';
-import { IAfm } from '../../interfaces/Afm';
 
 describe('DataSource', () => {
-    const afm: IAfm = { measures: [], filters: [], attributes: [] };
+    const afm: AFM.IAfm = { measures: [], filters: [], attributes: [] };
+    const resultSpec: AFM.IResultSpec = {};
 
     it('should call execfactory for getData', () => {
         const result = Promise.resolve();
         const execFactory = jest.fn().mockReturnValue(result);
-        const dataSource = new DataSource(execFactory);
+        const dataSource = new DataSource(execFactory, afm);
 
-        const dataPromise = dataSource.getData({});
+        const dataPromise = dataSource.getData(resultSpec);
         expect(dataPromise).toEqual(result);
     });
 

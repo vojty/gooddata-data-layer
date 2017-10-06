@@ -1,26 +1,25 @@
+import { AFM } from '@gooddata/typings';
 import * as stringify from 'json-stable-stringify';
 import { IDataSource } from '../interfaces/DataSource';
-import { IAfm } from '../interfaces/Afm';
-import { ITransformation } from '../interfaces/Transformation';
 
 export {
     IDataSource
 };
 
-export type ExecFactory<T> = (transformation: ITransformation) => Promise<T>;
+export type ExecFactory<T> = (resultSpec: AFM.IResultSpec) => Promise<T>;
 
 export class DataSource<T> implements IDataSource<T> {
     constructor(
         private execFactory: ExecFactory<T>,
-        private afm?: IAfm,
+        private afm: AFM.IAfm,
         private fingerprint?: string
     ) {}
 
-    public getData(transformation: ITransformation): Promise<T> {
-        return this.execFactory(transformation);
+    public getData(resultSpec: AFM.IResultSpec): Promise<T> {
+        return this.execFactory(resultSpec);
     }
 
-    public getAfm(): IAfm {
+    public getAfm(): AFM.IAfm {
         return this.afm;
     }
 

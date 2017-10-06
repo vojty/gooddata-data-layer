@@ -1,13 +1,18 @@
-import get = require('lodash/get');
 import flatMap = require('lodash/flatMap');
-import uniq = require('lodash/uniq');
 import compact = require('lodash/compact');
-import {
-    IAfm, IDateFilter, IFilter, IAttributeFilter, IMeasure, IPositiveAttributeFilter,
-    INegativeAttributeFilter
-} from '../interfaces/Afm';
+import { AFM } from '@gooddata/typings';
 
-export function normalizeAfm(afm: IAfm): IAfm {
+export const ALL_TIME_GRANULARITY = 'ALL_TIME_GRANULARITY';
+
+export function unwrapSimpleMeasure(item: AFM.IMeasure): AFM.ISimpleMeasure {
+    return (item.definition as AFM.ISimpleMeasureDefinition).measure;
+}
+
+export function unwrapPoPMeasure(item: AFM.IMeasure): AFM.IPopMeasure {
+    return (item.definition as AFM.IPopMeasureDefinition).popMeasure;
+}
+
+export function normalizeAfm(afm: AFM.IAfm): AFM.IAfm {
     return {
         attributes: afm.attributes || [],
         measures: afm.measures || [],
@@ -15,115 +20,148 @@ export function normalizeAfm(afm: IAfm): IAfm {
     };
 }
 
-export const isPoP = (item: IMeasure): boolean => {
-    return !!(item.definition && item.definition.popAttribute);
+export const isPoP = (item: AFM.IMeasure): boolean => {
+    return !!unwrapPoPMeasure(item);
 };
 
-export function hasMetricDateFilters(normalizedAfm: IAfm): boolean {
-    return normalizedAfm.measures.some((measure) => {
+export function isAttributeFilter(filter: AFM.FilterItem): filter is AFM.AttributeFilterItem {
+    return !!(filter as AFM.IPositiveAttributeFilter).positiveAttributeFilter ||
+        !!(filter as AFM.INegativeAttributeFilter).negativeAttributeFilter;
+}
+
+export function isDateFilter(filter: AFM.CompatibilityFilter): filter is AFM.DateFilterItem {
+    return !!(filter as AFM.IAbsoluteDateFilter).absoluteDateFilter ||
+        !!(filter as AFM.IRelativeDateFilter).relativeDateFilter;
+}
+
+export function hasMetricDateFilters(normalizedAfm: AFM.IAfm): boolean {
+    return normalizedAfm.measures.some((measure: AFM.IMeasure) => {
         if (!isPoP(measure)) {
-            return !!measure.definition.filters && measure.definition.filters.some(isDateFilter);
+            const filters: AFM.FilterItem[] = unwrapSimpleMeasure(measure).filters;
+            return filters && filters.some(isDateFilter);
         }
         return false;
     });
 }
 
-export function getGlobalDateFilters(normalizedAfm: IAfm): IDateFilter[] {
+export function getGlobalDateFilters(normalizedAfm: AFM.IAfm): AFM.DateFilterItem[] {
     return normalizedAfm.filters.filter(isDateFilter);
 }
 
-export const hasFilters = (item: IMeasure): boolean => {
-    return !!(item.definition && item.definition.filters);
+export const hasFilters = (measure: AFM.ISimpleMeasure): boolean => {
+    return measure.filters && measure.filters.length > 0;
 };
 
-export function getDateDatasetUris(normalizedAfm: IAfm): string[] {
-    const dataSets: string[] = [];
-
-    dataSets.push(...normalizedAfm.filters
-        .filter(isDateFilter)
-        .map(filter => filter.id));
-
-    normalizedAfm.measures.map((measure) => {
-        if (hasFilters(measure)) {
-            dataSets.push(...measure.definition.filters
-                .filter(isDateFilter)
-                .map(filter => filter.id));
+export function getMeasureDateFilters(normalizedAfm: AFM.IAfm): AFM.DateFilterItem[] {
+    return flatMap(normalizedAfm.measures, (item: AFM.IMeasure) => {
+        const measure = unwrapSimpleMeasure(item);
+        if (!measure || !hasFilters(measure)) {
+            return [];
         }
-    });
-    return uniq(dataSets);
-}
-
-export function getMeasureDateFilters(normalizedAfm: IAfm): IDateFilter[] {
-    return flatMap(normalizedAfm.measures, (measure) => {
-        return hasFilters(measure) ? measure.definition.filters.filter(isDateFilter) : [];
+        return measure.filters.filter(isDateFilter);
     });
 }
 
-export const isShowInPercent = (item: IMeasure): boolean => {
-    return item.definition && item.definition.showInPercent;
-};
-
-export function isAttributeFilter(filter: IFilter): filter is IAttributeFilter {
-    return filter.type === 'attribute';
-}
-
-export function isDateFilter(filter: IFilter): filter is IDateFilter {
-    return filter.type === 'date' && filter.between[0] !== undefined &&
-        filter.between[1] !== undefined;
-}
-
-export function isAbsoluteDateFilter(filter: IDateFilter) {
-    return filter.intervalType === 'absolute';
-}
-
-export function isPositiveAttributeFilter(filter: IAttributeFilter): filter is IPositiveAttributeFilter {
-    return (filter as IPositiveAttributeFilter).in !== undefined;
-}
-
-export function isNegativeAttributeFilter(filter: IAttributeFilter): filter is INegativeAttributeFilter {
-    return (filter as INegativeAttributeFilter).notIn !== undefined;
-}
-
-export function hasGlobalDateFilter(afm: IAfm): boolean {
+export function hasGlobalDateFilter(afm: AFM.IAfm): boolean {
     return afm.filters.some(isDateFilter);
+}
+
+function isDateFilterRelative(filter: AFM.DateFilterItem): filter is AFM.IRelativeDateFilter {
+    return filter && !!(filter as AFM.IRelativeDateFilter).relativeDateFilter;
+}
+
+function isDateFilterAbsolute(filter: AFM.DateFilterItem): filter is AFM.IAbsoluteDateFilter {
+    return filter && !!(filter as AFM.IAbsoluteDateFilter).absoluteDateFilter;
+}
+
+export function getId(obj: AFM.ObjQualifier) {
+    if ((obj as AFM.IObjUriQualifier).uri) {
+        return (obj as AFM.IObjUriQualifier).uri;
+    }
+    if ((obj as AFM.IObjIdentifierQualifier).identifier) {
+        return (obj as AFM.IObjIdentifierQualifier).identifier;
+    }
+    return null;
+}
+
+function getDateFilterDateDataSet(filter: AFM.DateFilterItem): AFM.ObjQualifier {
+    if (isDateFilterRelative(filter)) {
+        return filter.relativeDateFilter.dataSet;
+    }
+    if (isDateFilterAbsolute(filter)) {
+        return filter.absoluteDateFilter.dataSet;
+    }
+    return null;
+}
+
+function dateFiltersDataSetsMatch(f1: AFM.DateFilterItem, f2: AFM.DateFilterItem) {
+    if ((isDateFilterRelative(f1) && isDateFilterRelative(f2)) || (
+        isDateFilterAbsolute(f1) && isDateFilterAbsolute(f2)
+    )) {
+        const d1 = getDateFilterDateDataSet(f1);
+        const d2 = getDateFilterDateDataSet(f2);
+        return getId(d1) === getId(d2);
+    }
+    return false;
+}
+
+function isDateFilterAllTime(dateFilter: AFM.DateFilterItem): boolean {
+    if (isDateFilterRelative(dateFilter)) {
+        return dateFilter.relativeDateFilter.granularity === ALL_TIME_GRANULARITY;
+    }
+    return false;
 }
 
 /**
  * Append attribute filters and date filter to afm
+ *
  * Date filter handling:
- * * Override if date filter has the same id
- * * Add if date filter if date filter id is different
+ *      - Override if date filter has the same id
+ *      - Add if date filter if date filter id is different
+ *
  * Attribute filter handling:
- * * Add all
+ *      - Add all
  */
-export const appendFilters = (afm: IAfm, attributeFilters: IAttributeFilter[], dateFilter: IDateFilter): IAfm => {
-    const dateFilters = (dateFilter && dateFilter.granularity) ? [dateFilter] : [];
-    const afmDateFilter = afm.filters && afm.filters.find(filter => filter.type === 'date') as IDateFilter;
+export function appendFilters(
+    afm: AFM.IAfm,
+    attributeFilters: AFM.AttributeFilterItem[],
+    dateFilter: AFM.DateFilterItem = null
+): AFM.IAfm {
+    const normalizedAfm = normalizeAfm(afm);
+    const dateFilters: AFM.DateFilterItem[] = !isDateFilterAllTime(dateFilter) ? [dateFilter] : [];
+    const afmDateFilter: AFM.DateFilterItem = normalizedAfm.filters.filter(isDateFilter)[0];
 
     // all-time selected, need to delete date filter from filters
-    let afmFilters = afm.filters || [];
-    if (dateFilter && !dateFilter.granularity) {
-        afmFilters = afmFilters.filter(filter => filter.id !== dateFilter.id);
+    let afmFilters = normalizedAfm.filters || [];
+    if (isDateFilterAllTime(dateFilter)) {
+        afmFilters = afmFilters.filter((filter: AFM.FilterItem) => {
+            if (isDateFilter(filter)) {
+                return !dateFiltersDataSetsMatch(filter, dateFilter);
+            }
+            return true;
+        });
     }
 
-    if ((afmDateFilter && dateFilter && afmDateFilter.id !== dateFilter.id)
-        || (afmDateFilter && !dateFilter)) {
+    if ((afmDateFilter && dateFilter && !dateFiltersDataSetsMatch(afmDateFilter, dateFilter))
+    || (afmDateFilter && !dateFilter)) {
         dateFilters.unshift(afmDateFilter);
     }
 
-    const afmAttributeFilters = afmFilters.filter(filter => filter.type !== 'date');
+    const afmAttributeFilters = afmFilters.filter(filter => !isDateFilter(filter));
+
     const filters = compact([
         ...afmAttributeFilters,
         ...attributeFilters,
         ...dateFilters
-    ]) as IFilter[];
+    ]);
 
     return {
-        ...afm,
+        ...normalizedAfm,
         filters
     };
-};
+}
 
-export function isAfmExecutable(afm: IAfm) {
-    return get(afm, 'measures.length') > 0 || get(afm, 'attributes.length') > 0;
+export function isAfmExecutable(afm: AFM.IAfm) {
+    const normalizedAfm = normalizeAfm(afm);
+    return normalizedAfm.measures.length > 0 || normalizedAfm.attributes.length > 0;
 }

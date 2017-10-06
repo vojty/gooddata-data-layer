@@ -1,10 +1,9 @@
+import { AFM } from '@gooddata/typings';
 import { IAdapter } from '../interfaces/Adapter';
 import { IDataSource } from '../interfaces/DataSource';
 import { DummyDataSource } from './DummyDataSource';
-import { IAfm } from '../interfaces/Afm';
-import { ISimpleExecutorResult } from 'gooddata';
 
-export class DummyAdapter implements IAdapter<ISimpleExecutorResult> {
+export class DummyAdapter implements IAdapter<any> {
     private data: any;
     private success: boolean;
     private dataSource: any;
@@ -16,10 +15,11 @@ export class DummyAdapter implements IAdapter<ISimpleExecutorResult> {
         this.dataSource = dataSource;
     }
 
-    // tslint:disable-next-line:variable-name
-    public createDataSource(_afm: IAfm): Promise<IDataSource<ISimpleExecutorResult>> {
+    public createDataSource(
+        _afm: AFM.IAfm // tslint:disable-line:variable-name
+    ): Promise<IDataSource<any>> {
         return this.dataSource
             ? Promise.resolve(this.dataSource)
-            : Promise.resolve(new DummyDataSource<ISimpleExecutorResult>(this.data, this.success));
+            : Promise.resolve(new DummyDataSource<any>(this.data, this.success));
     }
 }

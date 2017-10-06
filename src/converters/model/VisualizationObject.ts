@@ -62,7 +62,7 @@ export interface IMeasure {
         format?: string;
         sort?: IMeasureSort;
         styles?: IVisualizationStyle[];
-        generatedId?: string
+        localIdentifier?: string // Used only in AD
     };
 }
 
@@ -76,6 +76,7 @@ export interface ICategory {
         attribute?: string;
         sort?: SortDirection;
         styles?: IVisualizationStyle[];
+        localIdentifier?: string // Used only in AD
     };
 }
 
@@ -130,13 +131,8 @@ export interface IAttributesMap {
     [x: string]: string;
 }
 
-export interface IMeasuresMap {
-    [x: string]: Partial<IMeasure>;
-}
-
 export interface IVisualizationMetadataResult {
     metadata: IVisualizationObject;
-    measuresMap: IMeasuresMap;
 }
 
 export function isEmbeddedDateFilter(dateFilter: EmbeddedFilter): dateFilter is IEmbeddedDateFilter {

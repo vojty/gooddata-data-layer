@@ -1,40 +1,54 @@
+import { AFM, Execution } from '@gooddata/typings';
+import * as GoodData from 'gooddata';
+
 import { IAdapter } from '../interfaces/Adapter';
 import { IDataSource } from '../interfaces/DataSource';
-import { IAfm } from '../interfaces/Afm';
-import { SimpleExecutorAdapter } from './SimpleExecutorAdapter';
-import { toAFM } from '../legacy/toAFM';
+import { ExecuteAfmAdapter } from './ExecuteAfmAdapter';
+import { toAfmResultSpec } from '../converters/toAfmResultSpec';
 import { appendFilters } from '../utils/AfmUtils';
-import { getAttributesMap } from '../helpers/metadata';
 import { IDataSourceParams } from '../interfaces/DataSourceParams';
-import * as GoodData from 'gooddata';
-// tslint:disable-next-line:no-duplicate-imports
-import { ISimpleExecutorResult } from 'gooddata';
-import { IVisualizationObjectResponse } from '../legacy/model/VisualizationObject';
+import { IVisualizationObjectResponse } from '../converters/model/VisualizationObject';
 
-export class UriAdapter implements IAdapter<ISimpleExecutorResult> {
+function defaultExecuteAdapterFactory(
+    sdk: typeof GoodData,
+    projectId: string
+): IAdapter<Execution.IExecutionResponses> {
+    return new ExecuteAfmAdapter(sdk, projectId);
+}
+
+export class UriAdapter implements IAdapter<Execution.IExecutionResponses> {
     private uri: string;
     private visObject: IVisualizationObjectResponse;
 
-    constructor(private sdk: typeof GoodData, private projectId: string) {}
+    constructor(
+        private sdk: typeof GoodData,
+        private projectId: string,
+        private translatedPopSuffix: string,
+        private executeAdapterFactory: any = defaultExecuteAdapterFactory
+    ) {}
 
-    public createDataSource(sourceParams: IDataSourceParams): Promise<IDataSource<ISimpleExecutorResult>> {
+    public createDataSource(sourceParams: IDataSourceParams): Promise<IDataSource<any>> {
         return this.fetchVisualizationObject(sourceParams.uri)
             .then((visObject) => {
-                return getAttributesMap(this.sdk, this.projectId, visObject.visualization)
-                    .then((attributesMap = {}) => {
-                        const content = visObject.visualization.content;
-                        const { afm } = toAFM(content, attributesMap);
-                        const afmWithAttributeFilters: IAfm = appendFilters(afm,
-                            sourceParams.attributeFilters,
-                            sourceParams.dateFilter);
-                        const simpleAdapter = new SimpleExecutorAdapter(this.sdk, this.projectId);
-
-                        return simpleAdapter.createDataSource(afmWithAttributeFilters);
-                    });
+                const content = visObject.visualization.content;
+                const { afm, resultSpec } = toAfmResultSpec(content, this.translatedPopSuffix);
+                const afmWithAttributeFilters: AFM.IAfm = appendFilters(
+                    afm,
+                    sourceParams.attributeFilters || [],
+                    sourceParams.dateFilter
+                );
+                const executeAdapter = this.executeAdapterFactory(this.sdk, this.projectId);
+                const execution: AFM.IExecution = {
+                    execution: {
+                        afm: afmWithAttributeFilters,
+                        resultSpec
+                    }
+                };
+                return executeAdapter.createDataSource(execution);
             });
     }
 
-    private fetchVisualizationObject(uri: string)  {
+    private fetchVisualizationObject(uri: string) {
         if (uri === this.uri) {
             return Promise.resolve(this.visObject);
         }

@@ -1,99 +1,120 @@
-import { IAfm, IDateFilter, IMeasure } from '../interfaces/Afm';
-import * as DataSetFixtures from '../fixtures/DataSet.fixtures';
+import { AFM } from '@gooddata/typings';
+import {
+    Granularities
+} from '../constants/granularities';
 
-export const absoluteDateFilter1: IDateFilter = {
-    id: DataSetFixtures.activityDateDataSet.dataSet.meta.uri,
-    type: 'date',
-    intervalType: 'absolute',
-    between: ['2014-01-01', '2016-01-01'],
-    granularity: 'date'
-};
+const DATE_DATASET_URI = '/gdc/md/project/obj/727';
 
-export const absoluteDateFilter2: IDateFilter = {
-    id: DataSetFixtures.activityDateDataSet.dataSet.meta.uri,
-    type: 'date',
-    intervalType: 'absolute',
-    between: ['2017-01-01', '2018-01-01'],
-    granularity: 'date'
-};
-
-export const relativeDateFilter: IDateFilter = {
-    id: DataSetFixtures.activityDateDataSet.dataSet.meta.uri,
-    type: 'date',
-    intervalType: 'relative',
-    between: [-10, -9],
-    granularity: 'year'
-};
-
-export const metricSum: IMeasure = {
-    id: 'metric_sum',
-    definition: {
-        baseObject: {
-            id: '/gdc/md/measure/obj/1'
+export const absoluteDateFilter1: AFM.IAbsoluteDateFilter = {
+    absoluteDateFilter: {
+        dataSet: {
+            uri: DATE_DATASET_URI
         },
-        aggregation: 'sum'
+        from: '2014-01-01',
+        to: '2016-01-01'
     }
 };
 
-export const metricSum2: IMeasure = {
-    id: 'metric_sum_2',
-    definition: {
-        baseObject: {
-            id: '/gdc/md/measure/obj/2'
+export const absoluteDateFilter2: AFM.IAbsoluteDateFilter = {
+    absoluteDateFilter: {
+        dataSet: {
+            uri: DATE_DATASET_URI
         },
-        filters: [relativeDateFilter],
-        aggregation: 'sum'
+        from: '2017-01-01',
+        to: '2018-01-01'
     }
 };
 
-export const metricSum3: IMeasure = {
-    id: 'metric_sum_3',
-    definition: {
-        baseObject: {
-            id: '/gdc/md/measure/obj/3'
+export const relativeDateFilter: AFM.IRelativeDateFilter = {
+    relativeDateFilter: {
+        dataSet: {
+            uri: DATE_DATASET_URI
         },
-        filters: [absoluteDateFilter2],
-        aggregation: 'sum'
+        from: -10,
+        to: -9,
+        granularity: Granularities.YEAR
     }
 };
 
-export const metricSum4: IMeasure = {
-    id: 'metric_sum_4',
+export const metricSum: AFM.IMeasure = {
+    localIdentifier: 'metric_sum',
     definition: {
-        baseObject: {
-            id: '/gdc/md/measure/obj/4'
-        },
-        filters: [absoluteDateFilter1],
-        aggregation: 'sum'
-    }
-};
-
-export const metricInPercent: IMeasure = {
-    id: 'measure_in_percent',
-    definition: {
-        baseObject: {
-            id: 'measure_identifier'
-        },
-        showInPercent: true,
-        filters: [
-            relativeDateFilter
-        ]
-    }
-};
-
-export const metricInPercentPop: IMeasure = {
-    id: 'measure_pop',
-    definition: {
-        baseObject: {
-            lookupId: 'measure_in_percent'
-        },
-        popAttribute: {
-            id: 'attribute_display_form_identifier'
+        measure: {
+            item: {
+                uri: '/gdc/md/measure/obj/1'
+            },
+            aggregation: 'sum'
         }
     }
 };
 
-export const afmWithMetricDateFilter: IAfm = {
+export const metricSum2: AFM.IMeasure = {
+    localIdentifier: 'metric_sum_2',
+    definition: {
+        measure: {
+            item: {
+                uri: '/gdc/md/measure/obj/2'
+            },
+            filters: [relativeDateFilter],
+            aggregation: 'sum'
+        }
+    }
+};
+
+export const metricSum3: AFM.IMeasure = {
+    localIdentifier: 'metric_sum_3',
+    definition: {
+        measure: {
+            item: {
+                uri: '/gdc/md/measure/obj/3'
+            },
+            filters: [absoluteDateFilter2],
+            aggregation: 'sum'
+        }
+    }
+};
+
+export const metricSum4: AFM.IMeasure = {
+    localIdentifier: 'metric_sum_4',
+    definition: {
+        measure: {
+            item: {
+                uri: '/gdc/md/measure/obj/4'
+            },
+            filters: [absoluteDateFilter1],
+            aggregation: 'sum'
+        }
+    }
+};
+
+export const metricInPercent: AFM.IMeasure = {
+    localIdentifier: 'measure_in_percent',
+    definition: {
+        measure: {
+            item: {
+                uri: 'measure_identifier'
+            },
+            showInPercent: true,
+            filters: [
+                relativeDateFilter
+            ]
+        }
+    }
+};
+
+export const metricInPercentPop: AFM.IMeasure = {
+    localIdentifier: 'measure_pop',
+    definition: {
+        popMeasure: {
+            measureIdentifier: 'measure_in_percent',
+            popAttribute: {
+                identifier: 'attribute_display_form_identifier'
+            }
+        }
+    }
+};
+
+export const afmWithMetricDateFilter: AFM.IAfm = {
     measures: [
         metricSum,
         metricSum2
@@ -103,7 +124,7 @@ export const afmWithMetricDateFilter: IAfm = {
     ]
 };
 
-export const afmWithMetricDateFilters: IAfm = {
+export const afmWithMetricDateFilters: AFM.IAfm = {
     measures: [
         metricSum,
         metricSum2,
@@ -114,26 +135,30 @@ export const afmWithMetricDateFilters: IAfm = {
     ]
 };
 
-export const afmWithoutMetricDateFilters: IAfm = {
+export const afmWithoutMetricDateFilters: AFM.IAfm = {
     measures: [
         metricSum,
         {
-            id: 'metric4_sum',
+            localIdentifier: 'metric4_sum',
             definition: {
-                baseObject: {
-                    id: '/gdc/md/measure/obj/4'
-                },
-                filters: [],
-                aggregation: 'sum'
+                measure: {
+                    item: {
+                        uri: '/gdc/md/measure/obj/4'
+                    },
+                    filters: [],
+                    aggregation: 'sum'
+                }
             }
         }, {
-            id: 'metric5_sum',
+            localIdentifier: 'metric5_sum',
             definition: {
-                baseObject: {
-                    id: '/gdc/md/measure/obj/5'
-                },
-                filters: [],
-                aggregation: 'sum'
+                measure: {
+                    item: {
+                        uri: '/gdc/md/measure/obj/5'
+                    },
+                    filters: [],
+                    aggregation: 'sum'
+                }
             }
         }],
     filters: [
@@ -141,54 +166,68 @@ export const afmWithoutMetricDateFilters: IAfm = {
     ]
 };
 
-export const afmWithTwoDimensions: IAfm = {
+export const afmWithTwoDimensions: AFM.IAfm = {
     attributes: [
         {
-            id: '/gdc/md/project/obj/657',
-            type: 'date'
+            localIdentifier: 'a1',
+            displayForm: {
+                uri: '/gdc/md/project/obj/657'
+            }
         }
     ],
     measures: [
         {
-            id: 'm1',
+            localIdentifier: 'm1',
             definition: {
-                baseObject: {
-                    id: '/gdc/md/project/obj/1507'
-                },
-                filters: [
-                    {
-                        type: 'date',
-                        id: '/gdc/md/project/obj/727',
-                        intervalType: 'relative',
-                        between: [-7, -7],
-                        granularity: 'quarter'
-                    }
-                ]
+                measure: {
+                    item: {
+                        uri: '/gdc/md/project/obj/1507'
+                    },
+                    filters: [
+                        {
+                            relativeDateFilter: {
+                                dataSet: {
+                                    uri: '/gdc/md/project/obj/727'
+                                },
+                                granularity: Granularities.QUARTER,
+                                from: -7,
+                                to: -7
+                            }
+                        }
+                    ]
+                }
             }
         },
         {
-            id: 'm2',
+            localIdentifier: 'm2',
             definition: {
-                baseObject: {
-                    id: '/gdc/md/project/obj/1507'
+                measure: {
+                    item: {
+                        uri: '/gdc/md/project/obj/1507'
+                    }
                 }
             }
         }
     ],
     filters: [
         {
-            id: '/gdc/md/project/obj/727',
-            type: 'date',
-            intervalType: 'absolute',
-            between: ['2016-01-01', '2016-12-31'],
-            granularity: 'date'
+            absoluteDateFilter: {
+                dataSet: {
+                    uri: '/gdc/md/project/obj/727'
+                },
+                from: '2016-01-01',
+                to: '2016-12-31'
+            }
         },
         {
-            id: '/gdc/md/project/obj/361',
-            type: 'date',
-            intervalType: 'relative',
-            between: [0, 0],
-            granularity: 'year'
+            relativeDateFilter: {
+                dataSet: {
+                    uri: '/gdc/md/project/obj/361'
+                },
+                from: 0,
+                to: 0,
+                granularity: Granularities.YEAR
+            }
         }
     ]
 };

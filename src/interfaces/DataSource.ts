@@ -1,8 +1,7 @@
-import { IAfm } from './Afm';
-import { ITransformation } from './Transformation';
+import { AFM } from '@gooddata/typings';
 
 export interface IDataSource<T> {
-    getData(transformation: ITransformation): Promise<T>;
-    getAfm(): IAfm;
+    getData(resultSpec: AFM.IResultSpec): Promise<T>;
+    getAfm(): AFM.IAfm;
     getFingerprint(): string;
 }
