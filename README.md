@@ -1,4 +1,4 @@
-# gdc-data-layer
+# gooddata-data-layer
 > JavaScript library to obtain data for custom visualizations from GoodData platform.
 
 ## Getting started
@@ -25,7 +25,7 @@ $ npm install @gooddata/data-layer
 
 ### Running the development
 ```sh
-$ cd gdc-data-layer
+$ cd gooddata-data-layer
 $ yarn dev
 ```
 
@@ -49,9 +49,9 @@ git push upstream master --tags
 ```
 
 ## Contributing
-Report bugs and features on our [issues page](https://github.com/gooddata/gdc-data-layer/issues).
+Report bugs and features on our [issues page](https://github.com/gooddata/gooddata-data-layer/issues).
 
 ## License
 Copyright (C) 2007-2017, GoodData(R) Corporation. All rights reserved.
 
-For more information, please see [LICENSE](https://github.com/gooddata/gdc-data-layer/blob/master/LICENSE.txt)
+For more information, please see [LICENSE](https://github.com/gooddata/gooddata-data-layer/blob/master/LICENSE)
