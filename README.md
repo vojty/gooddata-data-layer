@@ -17,9 +17,9 @@ $ npm install @gooddata/data-layer
 ```
 
 ## Documentation
- - [DataTable](https://confluence.intgdc.com/display/VS/Obtain+Data+from+the+GoodData+Platform)
- - [AFM](https://confluence.intgdc.com/display/VS/AFM)
- - [Transformation](https://confluence.intgdc.com/display/VS/Transformation)
+ - [DataLayer](https://help.gooddata.com/display/bHsp5IhQjuz0e6HS0s76/DataLayer)
+ - [AFM](https://help.gooddata.com/display/bHsp5IhQjuz0e6HS0s76/AFM)
+ - [Transformation](https://help.gooddata.com/display/bHsp5IhQjuz0e6HS0s76/Transformation)
 
 ## Develop
 
