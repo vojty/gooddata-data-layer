@@ -34,7 +34,7 @@ import {
     IVisualizationObjectContent,
     isEmbeddedDateFilter
 } from '../model/VisualizationObject';
-import { IAttributeHeader, HeaderType } from '../../interfaces/Header';
+import { IAttributeHeader } from '../../interfaces/Header';
 
 const bar: VisualizationType = 'bar';
 
@@ -236,7 +236,7 @@ describe('converters', () => {
                     id: 'bar',
                     title: 'Attribute Bar',
                     uri: ATTRIBUTE_DISPLAY_FORM_URI,
-                    type: HeaderType.Attribute
+                    type: 'attrLabel'
                 }
             ];
 

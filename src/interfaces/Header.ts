@@ -1,17 +1,12 @@
-export enum HeaderType {
-    Attribute = 'attrLabel',
-    Metric = 'metric'
-}
-
 export interface IAttributeHeader {
-    type: HeaderType.Attribute;
+    type: 'attrLabel';
     id: string;
     uri: string;
     title: string;
 }
 
 export interface IMetricHeader {
-    type: HeaderType.Metric;
+    type: 'metric';
     id: string;
     uri?: string;
     title: string;
