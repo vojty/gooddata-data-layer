@@ -11,8 +11,8 @@ import * as VisObj from './model/VisualizationObject';
 import { SHOW_IN_PERCENT_MEASURE_FORMAT } from '../constants/formats';
 
 const getMeasureId = (n: number, isPoP?: boolean, measure?: VisObj.IMeasure): string => {
-    if (measure && measure.measure.generatedId) {
-        return measure.measure.generatedId;
+    if (measure && measure.measure.localIdentifier) {
+        return `${measure.measure.localIdentifier}${isPoP ? '_pop' : ''}`;
     }
     return `m${n + 1}${isPoP ? '_pop' : ''}`;
 };
@@ -78,10 +78,10 @@ function convertMeasureAfm(measure: VisObj.IMeasure, index: number, popAttribute
 
     if (measure.measure.showPoP) {
         const popMeasure: Afm.IMeasure = {
-            id: getMeasureId(index, true),
+            id: getMeasureId(index, true, measure),
             definition: {
                 baseObject: {
-                    lookupId: getMeasureId(index)
+                    lookupId: getMeasureId(index, false, measure)
                 },
                 popAttribute: {
                     id: popAttribute
@@ -149,14 +149,14 @@ function convertMeasureTransformation(
 
     const measures: Transformation.IMeasure[] = [
         omitBy({
-            id: getMeasureId(index),
+            id: getMeasureId(index, false, measure),
             title: measure.measure.title,
             format
         }, isUndefined) as Transformation.IMeasure
     ];
     if (measure.measure.showPoP) {
         const transformationMeasure: Transformation.IMeasure = {
-            id: getMeasureId(index, true),
+            id: getMeasureId(index, true, measure),
             title: `${measure.measure.title} - previous year`,
             format
         };
@@ -173,7 +173,7 @@ function convertSortingTransformation(visObj: VisObj.IVisualizationObjectContent
         }
 
         return {
-            column: getMeasureId(index, measure.measure.sort.sortByPoP),
+            column: getMeasureId(index, measure.measure.sort.sortByPoP, measure),
             direction: measure.measure.sort.direction
         };
     });
