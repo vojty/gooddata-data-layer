@@ -62,7 +62,7 @@ export interface IMeasure {
         format?: string;
         sort?: IMeasureSort;
         styles?: IVisualizationStyle[];
-        generatedId?: string
+        localIdentifier?: string
     };
 }
 
