@@ -7,8 +7,6 @@ import { createSubject, ISubject } from './utils/async';
 import { toAfmResultSpec } from './converters/toAfmResultSpec';
 import * as ResultSpecUtils from './utils/ResultSpecUtils';
 import * as AfmUtils from './utils/AfmUtils';
-import * as VisObjUtils from './utils/VisObjUtils';
-import * as VisualizationObject from './converters/model/VisualizationObject';
 import { ErrorCodes } from './constants/errors';
 import { DataTable } from './DataTable';
 import { DummyAdapter } from './utils/DummyAdapter';
@@ -20,7 +18,6 @@ export {
     Header,
     ErrorCodes,
     AfmUtils,
-    VisObjUtils,
     ExecuteAfmAdapter,
     DataSourceUtils,
     toAfmResultSpec,
@@ -33,6 +30,5 @@ export {
     Filters,
     ResultSpecUtils,
     Uri,
-    UriAdapter,
-    VisualizationObject
+    UriAdapter
 };

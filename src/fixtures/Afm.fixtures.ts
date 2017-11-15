@@ -124,17 +124,6 @@ export const afmWithMetricDateFilter: AFM.IAfm = {
     ]
 };
 
-export const afmWithMetricDateFilters: AFM.IAfm = {
-    measures: [
-        metricSum,
-        metricSum2,
-        metricSum3
-    ],
-    filters: [
-        absoluteDateFilter1
-    ]
-};
-
 export const afmWithoutMetricDateFilters: AFM.IAfm = {
     measures: [
         metricSum,
@@ -163,71 +152,5 @@ export const afmWithoutMetricDateFilters: AFM.IAfm = {
         }],
     filters: [
         absoluteDateFilter1
-    ]
-};
-
-export const afmWithTwoDimensions: AFM.IAfm = {
-    attributes: [
-        {
-            localIdentifier: 'a1',
-            displayForm: {
-                uri: '/gdc/md/project/obj/657'
-            }
-        }
-    ],
-    measures: [
-        {
-            localIdentifier: 'm1',
-            definition: {
-                measure: {
-                    item: {
-                        uri: '/gdc/md/project/obj/1507'
-                    },
-                    filters: [
-                        {
-                            relativeDateFilter: {
-                                dataSet: {
-                                    uri: '/gdc/md/project/obj/727'
-                                },
-                                granularity: Granularities.QUARTER,
-                                from: -7,
-                                to: -7
-                            }
-                        }
-                    ]
-                }
-            }
-        },
-        {
-            localIdentifier: 'm2',
-            definition: {
-                measure: {
-                    item: {
-                        uri: '/gdc/md/project/obj/1507'
-                    }
-                }
-            }
-        }
-    ],
-    filters: [
-        {
-            absoluteDateFilter: {
-                dataSet: {
-                    uri: '/gdc/md/project/obj/727'
-                },
-                from: '2016-01-01',
-                to: '2016-12-31'
-            }
-        },
-        {
-            relativeDateFilter: {
-                dataSet: {
-                    uri: '/gdc/md/project/obj/361'
-                },
-                from: 0,
-                to: 0,
-                granularity: Granularities.YEAR
-            }
-        }
     ]
 };

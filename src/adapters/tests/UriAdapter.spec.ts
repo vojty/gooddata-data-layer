@@ -9,8 +9,8 @@ describe('UriAdapter', () => {
 
     function createDummySDK(): typeof GoodData {
         const visualizationObject = {
-            visualization: {
-                content: charts.bar.simpleMeasure
+            visualizationObject: {
+                content: charts.simpleMeasure
             }
         };
 
@@ -26,7 +26,7 @@ describe('UriAdapter', () => {
 
     it('should fetch visualization object when creating data source', () => {
         const dummySDK = createDummySDK();
-        const adapter = new UriAdapter(dummySDK, projectId, 'translated-pop-suffix');
+        const adapter = new UriAdapter(dummySDK, projectId);
         return adapter.createDataSource({ uri }).then(() => {
             expect(dummySDK.xhr.get).toBeCalledWith(uri);
         });
@@ -34,7 +34,7 @@ describe('UriAdapter', () => {
 
     it('should handle fail of vis. obj. fetch', () => {
         const DummySDK = createDummySDK();
-        const adapter = new UriAdapter(DummySDK, projectId, 'translated-pop-suffix');
+        const adapter = new UriAdapter(DummySDK, projectId);
         DummySDK.xhr.get = jest.fn(() => Promise.reject('invalid URI'));
         return adapter.createDataSource({ uri }).catch((error) => {
             expect(error).toBe('invalid URI');
@@ -43,7 +43,7 @@ describe('UriAdapter', () => {
 
     it('should request visualization object for consecutive createDataSource call only when uri changes', () => {
         const DummySDK = createDummySDK();
-        const adapter = new UriAdapter(DummySDK, projectId, 'translated-pop-suffix');
+        const adapter = new UriAdapter(DummySDK, projectId);
         return adapter.createDataSource({ uri }).then(() => {
             expect(DummySDK.xhr.get).toHaveBeenCalledTimes(1);
             return adapter.createDataSource({ uri }).then(() => {

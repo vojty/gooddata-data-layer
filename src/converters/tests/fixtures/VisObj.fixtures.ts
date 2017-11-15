@@ -1,774 +1,929 @@
-import { IVisualizationObjectContent } from '../../model/VisualizationObject';
+import { VisualizationObject } from '@gooddata/typings';
 import {
     ATTRIBUTE_DISPLAY_FORM_URI,
     ATTRIBUTE_URI,
     ATTRIBUTE_DISPLAY_FORM_URI_2,
     ATTRIBUTE_URI_2,
     DATE_DATA_SET_URI,
-    DATE_DISPLAY_FORM_URI,
-    DATE_URI,
-    METRIC_ID_URI
+    DATE_DISPLAY_FORM_URI
 } from './Afm.fixtures';
 
-const simpleMeasure: IVisualizationObjectContent = {
-    type: 'bar',
-
-    buckets: {
-        measures: [{
-            measure: {
-                measureFilters: [],
-                objectUri: '/gdc/md/project/obj/metric.id',
-                showInPercent: false,
-                showPoP: false,
-                title: 'Measure M1',
-                type: 'metric'
-            }
-        }],
-        categories: [],
-        filters: []
-    }
-};
-
-const renamedMeasure: IVisualizationObjectContent = {
-    type: 'bar',
-
-    buckets: {
-        measures: [{
-            measure: {
-                measureFilters: [],
-                objectUri: '/gdc/md/project/obj/metric.id',
-                showInPercent: false,
-                showPoP: false,
-                title: 'Measure M1',
-                alias: 'Alias A1',
-                type: 'metric'
-            }
-        }],
-        categories: [],
-        filters: []
-    }
-};
-
-const filteredMeasure: IVisualizationObjectContent = {
-    type: 'bar',
-
-    buckets: {
-        measures: [{
-            measure: {
-                measureFilters: [{
-                    listAttributeFilter: {
-                        attribute: ATTRIBUTE_URI,
-                        displayForm: ATTRIBUTE_DISPLAY_FORM_URI,
-                        default: {
-                            negativeSelection: false,
-                            attributeElements: [
-                                `${ATTRIBUTE_URI}?id=1`,
-                                `${ATTRIBUTE_URI}?id=2`
-                            ]
+const simpleMeasure: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [
+        {
+            localIdentifier: 'measures',
+            items: [
+                {
+                    measure: {
+                        localIdentifier: 'm1',
+                        alias: 'Measure M1',
+                        definition: {
+                            measureDefinition: {
+                                item: {
+                                    uri: '/gdc/md/project/obj/metric.id'
+                                }
+                            }
                         }
                     }
-                }],
-                objectUri: '/gdc/md/project/obj/metric.id',
-                showInPercent: false,
-                showPoP: false,
-                title: 'Measure M1',
-                type: 'metric'
-            }
-        }],
-        categories: [],
-        filters: []
-    }
-};
-
-const measureWithRelativeDate: IVisualizationObjectContent = {
-    type: 'bar',
-
-    buckets: {
-        measures: [{
-            measure: {
-                measureFilters: [{
-                    dateFilter: {
-                        attribute: DATE_URI,
-                        dataset: DATE_DATA_SET_URI,
-                        from: -89,
-                        granularity: 'GDC.time.date',
-                        to: 0,
-                        type: 'relative'
-                    }
-                }, {
-                    listAttributeFilter: {
-                        attribute: ATTRIBUTE_URI,
-                        displayForm: ATTRIBUTE_DISPLAY_FORM_URI,
-                        default: {
-                            negativeSelection: false,
-                            attributeElements: [
-                                `${ATTRIBUTE_URI}?id=1`,
-                                `${ATTRIBUTE_URI}?id=2`
-                            ]
-                        }
-                    }
-                }],
-                objectUri: '/gdc/md/project/obj/metric.id',
-                showInPercent: false,
-                showPoP: false,
-                title: 'Measure M1',
-                type: 'metric'
-            }
-        }],
-        categories: [],
-        filters: []
-    }
-};
-
-const measureWithAbsoluteDate: IVisualizationObjectContent = {
-    type: 'bar',
-
-    buckets: {
-        measures: [{
-            measure: {
-                measureFilters: [{
-                    dateFilter: {
-                        attribute: DATE_URI,
-                        dataset: DATE_DATA_SET_URI,
-                        from: '2016-01-01',
-                        granularity: 'GDC.time.date',
-                        to: '2017-01-01',
-                        type: 'absolute'
-                    }
-                }, {
-                    listAttributeFilter: {
-                        attribute: ATTRIBUTE_URI,
-                        displayForm: ATTRIBUTE_DISPLAY_FORM_URI,
-                        default: {
-                            negativeSelection: false,
-                            attributeElements: [
-                                `${ATTRIBUTE_URI}?id=1`,
-                                `${ATTRIBUTE_URI}?id=2`
-                            ]
-                        }
-                    }
-                }],
-                objectUri: '/gdc/md/project/obj/metric.id',
-                showInPercent: false,
-                showPoP: false,
-                title: 'Measure M1',
-                type: 'metric'
-            }
-        }],
-        categories: [],
-        filters: []
-    }
-};
-
-const factBasedMeasure: IVisualizationObjectContent = {
-    type: 'bar',
-
-    buckets: {
-        measures: [{
-            measure: {
-                measureFilters: [],
-                objectUri: '/gdc/md/project/obj/fact.id',
-                showInPercent: false,
-                showPoP: false,
-                title: 'SUM of Measure M1',
-                type: 'fact',
-                aggregation: 'sum'
-            }
-        }],
-        categories: [],
-        filters: []
-    }
-};
-
-const factBasedRenamedMeasure: IVisualizationObjectContent = {
-    type: 'bar',
-
-    buckets: {
-        measures: [{
-            measure: {
-                measureFilters: [],
-                objectUri: '/gdc/md/project/obj/fact.id',
-                showInPercent: false,
-                showPoP: false,
-                title: 'SUM of Measure M1',
-                alias: 'Summary',
-                type: 'fact',
-                aggregation: 'sum'
-            }
-        }],
-        categories: [],
-        filters: []
-    }
-};
-
-const attributeBasedMeasure: IVisualizationObjectContent = {
-    type: 'bar',
-
-    buckets: {
-        measures: [{
-            measure: {
-                measureFilters: [],
-                objectUri: ATTRIBUTE_DISPLAY_FORM_URI,
-                showInPercent: false,
-                showPoP: false,
-                title: 'COUNT of Measure M1',
-                type: 'attribute',
-                aggregation: 'count'
-            }
-        }],
-        categories: [],
-        filters: []
-    }
-};
-
-const attributeBasedRenamedMeasure: IVisualizationObjectContent = {
-    type: 'bar',
-
-    buckets: {
-        measures: [{
-            measure: {
-                measureFilters: [],
-                objectUri: ATTRIBUTE_DISPLAY_FORM_URI,
-                showInPercent: false,
-                showPoP: false,
-                title: 'COUNT of Measure M1',
-                alias: 'Count',
-                type: 'attribute',
-                aggregation: 'count'
-            }
-        }],
-        categories: [],
-        filters: []
-    }
-};
-
-const showInPercent: IVisualizationObjectContent = {
-    type: 'bar',
-
-    buckets: {
-        measures: [{
-            measure: {
-                measureFilters: [],
-                objectUri: '/gdc/md/project/obj/metric.id',
-                showInPercent: true,
-                format: '#,##0.00%',
-                showPoP: false,
-                title: 'Measure M1',
-                type: 'metric'
-            }
-        }],
-        categories: [{
-            category: {
-                type: 'attribute',
-                collection: 'view',
-                displayForm: ATTRIBUTE_DISPLAY_FORM_URI
-            }
-        }],
-        filters: []
-    }
-};
-
-const showInPercentWithDate: IVisualizationObjectContent = {
-    type: 'bar',
-
-    buckets: {
-        measures: [{
-            measure: {
-                measureFilters: [],
-                objectUri: '/gdc/md/project/obj/metric.id',
-                showInPercent: true,
-                format: '#,##0.00%',
-                showPoP: false,
-                title: 'Measure M1',
-                type: 'metric'
-            }
-        }],
-        categories: [{
-            category: {
-                collection: 'view',
-                displayForm: DATE_DISPLAY_FORM_URI,
-                type: 'date'
-            }
-        }],
-        filters: []
-    }
-};
-
-const measureWithSorting: IVisualizationObjectContent = {
-    type: 'bar',
-
-    buckets: {
-        measures: [{
-            measure: {
-                measureFilters: [],
-                objectUri: '/gdc/md/project/obj/metric.id',
-                showInPercent: false,
-                showPoP: false,
-                title: 'Measure M1',
-                type: 'metric',
-                sort: {
-                    direction: 'desc',
-                    sortByPoP: false
                 }
-            }
-        }],
-        categories: [],
-        filters: []
-    }
+            ]
+        }]
 };
 
-const popMeasure: IVisualizationObjectContent = {
-    type: 'bar',
-    buckets: {
-        measures: [
-            {
+const simpleMeasureWithFormat: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [
+        {
+            localIdentifier: 'measures',
+            items: [
+                {
+                    measure: {
+                        localIdentifier: 'm1',
+                        alias: 'Measure M1',
+                        format: 'GD #,##0.00000',
+                        definition: {
+                            measureDefinition: {
+                                item: {
+                                    uri: '/gdc/md/project/obj/metric.id'
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        }]
+};
+
+const renamedMeasure: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [
+        {
+            localIdentifier: 'measures',
+            items: [
+                {
+                    measure: {
+                        localIdentifier: 'm1',
+                        alias: 'Alias A1',
+                        definition: {
+                            measureDefinition: {
+                                item: {
+                                    uri: '/gdc/md/project/obj/metric.id'
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        }]
+};
+
+const filteredMeasure: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [
+        {
+            localIdentifier: 'measures',
+            items: [
+                {
+                    measure: {
+                        localIdentifier: 'm1',
+                        alias: 'Measure M1',
+                        definition: {
+                            measureDefinition: {
+                                item: {
+                                    uri: '/gdc/md/project/obj/metric.id'
+                                },
+                                filters: [
+                                    {
+                                        positiveAttributeFilter: {
+                                            displayForm: {
+                                                uri: ATTRIBUTE_DISPLAY_FORM_URI
+                                            },
+                                            in: [
+                                                `${ATTRIBUTE_URI}?id=1`,
+                                                `${ATTRIBUTE_URI}?id=2`
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+};
+
+const measureWithRelativeDate: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [
+        {
+            localIdentifier: 'measures',
+            items: [
+                {
+                    measure: {
+                        localIdentifier: 'm1',
+                        alias: 'Measure M1',
+                        definition: {
+                            measureDefinition: {
+                                item: {
+                                    uri: '/gdc/md/project/obj/metric.id'
+                                },
+                                filters: [
+                                    {
+                                        relativeDateFilter: {
+                                            dataSet: {
+                                                uri: DATE_DATA_SET_URI
+                                            },
+                                            granularity: 'GDC.time.date',
+                                            from: -89,
+                                            to: 0
+                                        }
+                                    }, {
+                                        positiveAttributeFilter: {
+                                            displayForm: {
+                                                uri: ATTRIBUTE_DISPLAY_FORM_URI
+                                            },
+                                            in: [
+                                                `${ATTRIBUTE_URI}?id=1`,
+                                                `${ATTRIBUTE_URI}?id=2`
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+};
+
+const measureWithAbsoluteDate: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [
+        {
+            localIdentifier: 'measures',
+            items: [{
                 measure: {
-                    type: 'metric',
-                    objectUri: '/gdc/md/project/obj/metric.id',
-                    title: 'Measure M1',
-                    measureFilters: [],
-                    showInPercent: false,
-                    showPoP: true,
-                    sort: {
-                        direction: 'desc',
-                        sortByPoP: false
+                    localIdentifier: 'm1',
+                    alias: 'Measure M1',
+                    definition: {
+                        measureDefinition: {
+                            item: {
+                                uri: '/gdc/md/project/obj/metric.id'
+                            },
+                            filters: [
+                                {
+                                    absoluteDateFilter: {
+                                        dataSet: {
+                                            uri: DATE_DATA_SET_URI
+                                        },
+                                        from: '2016-01-01',
+                                        to: '2017-01-01'
+                                    }
+                                }, {
+                                    positiveAttributeFilter: {
+                                        displayForm: {
+                                            uri: ATTRIBUTE_DISPLAY_FORM_URI
+                                        },
+                                        in: [
+                                            `${ATTRIBUTE_URI}?id=1`,
+                                            `${ATTRIBUTE_URI}?id=2`
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
                     }
                 }
-            }
-        ],
-        categories: [
-            {
-                category: {
-                    type: 'date',
-                    collection: 'view',
-                    displayForm: ATTRIBUTE_DISPLAY_FORM_URI,
-                    attribute: ATTRIBUTE_URI
-                }
-            }
-        ],
-        filters: []
-    }
+            }]
+        }
+    ]
 };
 
-const popMeasureWithSorting: IVisualizationObjectContent = {
-    type: 'bar',
-    buckets: {
-        measures: [
-            {
-                measure: {
-                    type: 'metric',
-                    objectUri: '/gdc/md/project/obj/metric.id',
-                    title: 'Measure M1',
-                    measureFilters: [],
-                    showInPercent: false,
-                    showPoP: true,
-                    sort: {
-                        direction: 'desc',
-                        sortByPoP: true
+const factBasedMeasure: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [
+        {
+            localIdentifier: 'measures',
+            items: [
+                {
+                    measure: {
+                        localIdentifier: 'm1',
+                        definition: {
+                            measureDefinition: {
+                                item: {
+                                    uri: '/gdc/md/project/obj/fact.id'
+                                },
+                                aggregation: 'sum'
+                            }
+                        }
                     }
                 }
-            }
-        ],
-        categories: [
-            {
-                category: {
-                    type: 'date',
-                    collection: 'view',
-                    displayForm: ATTRIBUTE_DISPLAY_FORM_URI,
-                    attribute: ATTRIBUTE_URI
-                }
-            }
-        ],
-        filters: []
-    }
+            ]
+        }]
 };
 
-const categoryWithSorting: IVisualizationObjectContent = {
-    type: 'bar',
-    buckets: {
-        measures: [],
-        categories: [{
-            category: {
-                collection: 'view',
-                displayForm: ATTRIBUTE_DISPLAY_FORM_URI,
-                type: 'attribute',
-                sort: 'desc'
-            }
+const factBasedRenamedMeasure: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [
+        {
+            localIdentifier: 'measures',
+            items: [
+                {
+                    measure: {
+                        localIdentifier: 'm1',
+                        alias: 'Summary',
+                        definition: {
+                            measureDefinition: {
+                                item: {
+                                    uri: '/gdc/md/project/obj/fact.id'
+                                },
+                                aggregation: 'sum'
+                            }
+                        }
+                    }
+                }
+            ]
+        }]
+};
+
+const attributeBasedMeasure: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [
+        {
+            localIdentifier: 'measures',
+            items: [
+                {
+                    measure: {
+                        localIdentifier: 'm1',
+                        format: '#,##0',
+                        definition: {
+                            measureDefinition: {
+                                item: {
+                                    uri: ATTRIBUTE_DISPLAY_FORM_URI
+                                },
+                                aggregation: 'count'
+                            }
+                        }
+                    }
+                }
+            ]
+        }]
+};
+
+const attributeBasedMeasureWithoutFormat: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [
+        {
+            localIdentifier: 'measures',
+            items: [
+                {
+                    measure: {
+                        localIdentifier: 'm1',
+                        definition: {
+                            measureDefinition: {
+                                item: {
+                                    uri: ATTRIBUTE_DISPLAY_FORM_URI
+                                },
+                                aggregation: 'count'
+                            }
+                        }
+                    }
+                }
+            ]
+        }]
+};
+
+const attributeBasedRenamedMeasure: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [
+        {
+            localIdentifier: 'measures',
+            items: [
+                {
+                    measure: {
+                        localIdentifier: 'm1',
+                        alias: 'Count',
+                        format: '#,##0',
+                        definition: {
+                            measureDefinition: {
+                                item: {
+                                    uri: ATTRIBUTE_DISPLAY_FORM_URI
+                                },
+                                aggregation: 'count'
+                            }
+                        }
+                    }
+                }
+            ]
+        }]
+};
+
+const showInPercent: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [
+        {
+            localIdentifier: 'measures',
+            items: [
+                {
+                    measure: {
+                        localIdentifier: 'm1',
+                        alias: 'Measure M1',
+                        format: '#,##0.00%',
+                        definition: {
+                            measureDefinition: {
+                                item: {
+                                    uri: '/gdc/md/project/obj/metric.id'
+                                },
+                                computeRatio: true
+                            }
+                        }
+                    }
+                }
+            ]
+        }, {
+            localIdentifier: 'categories',
+            items: [
+                {
+                    visualizationAttribute: {
+                        localIdentifier: 'a1',
+                        displayForm: {
+                            uri: ATTRIBUTE_DISPLAY_FORM_URI
+                        }
+                    }
+                }
+            ]
+        }]
+};
+
+const showInPercentWithoutFormat: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [
+        {
+            localIdentifier: 'measures',
+            items: [
+                {
+                    measure: {
+                        localIdentifier: 'm1',
+                        alias: 'Measure M1',
+                        definition: {
+                            measureDefinition: {
+                                item: {
+                                    uri: '/gdc/md/project/obj/metric.id'
+                                },
+                                computeRatio: true
+                            }
+                        }
+                    }
+                }
+            ]
+        }, {
+            localIdentifier: 'categories',
+            items: [
+                {
+                    visualizationAttribute: {
+                        localIdentifier: 'a1',
+                        displayForm: {
+                            uri: ATTRIBUTE_DISPLAY_FORM_URI
+                        }
+                    }
+                }
+            ]
+        }]
+};
+
+const showInPercentWithDate: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [
+        {
+            localIdentifier: 'measures',
+            items: [
+                {
+                    measure: {
+                        localIdentifier: 'm1',
+                        alias: 'Measure M1',
+                        format: '#,##0.00%',
+                        definition: {
+                            measureDefinition: {
+                                item: {
+                                    uri: '/gdc/md/project/obj/metric.id'
+                                },
+                                computeRatio: true
+                            }
+                        }
+                    }
+                }
+            ]
+        }, {
+            localIdentifier: 'categories',
+            items: [
+                {
+                    visualizationAttribute: {
+                        localIdentifier: 'a1',
+                        displayForm: {
+                            uri: DATE_DISPLAY_FORM_URI
+                        }
+                    }
+            }]
+        }]
+    };
+
+const measureWithSorting: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [
+        {
+            localIdentifier: 'measures',
+            items: [
+                {
+                    measure: {
+                        localIdentifier: 'm1',
+                        alias: 'Measure M1',
+                        definition: {
+                            measureDefinition: {
+                                item: {
+                                    uri: '/gdc/md/project/obj/metric.id'
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
         }],
-        filters: []
-    }
+
+    // tslint:disable-next-line:max-line-length
+    properties: '{"sortItems":[{"measureSortItem":{"direction":"desc","locators":[{"measureLocatorItem":{"measureIdentifier":"m1"}}]}}]}'
 };
 
-const dateFilter: IVisualizationObjectContent = {
-    type: 'bar',
-    buckets: {
-        measures: [],
-        categories: [],
-        filters: [{
-            dateFilter: {
-                attribute: DATE_URI,
-                dataset: DATE_DATA_SET_URI,
+const popMeasure: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [
+        {
+            localIdentifier: 'measures',
+            items: [
+                {
+                    measure: {
+                        localIdentifier: 'm1_pop',
+                        alias: 'Measure M1 - previous year',
+                        definition: {
+                            popMeasureDefinition: {
+                                measureIdentifier: 'm1',
+                                popAttribute: {
+                                    uri: ATTRIBUTE_URI
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    measure: {
+                        localIdentifier: 'm1',
+                        alias: 'Measure M1',
+                        definition: {
+                            measureDefinition: {
+                                item: {
+                                    uri: '/gdc/md/project/obj/metric.id'
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        }, {
+            localIdentifier: 'categories',
+            items: [
+                {
+                    visualizationAttribute: {
+                        localIdentifier: 'a1',
+                        displayForm: {
+                            uri: ATTRIBUTE_DISPLAY_FORM_URI
+                        }
+                    }
+                }]
+            }],
+    // tslint:disable-next-line:max-line-length
+    properties: '{"sortItems":[{"measureSortItem":{"direction":"desc","locators":[{"measureLocatorItem":{"measureIdentifier":"m1"}}]}}]}'
+};
+
+const popMeasureWithSorting: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [
+        {
+            localIdentifier: 'measures',
+            items: [
+                {
+                    measure: {
+                        localIdentifier: 'm1_pop',
+                        alias: 'Measure M1 - previous year',
+                        definition: {
+                            popMeasureDefinition: {
+                                measureIdentifier: 'm1',
+                                popAttribute: {
+                                    uri: ATTRIBUTE_URI
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    measure: {
+                        localIdentifier: 'm1',
+                        alias: 'Measure M1',
+                        definition: {
+                            measureDefinition: {
+                                item: {
+                                    uri: '/gdc/md/project/obj/metric.id'
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        }, {
+            localIdentifier: 'categories',
+            items: [{
+                visualizationAttribute: {
+                    localIdentifier: 'a1',
+                    displayForm: {
+                        uri: ATTRIBUTE_DISPLAY_FORM_URI
+                    }
+                }
+            }]
+        }],
+    // tslint:disable-next-line:max-line-length
+    properties: '{"sortItems":[{"measureSortItem":{"direction":"desc","locators":[{"measureLocatorItem":{"measureIdentifier":"m1_pop"}}]}}]}'
+};
+
+const categoryWithSorting: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [
+        {
+            localIdentifier: 'categories',
+            items: [
+                {
+                    visualizationAttribute: {
+                        localIdentifier: 'a1',
+                        displayForm: {
+                            uri: ATTRIBUTE_DISPLAY_FORM_URI
+                        }
+                    }
+                }
+            ]
+        }],
+    // tslint:disable-next-line:max-line-length
+    properties: '{"sortItems":[{"attributeSortItem":{"direction":"desc","attributeIdentifier":"a1"}}]}'
+};
+
+const attributeFilter: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [],
+    filters: [
+        {
+            positiveAttributeFilter: {
+                displayForm: {
+                    uri: ATTRIBUTE_DISPLAY_FORM_URI
+                },
+                in: [
+                    `${ATTRIBUTE_URI}?id=1`,
+                    `${ATTRIBUTE_URI}?id=2`,
+                    `${ATTRIBUTE_URI}?id=3`
+                ]
+            }
+        },
+        {
+            positiveAttributeFilter: {
+                displayForm: {
+                    uri: ATTRIBUTE_DISPLAY_FORM_URI_2
+                },
+                in: [
+                    `${ATTRIBUTE_URI_2}?id=a`
+                ]
+            }
+        }
+    ]
+};
+
+const dateFilter: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [],
+    filters: [
+        {
+            relativeDateFilter: {
                 from: -89,
-                granularity: 'GDC.time.date',
                 to: 0,
-                type: 'relative'
-            }
-        }]
-    }
-};
-
-const dateFilterWithStrings: IVisualizationObjectContent = {
-    type: 'bar',
-    buckets: {
-        measures: [],
-        categories: [],
-        filters: [{
-            dateFilter: {
-                attribute: DATE_URI,
-                dataset: DATE_DATA_SET_URI,
-                from: '-89',
                 granularity: 'GDC.time.date',
-                to: '0',
-                type: 'relative'
+                dataSet: {
+                    uri: DATE_DATA_SET_URI
+                }
             }
-        }]
-    }
+        }
+    ]
 };
 
-const dateFilterWithUndefs: IVisualizationObjectContent = {
-    type: 'bar',
-    buckets: {
-        measures: [],
-        categories: [],
-        filters: [{
-            dateFilter: {
-                attribute: DATE_URI,
-                dataset: DATE_DATA_SET_URI,
-                granularity: 'GDC.time.date',
-                type: 'relative'
+const dateFilterWithStrings: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [],
+    filters: [{
+        relativeDateFilter: {
+            from: -89,
+            to: 0,
+            granularity: 'GDC.time.date',
+            dataSet: {
+                uri: DATE_DATA_SET_URI
             }
-        }]
-    }
+        }
+    }]
 };
 
-const attributeFilter: IVisualizationObjectContent = {
-    type: 'bar',
-    buckets: {
-        measures: [],
-        categories: [],
-        filters: [
-            {
-                listAttributeFilter: {
-                    attribute: ATTRIBUTE_URI,
-                    displayForm: ATTRIBUTE_DISPLAY_FORM_URI,
-                    default: {
-                        negativeSelection: false,
-                        attributeElements: [
-                            `${ATTRIBUTE_URI}?id=1`,
-                            `${ATTRIBUTE_URI}?id=2`,
-                            `${ATTRIBUTE_URI}?id=3`
-                        ]
-                    }
-                }
-            },
-            {
-                listAttributeFilter: {
-                    attribute: ATTRIBUTE_URI_2,
-                    displayForm: ATTRIBUTE_DISPLAY_FORM_URI_2,
-                    default: {
-                        negativeSelection: false,
-                        attributeElements: [
-                            `${ATTRIBUTE_URI_2}?id=a`
-                        ]
-                    }
-                }
+const dateFilterWithUndefs: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [],
+    filters: [{
+        relativeDateFilter: {
+            granularity: 'GDC.time.date',
+            dataSet: {
+                uri: DATE_DATA_SET_URI
             }
-        ]
-    }
+        }
+    }]
 };
 
-const attributeFilterWithAll: IVisualizationObjectContent = {
-    type: 'bar',
-    buckets: {
-        measures: [],
-        categories: [],
-        filters: [
-            {
-                listAttributeFilter: {
-                    attribute: ATTRIBUTE_URI,
-                    displayForm: ATTRIBUTE_DISPLAY_FORM_URI,
-                    default: {
-                        negativeSelection: true,
-                        attributeElements: []
-                    }
-                }
-            },
-            {
-                listAttributeFilter: {
-                    attribute: ATTRIBUTE_URI_2,
-                    displayForm: ATTRIBUTE_DISPLAY_FORM_URI_2,
-                    default: {
-                        negativeSelection: false,
-                        attributeElements: [
-                            `${ATTRIBUTE_URI_2}?id=a`
-                        ]
-                    }
-                }
+const attributeFilterWithAll: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [],
+    filters: [
+        {
+            negativeAttributeFilter: {
+                displayForm: {
+                    uri: ATTRIBUTE_DISPLAY_FORM_URI
+                },
+                notIn: []
             }
-        ]
-    }
+        },
+        {
+            positiveAttributeFilter: {
+                displayForm: {
+                    uri: ATTRIBUTE_DISPLAY_FORM_URI_2
+                },
+                in: [
+                    `${ATTRIBUTE_URI_2}?id=a`
+                ]
+            }
+    }]
 };
 
-const stackingAttribute: IVisualizationObjectContent = {
-    type: 'bar',
-    buckets: {
-        measures: [
-            {
-                measure: {
-                    aggregation: 'sum',
-                    showInPercent: false,
-                    objectUri: '/gdc/md/project/obj/metric.id',
-                    showPoP: false,
-                    format: '#,##0.00',
-                    title: 'Sum of Bundle cost',
-                    type: 'fact',
-                    measureFilters: [
-
-                    ]
-                }
-            }
-        ],
-        categories: [
-            {
-                category: {
-                    type: 'date',
-                    collection: 'view',
-                    displayForm: DATE_DISPLAY_FORM_URI,
-                    attribute: DATE_URI
-                }
-            },
-            {
-                category: {
-                    type: 'attribute',
-                    collection: 'stack',
-                    attribute: ATTRIBUTE_URI,
-                    displayForm: ATTRIBUTE_DISPLAY_FORM_URI
-                }
-            }
-        ],
-        filters: [
-            {
-                dateFilter: {
-                    type: 'relative',
-                    from: -3,
-                    to: 0,
-                    granularity: 'GDC.time.quarter',
-                    dataset: DATE_DATA_SET_URI,
-                    attribute: DATE_URI
-                }
-            },
-            {
-                listAttributeFilter: {
-                    attribute: ATTRIBUTE_URI,
-                    displayForm: ATTRIBUTE_DISPLAY_FORM_URI,
-                    default: {
-                        negativeSelection: true,
-                        attributeElements: [
-                            `${ATTRIBUTE_URI}?id=1`
-                        ]
+const stackingAttribute: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [
+        {
+            localIdentifier: 'measures',
+            items: [
+                {
+                    measure: {
+                        localIdentifier: 'm1',
+                        alias: 'Sum of Bundle cost',
+                        format: '#,##0.00',
+                        definition: {
+                            measureDefinition: {
+                                item: {
+                                    uri: '/gdc/md/project/obj/metric.id'
+                                },
+                                aggregation: 'sum'
+                            }
+                        }
                     }
                 }
+            ]
+        }, {
+            localIdentifier: 'view',
+            items: [{
+                visualizationAttribute: {
+                    localIdentifier: 'a1',
+                    displayForm: {
+                        uri: DATE_DISPLAY_FORM_URI
+                    }
+                }
+            }]
+        }, {
+            localIdentifier: 'stack',
+            items: [
+                {
+                    visualizationAttribute: {
+                        localIdentifier: 'a2',
+                        displayForm: {
+                            uri: ATTRIBUTE_DISPLAY_FORM_URI
+                        }
+                    }
+                }
+            ]
+        }],
+    filters: [
+        {
+            relativeDateFilter: {
+                granularity: 'GDC.time.quarter',
+                dataSet: {
+                    uri: DATE_DATA_SET_URI
+                },
+                from: -3,
+                to: 0
             }
-        ]
-    }
+        },
+        {
+            negativeAttributeFilter: {
+                displayForm: {
+                    uri: ATTRIBUTE_DISPLAY_FORM_URI
+                },
+                notIn: [
+                    `${ATTRIBUTE_URI}?id=1`
+                ]
+            }
+        }
+    ]
 };
 
-const stackingRenamedAttribute: IVisualizationObjectContent = {
-    type: 'bar',
-    buckets: {
-        measures: [
-            {
-                measure: {
-                    aggregation: 'sum',
-                    showInPercent: false,
-                    objectUri: '/gdc/md/project/obj/metric.id',
-                    showPoP: false,
-                    format: '#,##0.00',
-                    title: 'Sum of Bundle cost',
-                    alias: 'My Metric Alias',
-                    type: 'fact',
-                    measureFilters: []
+const stackingRenamedAttribute: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [
+        {
+            localIdentifier: 'measures',
+            items: [
+                {
+                    measure: {
+                        localIdentifier: 'm1',
+                        alias: 'My Metric Alias',
+                        definition: {
+                            measureDefinition: {
+                                item: {
+                                    uri: '/gdc/md/project/obj/metric.id'
+                                },
+                                aggregation: 'sum'
+                            }
+                        }
+                    }
                 }
-            }
-        ],
-        categories: [
-            {
-                category: {
+            ]
+        }, {
+            localIdentifier: 'view',
+            items: [{
+                visualizationAttribute: {
+                    localIdentifier: 'a1',
                     alias: 'My Date Alias',
-                    type: 'date',
-                    collection: 'view',
-                    displayForm: DATE_DISPLAY_FORM_URI,
-                    attribute: DATE_URI
-                }
-            },
-            {
-                category: {
-                    alias: 'My Attribute Alias',
-                    type: 'attribute',
-                    collection: 'stack',
-                    attribute: ATTRIBUTE_URI,
-                    displayForm: ATTRIBUTE_DISPLAY_FORM_URI
-                }
-            }
-        ],
-        filters: []
-    }
-};
-
-const measuresOnly: IVisualizationObjectContent = {
-    type: 'pie',
-    buckets: {
-        measures: [
-            {
-                measure: {
-                    showInPercent: false,
-                    objectUri: METRIC_ID_URI,
-                    showPoP: false,
-                    title: 'Close BOP',
-                    type: 'metric',
-                    measureFilters: []
-                }
-            },
-            {
-                measure: {
-                    showInPercent: false,
-                    objectUri: METRIC_ID_URI,
-                    showPoP: false,
-                    title: 'Close EOP',
-                    type: 'metric',
-                    measureFilters: []
-                }
-            }
-        ],
-        categories: [],
-        filters: []
-    }
-};
-
-const segmentedAndTrended: IVisualizationObjectContent = {
-    type: 'line',
-    buckets: {
-        measures: [
-            {
-                measure: {
-                    aggregation: 'sum',
-                    showInPercent: false,
-                    objectUri: '/gdc/md/project/obj/metric.id',
-                    showPoP: false,
-                    format: '#,##0.00',
-                    title: 'Sum of Bundle cost',
-                    type: 'fact',
-                    measureFilters: [
-
-                    ]
-                }
-            }
-        ],
-        categories: [
-            {
-                category: {
-                    type: 'date',
-                    collection: 'trend',
-                    displayForm: DATE_DISPLAY_FORM_URI,
-                    attribute: DATE_URI
-                }
-            },
-            {
-                category: {
-                    type: 'attribute',
-                    collection: 'segment',
-                    attribute: ATTRIBUTE_URI,
-                    displayForm: ATTRIBUTE_DISPLAY_FORM_URI
-                }
-            }
-        ],
-        filters: []
-    }
-};
-
-const oneMeasureOneAttribute: IVisualizationObjectContent = {
-    type: 'table',
-    buckets: {
-        measures: [
-            {
-                measure: {
-                    aggregation: 'sum',
-                    showInPercent: false,
-                    objectUri: '/gdc/md/project/obj/metric.id',
-                    showPoP: false,
-                    format: '#,##0.00',
-                    title: 'Sum of Bundle cost',
-                    type: 'fact',
-                    measureFilters: [
-
-                    ]
-                }
-            }
-        ],
-        categories: [
-            {
-                category: {
-                    type: 'attribute',
-                    collection: 'attribute',
-                    attribute: ATTRIBUTE_URI,
-                    displayForm: ATTRIBUTE_DISPLAY_FORM_URI
-                }
-            }
-        ],
-        filters: []
-    }
-};
-
-const multipleSorts: IVisualizationObjectContent = {
-    type: 'table',
-    buckets: {
-        measures: [
-            {
-                measure: {
-                    aggregation: 'sum',
-                    showInPercent: false,
-                    objectUri: '/gdc/md/project/obj/metric.id',
-                    showPoP: false,
-                    format: '#,##0.00',
-                    title: 'Sum of Bundle cost',
-                    type: 'fact',
-                    measureFilters: [],
-                    sort: {
-                        direction: 'desc',
-                        sortByPoP: false
+                    displayForm: {
+                        uri: DATE_DISPLAY_FORM_URI
                     }
                 }
-            },
-            {
-                measure: {
-                    aggregation: 'sum',
-                    showInPercent: false,
-                    objectUri: '/gdc/md/project/obj/metric.id',
-                    showPoP: false,
-                    format: '#,##0.00',
-                    title: 'Sum of Bundle cost',
-                    type: 'fact',
-                    measureFilters: [],
-                    sort: {
-                        direction: 'desc',
-                        sortByPoP: false
+            }]
+        }, {
+            localIdentifier: 'stack',
+            items: [
+                {
+                    visualizationAttribute: {
+                        localIdentifier: 'a2',
+                        alias: 'My Attribute Alias',
+                        displayForm: {
+                            uri: ATTRIBUTE_DISPLAY_FORM_URI
+                        }
                     }
                 }
-            }
-        ],
-        categories: [],
-        filters: []
-    }
+            ]
+        }],
+    filters: []
+};
+
+const oneMeasureOneAttribute: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [
+        {
+            localIdentifier: 'measures',
+            items: [
+                {
+                    measure: {
+                        localIdentifier: 'm1',
+                        alias: 'Sum of Bundle cost',
+                        format: '#,##0.00',
+                        definition: {
+                            measureDefinition: {
+                                item: {
+                                    uri: '/gdc/md/project/obj/metric.id'
+                                },
+                                aggregation: 'sum'
+                            }
+                        }
+                    }
+                }
+            ]
+        }, {
+            localIdentifier: 'attributes',
+            items: [{
+                visualizationAttribute: {
+                    localIdentifier: 'a1',
+                    displayForm: {
+                        uri: ATTRIBUTE_DISPLAY_FORM_URI
+                    }
+                }
+            }]
+        }],
+    filters: []
+};
+
+const multipleSorts: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
+    },
+    buckets: [
+        {
+            localIdentifier: 'measures',
+            items: [
+                {
+                    measure: {
+                        localIdentifier: 'm1',
+                        alias: 'Sum of Bundle cost',
+                        format: '#,##0.00',
+                        definition: {
+                            measureDefinition: {
+                                item: {
+                                    uri: '/gdc/md/project/obj/metric.id'
+                                },
+                                aggregation: 'sum'
+                            }
+                        }
+                    }
+                },
+                {
+                    measure: {
+                        localIdentifier: 'm2',
+                        alias: 'Sum of Bundle cost',
+                        format: '#,##0.00',
+                        definition: {
+                            measureDefinition: {
+                                item: {
+                                    uri: '/gdc/md/project/obj/metric.id'
+                                },
+                                aggregation: 'sum'
+                            }
+                        }
+                    }
+                }
+            ]}
+    ],
+    filters: [],
+    // tslint:disable-next-line:max-line-length
+    properties: '{"sortItems":[{"measureSortItem":{"direction":"desc","locators":[{"measureLocatorItem":{"measureIdentifier":"m1"}}]}}]}'
 };
 
 export const tables = {
@@ -777,34 +932,66 @@ export const tables = {
 };
 
 export const charts = {
-    bar: {
-        simpleMeasure,
-        renamedMeasure,
-        filteredMeasure,
-        measureWithRelativeDate,
-        measureWithAbsoluteDate,
-        factBasedMeasure,
-        factBasedRenamedMeasure,
-        attributeBasedMeasure,
-        attributeBasedRenamedMeasure,
-        showInPercent,
-        showInPercentWithDate,
-        measureWithSorting,
-        popMeasure,
-        popMeasureWithSorting,
-        categoryWithSorting,
-        dateFilter,
-        dateFilterWithStrings,
-        dateFilterWithUndefs,
-        attributeFilter,
-        attributeFilterWithAll,
-        stackingAttribute,
-        stackingRenamedAttribute
+    simpleMeasure,
+    simpleMeasureWithFormat,
+    renamedMeasure,
+    filteredMeasure,
+    measureWithRelativeDate,
+    measureWithAbsoluteDate,
+    factBasedMeasure,
+    factBasedRenamedMeasure,
+    attributeBasedMeasure,
+    attributeBasedMeasureWithoutFormat,
+    attributeBasedRenamedMeasure,
+    showInPercent,
+    showInPercentWithoutFormat,
+    showInPercentWithDate,
+    measureWithSorting,
+    popMeasure,
+    popMeasureWithSorting,
+    categoryWithSorting,
+    dateFilter,
+    dateFilterWithStrings,
+    dateFilterWithUndefs,
+    attributeFilter,
+    attributeFilterWithAll,
+    stackingAttribute,
+    stackingRenamedAttribute
+};
+
+export const attributeWithIdentifier: VisualizationObject.IVisualizationObjectContent = {
+    visualizationClass: {
+        uri: 'visClassUri'
     },
-    line: {
-        segmentedAndTrended
-    },
-    pie: {
-        measuresOnly
-    }
+    buckets: [{
+        localIdentifier: 'measures',
+        items: [
+            {
+                measure: {
+                    localIdentifier: 'm1',
+                    alias: 'm1',
+                    definition: {
+                        measureDefinition: {
+                            item: {
+                                uri: 'foo'
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+    }, {
+        localIdentifier: 'categories',
+        items: [
+            {
+                visualizationAttribute: {
+                    localIdentifier: 'bar',
+                    displayForm: {
+                        uri: ATTRIBUTE_DISPLAY_FORM_URI
+                    },
+                    alias: 'Attribute Bar'
+                }
+            }
+        ]
+    }]
 };

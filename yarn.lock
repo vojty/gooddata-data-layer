@@ -2,13 +2,9 @@
 # yarn lockfile v1
 
 
-"@gooddata/typings@0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@gooddata/typings/-/typings-0.0.3.tgz#e65a1d0f4188d110631f15698a9cda400862b0eb"
-
-"@gooddata/typings@0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@gooddata/typings/-/typings-0.0.4.tgz#cc2a625010a15ee2dbe698caaa35b518dd33f1fd"
+"@gooddata/typings@0.0.6-pbenes-visualization-object-2018-02-09T14-03-56-154Z":
+  version "0.0.6-pbenes-visualization-object-2018-02-09T14-03-56-154Z"
+  resolved "https://registry.yarnpkg.com/@gooddata/typings/-/typings-0.0.6-pbenes-visualization-object-2018-02-09T14-03-56-154Z.tgz#7db6264d3b858bee5ef4aab2bc03ec3525698346"
 
 "@types/express-serve-static-core@*":
   version "4.0.52"
@@ -935,11 +931,11 @@ globals@^9.18.0:
   version "9.18.0"
   resolved "https://registry.yarnpkg.com/globals/-/globals-9.18.0.tgz#aa3896b3e69b487f17e31ed2143d69a8e30c2d8a"
 
-gooddata@4.4.0:
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/gooddata/-/gooddata-4.4.0.tgz#01f380f32262b3588f9dc92973f8fa2e7a0d5db5"
+gooddata@4.5.0-pbenes-visualization-object-2018-02-09T14-06-11-864Z:
+  version "4.5.0-pbenes-visualization-object-2018-02-09T14-06-11-864Z"
+  resolved "https://registry.yarnpkg.com/gooddata/-/gooddata-4.5.0-pbenes-visualization-object-2018-02-09T14-06-11-864Z.tgz#6fa9c4b0492c685209678a199cf3a6e7e18bd0b3"
   dependencies:
-    "@gooddata/typings" "0.0.3"
+    "@gooddata/typings" "0.0.6-pbenes-visualization-object-2018-02-09T14-03-56-154Z"
     es6-promise "3.0.2"
     fetch-cookie "0.4.0"
     invariant "2.2.2"

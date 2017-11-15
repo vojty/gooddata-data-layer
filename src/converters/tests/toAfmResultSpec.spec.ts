@@ -1,4 +1,3 @@
-import { toAfmResultSpec } from '../toAfmResultSpec';
 import {
     simpleMeasure,
     renamedMeasure,
@@ -21,196 +20,173 @@ import {
     attributeFilterWithAll,
     dateFilter,
     dateFilterWithoutInterval,
-    segmentedAndTrendedLineChart,
-    measuresOnlyPieChart,
     oneMeasureOneAttribute,
     reducedMultipleSorts
 } from './fixtures/Afm.fixtures';
+
 import { charts, tables } from './fixtures/VisObj.fixtures';
-import { TABLE, BAR, LINE, PIE } from '../../constants/visualizationTypes';
+import { toAfmResultSpec } from '../toAfmResultSpec';
 
 describe('toAfmResultSpec', () => {
-    const translatedPopSuffix = ' - translated-pop-suffix';
-
     it('should convert simple measures', () => {
-        expect(toAfmResultSpec(charts.bar.simpleMeasure, translatedPopSuffix)).toEqual({
-            ...simpleMeasure,
-            type: BAR
+        expect(toAfmResultSpec(charts.simpleMeasure)).toEqual({
+            ...simpleMeasure
+        });
+    });
+
+    it('should ignore format defined on simple measures', () => {
+        expect(toAfmResultSpec(charts.simpleMeasureWithFormat)).toEqual({
+            ...simpleMeasure
         });
     });
 
     it('should convert simple renamed measures', () => {
-        expect(toAfmResultSpec(charts.bar.renamedMeasure, translatedPopSuffix)).toEqual({
-            ...renamedMeasure,
-            type: BAR
+        expect(toAfmResultSpec(charts.renamedMeasure)).toEqual({
+            ...renamedMeasure
         });
     });
 
     it('should convert filtered measures', () => {
-        expect(toAfmResultSpec(charts.bar.filteredMeasure, translatedPopSuffix)).toEqual({
-            ...filteredMeasure,
-            type: BAR
+        expect(toAfmResultSpec(charts.filteredMeasure)).toEqual({
+            ...filteredMeasure
         });
     });
 
     it('should convert relative date filtered measures', () => {
-        expect(toAfmResultSpec(charts.bar.measureWithRelativeDate, translatedPopSuffix)).toEqual({
-            ...measureWithRelativeDate,
-            type: BAR
+        expect(toAfmResultSpec(charts.measureWithRelativeDate)).toEqual({
+            ...measureWithRelativeDate
         });
     });
 
     it('should convert absolute date filtered measures', () => {
-        expect(toAfmResultSpec(charts.bar.measureWithAbsoluteDate, translatedPopSuffix)).toEqual({
-            ...measureWithAbsoluteDate,
-            type: BAR
+        expect(toAfmResultSpec(charts.measureWithAbsoluteDate)).toEqual({
+            ...measureWithAbsoluteDate
         });
     });
 
     it('should convert fact based measures', () => {
-        expect(toAfmResultSpec(charts.bar.factBasedMeasure, translatedPopSuffix)).toEqual({
-            ...factBasedMeasure,
-            type: BAR
+        expect(toAfmResultSpec(charts.factBasedMeasure)).toEqual({
+            ...factBasedMeasure
         });
     });
 
     it('should convert fact based renamed measures', () => {
-        expect(toAfmResultSpec(charts.bar.factBasedRenamedMeasure, translatedPopSuffix)).toEqual({
-            ...factBasedRenamedMeasure,
-            type: BAR
+        expect(toAfmResultSpec(charts.factBasedRenamedMeasure)).toEqual({
+            ...factBasedRenamedMeasure
         });
     });
 
     it('should convert attribute based measures', () => {
-        expect(toAfmResultSpec(charts.bar.attributeBasedMeasure, translatedPopSuffix)).toEqual({
-            ...attributeBasedMeasure,
-            type: BAR
+        expect(toAfmResultSpec(charts.attributeBasedMeasure)).toEqual({
+            ...attributeBasedMeasure
+        });
+    });
+
+    it('should convert attribute based measures and add its default format #,##0', () => {
+        expect(toAfmResultSpec(charts.attributeBasedMeasureWithoutFormat)).toEqual({
+            ...attributeBasedMeasure
         });
     });
 
     it('should convert attribute based renamed measures', () => {
-        expect(toAfmResultSpec(charts.bar.attributeBasedRenamedMeasure, translatedPopSuffix)).toEqual({
-            ...attributeBasedRenamedMeasure,
-            type: BAR
+        expect(toAfmResultSpec(charts.attributeBasedRenamedMeasure)).toEqual({
+            ...attributeBasedRenamedMeasure
         });
     });
 
     it('should convert measure with show in percent with attribute', () => {
-        expect(toAfmResultSpec(charts.bar.showInPercent, translatedPopSuffix)).toEqual({
-            ...showInPercent,
-            type: BAR
+        expect(toAfmResultSpec(charts.showInPercent)).toEqual({
+            ...showInPercent
+        });
+    });
+
+    it('should convert measure with show in percent and add its default format #,##0.00%', () => {
+        expect(toAfmResultSpec(charts.showInPercentWithoutFormat)).toEqual({
+            ...showInPercent
         });
     });
 
     it('should convert measure with show in percent with date', () => {
-        expect(toAfmResultSpec(charts.bar.showInPercentWithDate, translatedPopSuffix)).toEqual({
-            ...showInPercentWithDate,
-            type: BAR
+        expect(toAfmResultSpec(charts.showInPercentWithDate)).toEqual({
+            ...showInPercentWithDate
         });
     });
 
     it('should convert measure with sorting', () => {
-        expect(toAfmResultSpec(charts.bar.measureWithSorting, translatedPopSuffix)).toEqual({
-            ...measureWithSorting,
-            type: BAR
+        expect(toAfmResultSpec(charts.measureWithSorting)).toEqual({
+            ...measureWithSorting
         });
     });
 
     it('should convert pop measure', () => {
-        expect(toAfmResultSpec(charts.bar.popMeasure, translatedPopSuffix)).toEqual({
-            ...popMeasure,
-            type: BAR
+        expect(toAfmResultSpec(charts.popMeasure)).toEqual({
+            ...popMeasure
         });
     });
 
     it('should convert pop measure with sorting', () => {
-        expect(toAfmResultSpec(charts.bar.popMeasureWithSorting, translatedPopSuffix)).toEqual({
-            ...popMeasureWithSorting,
-            type: BAR
+        expect(toAfmResultSpec(charts.popMeasureWithSorting)).toEqual({
+            ...popMeasureWithSorting
         });
     });
 
     it('should convert category with sorting', () => {
-        expect(toAfmResultSpec(charts.bar.categoryWithSorting, translatedPopSuffix)).toEqual({
-            ...categoryWithSorting,
-            type: BAR
+        expect(toAfmResultSpec(charts.categoryWithSorting)).toEqual({
+            ...categoryWithSorting
         });
     });
 
     it('should convert attribute filter', () => {
-        expect(toAfmResultSpec(charts.bar.attributeFilter, translatedPopSuffix)).toEqual({
-            ...attributeFilter,
-            type: BAR
+        expect(toAfmResultSpec(charts.attributeFilter)).toEqual({
+            ...attributeFilter
         });
     });
 
     it('should convert date filter', () => {
-        expect(toAfmResultSpec(charts.bar.dateFilter, translatedPopSuffix)).toEqual({
-            ...dateFilter,
-            type: BAR
+        expect(toAfmResultSpec(charts.dateFilter)).toEqual({
+            ...dateFilter
         });
     });
 
     it('should convert date filter with from/to as strings', () => {
-        expect(toAfmResultSpec(charts.bar.dateFilterWithStrings, translatedPopSuffix)).toEqual({
-            ...dateFilter,
-            type: BAR
+        expect(toAfmResultSpec(charts.dateFilterWithStrings)).toEqual({
+            ...dateFilter
         });
     });
 
     it('should skip filter when date filter from/to is undefined for relative (alltime)', () => {
-        expect(toAfmResultSpec(charts.bar.dateFilterWithUndefs, translatedPopSuffix)).toEqual({
-            ...dateFilterWithoutInterval,
-            type: BAR
-        });
-    });
-
-    it('should convert stacking attribute', () => {
-        expect(toAfmResultSpec(charts.bar.stackingAttribute, translatedPopSuffix)).toEqual({
-            ...stackingAttribute,
-            type: BAR
+        expect(toAfmResultSpec(charts.dateFilterWithUndefs)).toEqual({
+            ...dateFilterWithoutInterval
         });
     });
 
     it('should convert stacking renamed attribute', () => {
-        expect(toAfmResultSpec(charts.bar.stackingRenamedAttribute, translatedPopSuffix)).toEqual({
-            ...stackingRenamedAttribute,
-            type: BAR
+        expect(toAfmResultSpec(charts.stackingRenamedAttribute)).toEqual({
+            ...stackingRenamedAttribute
         });
     });
 
     it('should skip attribute filter with ALL', () => {
-        expect(toAfmResultSpec(charts.bar.attributeFilterWithAll, translatedPopSuffix)).toEqual({
-            ...attributeFilterWithAll,
-            type: BAR
+        expect(toAfmResultSpec(charts.attributeFilterWithAll)).toEqual({
+            ...attributeFilterWithAll
         });
     });
 
-    it('should convert segmented attribute for Line chart', () => {
-        expect(toAfmResultSpec(charts.line.segmentedAndTrended, translatedPopSuffix)).toEqual({
-            ...segmentedAndTrendedLineChart,
-            type: LINE
+    it('should convert stacking attribute as normal attribute, conversion has no semantic for buckets', () => {
+        expect(toAfmResultSpec(charts.stackingAttribute)).toEqual({
+            ...stackingAttribute
         });
     });
 
-    it('should convert measures only for pie chart', () => {
-        expect(toAfmResultSpec(charts.pie.measuresOnly, translatedPopSuffix)).toEqual({
-            ...measuresOnlyPieChart,
-            type: PIE
-        });
-    });
-
-    it('should convert table', () => {
-        expect(toAfmResultSpec(tables.oneMeasureOneAttribute, translatedPopSuffix)).toEqual({
-            ...oneMeasureOneAttribute,
-            type: TABLE
+    it('should convert table as generic chart, conversion has no semantic for buckets', () => {
+        expect(toAfmResultSpec(tables.oneMeasureOneAttribute)).toEqual({
+            ...oneMeasureOneAttribute
         });
     });
 
     it('should convert only one sort item', () => {
-        expect(toAfmResultSpec(tables.multipleSorts, translatedPopSuffix)).toEqual({
-            ...reducedMultipleSorts,
-            type: TABLE
+        expect(toAfmResultSpec(tables.multipleSorts)).toEqual({
+            ...reducedMultipleSorts
         });
     });
 });

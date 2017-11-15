@@ -1,19 +1,19 @@
 import { toAfmResultSpec } from '../../toAfmResultSpec';
 import {
-    executionWithTotals,
+    executionWithoutTotals,
+    executionWithTotals, tableWithoutTotals,
     tableWithTotals
 } from './totals.fixtures';
 
-import { TABLE } from '../../../constants/visualizationTypes';
-
 describe('totals toAfmResultSpec', () => {
-    const translatedPopSuffix = 'translated-pop-suffix';
+
+    it('should not contain afm.native totals attribute', () => {
+        const executionObject = toAfmResultSpec(tableWithoutTotals);
+        expect(executionObject).toEqual(executionWithoutTotals);
+    });
 
     it('should convert table grand totals', () => {
-        const executionObject = toAfmResultSpec(tableWithTotals, translatedPopSuffix);
-        expect(executionObject).toEqual({
-            ...executionWithTotals,
-            type: TABLE
-        });
+        const executionObject = toAfmResultSpec(tableWithTotals);
+        expect(executionObject).toEqual(executionWithTotals);
     });
 });

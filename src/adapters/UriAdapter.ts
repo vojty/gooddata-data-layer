@@ -1,4 +1,4 @@
-import { AFM, Execution } from '@gooddata/typings';
+import { AFM, Execution, VisualizationObject } from '@gooddata/typings';
 import * as GoodData from 'gooddata';
 
 import { IAdapter } from '../interfaces/Adapter';
@@ -7,7 +7,6 @@ import { ExecuteAfmAdapter } from './ExecuteAfmAdapter';
 import { toAfmResultSpec } from '../converters/toAfmResultSpec';
 import { appendFilters } from '../utils/AfmUtils';
 import { IDataSourceParams } from '../interfaces/DataSourceParams';
-import { IVisualizationObjectResponse } from '../converters/model/VisualizationObject';
 
 function defaultExecuteAdapterFactory(
     sdk: typeof GoodData,
@@ -18,20 +17,19 @@ function defaultExecuteAdapterFactory(
 
 export class UriAdapter implements IAdapter<Execution.IExecutionResponses> {
     private uri: string;
-    private visObject: IVisualizationObjectResponse;
+    private visualizationObject: VisualizationObject.IVisualizationObjectResponse;
 
     constructor(
         private sdk: typeof GoodData,
         private projectId: string,
-        private translatedPopSuffix: string,
         private executeAdapterFactory: any = defaultExecuteAdapterFactory
     ) {}
 
     public createDataSource(sourceParams: IDataSourceParams): Promise<IDataSource<any>> {
         return this.fetchVisualizationObject(sourceParams.uri)
-            .then((visObject) => {
-                const content = visObject.visualization.content;
-                const { afm, resultSpec } = toAfmResultSpec(content, this.translatedPopSuffix);
+            .then((visualizationObject) => {
+                const content = visualizationObject.visualizationObject.content;
+                const { afm, resultSpec } = toAfmResultSpec(content);
                 const afmWithAttributeFilters: AFM.IAfm = appendFilters(
                     afm,
                     sourceParams.attributeFilters || [],
@@ -50,11 +48,11 @@ export class UriAdapter implements IAdapter<Execution.IExecutionResponses> {
 
     private fetchVisualizationObject(uri: string) {
         if (uri === this.uri) {
-            return Promise.resolve(this.visObject);
+            return Promise.resolve(this.visualizationObject);
         }
-        return this.sdk.xhr.get<IVisualizationObjectResponse>(uri).then((visObject) => {
+        return this.sdk.xhr.get<VisualizationObject.IVisualizationObjectResponse>(uri).then((visObject) => {
             this.uri = uri;
-            return this.visObject = visObject;
+            return this.visualizationObject = visObject;
         });
     }
 }
