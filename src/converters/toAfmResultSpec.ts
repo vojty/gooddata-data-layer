@@ -1,5 +1,7 @@
 import flatten = require('lodash/flatten');
 import compact = require('lodash/compact');
+import isEmpty = require('lodash/isEmpty');
+import flatMap = require('lodash/flatMap');
 import { AFM } from '@gooddata/typings';
 import { get } from 'lodash';
 
@@ -240,6 +242,27 @@ function getPoPAttribute(visObj: VisObj.IVisualizationObjectContent): string {
     return null;
 }
 
+function convertNativeTotals(visObj: VisObj.IVisualizationObjectContent, measures: AFM.IMeasure[]
+): AFM.INativeTotalItem[] {
+    if (isEmpty(visObj.buckets.totals)) {
+        return [];
+    }
+
+    const visNativeTotals = visObj.buckets.totals.filter(visTotal => visTotal.total.type === 'nat');
+    const nativeTotals = flatMap(visNativeTotals, (visTotal) => {
+        return visTotal.total.outputMeasureIndexes.map((measureIndex) => {
+            return {
+                measureIdentifier: measures[measureIndex].localIdentifier,
+                // Currently supports only Grand Totals.
+                // TODO Update this once new Visualization Object is available
+                attributeIdentifiers: []
+            };
+        });
+    });
+
+    return compact(nativeTotals);
+}
+
 function convertAFM(visObj: VisObj.IVisualizationObjectContent, translatedPopSuffix: string): AFM.IAfm {
     const attributes = visObj.buckets.categories.map(convertAttribute);
     const attributesProp = attributes.length ? { attributes } : {};
@@ -253,13 +276,14 @@ function convertAFM(visObj: VisObj.IVisualizationObjectContent, translatedPopSuf
     const filters = compact(visObj.buckets.filters.map(convertFilter));
     const filtersProp = filters.length ? { filters } : {};
 
-    // TODO: convertNativeTotals(visObj, afm.attributes, afm.measures)
+    const nativeTotals = convertNativeTotals(visObj, measures);
+    const nativeTotalsProp = nativeTotals.length ? { nativeTotals } : {};
 
     return {
         ...measuresProp,
         ...attributesProp,
-        ...filtersProp
-        // TODO: add native totals here
+        ...filtersProp,
+        ...nativeTotalsProp
     };
 }
 
@@ -329,16 +353,48 @@ function generateDimensions(
         itemIdentifiersList[measureGroupIndex].push('measureGroup');
     }
 
-    return itemIdentifiersList.map(generateDimension);
+    return itemIdentifiersList.map(itemIdentifiers => generateDimension(itemIdentifiers, visObj, afm));
 }
 
-function generateDimension(itemIdentifiers: string[]): AFM.IDimension {
+function shouldConvertTotals(itemIdentifiers: AFM.Identifier[], visObj: VisObj.IVisualizationObjectContent): boolean {
+    if (!isEmpty(itemIdentifiers)) {
+        const hasTotals = !isEmpty(visObj.buckets.totals);
+        const containsMeasureGroup = itemIdentifiers.some(item => item === 'measureGroup');
+        return hasTotals && !containsMeasureGroup;
+    }
 
-    // TODO Add here optional totals
+    return false;
+}
+
+function convertTotals(itemIdentifiers: AFM.Identifier[], visObj: VisObj.IVisualizationObjectContent,
+                       afm: AFM.IAfm): AFM.ITotalItem[] {
+    if (!shouldConvertTotals(itemIdentifiers, visObj)) {
+        return [];
+    }
+
+    const totals = flatMap(visObj.buckets.totals, (visTotal) => {
+        return visTotal.total.outputMeasureIndexes.map((measureIndex) => {
+            return {
+                measureIdentifier: afm.measures[measureIndex].localIdentifier,
+                type: visTotal.total.type,
+                // Currently supports only Grand Totals.
+                // TODO Update this once new Visualization Object is available
+                attributeIdentifier: itemIdentifiers[0]
+            };
+        });
+    });
+
+    return compact(totals);
+}
+
+function generateDimension(itemIdentifiers: string[], visObj: VisObj.IVisualizationObjectContent,
+                           afm: AFM.IAfm): AFM.IDimension {
+    const totals = convertTotals(itemIdentifiers, visObj, afm);
+    const totalsProp = totals.length ? { totals } : {};
 
     return {
-        itemIdentifiers
-        // TODO ...totalsProp
+        itemIdentifiers,
+        ...totalsProp
     };
 }
 

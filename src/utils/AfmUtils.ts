@@ -16,7 +16,8 @@ export function normalizeAfm(afm: AFM.IAfm): AFM.IAfm {
     return {
         attributes: afm.attributes || [],
         measures: afm.measures || [],
-        filters: afm.filters || []
+        filters: afm.filters || [],
+        nativeTotals: afm.nativeTotals || []
     };
 }
 

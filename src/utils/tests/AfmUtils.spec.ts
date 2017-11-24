@@ -111,7 +111,8 @@ describe('normalizeAfm', () => {
         expect(normalizeAfm(afm)).toEqual({
             measures: [],
             attributes: [],
-            filters: []
+            filters: [],
+            nativeTotals: []
         });
     });
 
@@ -126,7 +127,8 @@ describe('normalizeAfm', () => {
                 }
             ],
             measures: [],
-            filters: []
+            filters: [],
+            nativeTotals: []
         };
         expect(normalizeAfm({
             attributes: [
@@ -155,7 +157,8 @@ describe('normalizeAfm', () => {
                 }
             ],
             attributes: [],
-            filters: []
+            filters: [],
+            nativeTotals: []
         };
         expect(normalizeAfm({
             measures: [
@@ -188,7 +191,8 @@ describe('normalizeAfm', () => {
                         granularity: Granularities.YEAR
                     }
                 }
-            ]
+            ],
+            nativeTotals: []
         };
         expect(normalizeAfm({
             filters: [
