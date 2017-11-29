@@ -1,7 +1,7 @@
-import { IAttributeFilter, IDateFilter } from './Afm';
+import { AFM } from '@gooddata/typings';
 
 export interface IDataSourceParams {
     uri: string;
-    attributeFilters?: IAttributeFilter[];
-    dateFilter?: IDateFilter;
+    attributeFilters?: AFM.AttributeFilterItem[];
+    dateFilter?: AFM.DateFilterItem;
 }

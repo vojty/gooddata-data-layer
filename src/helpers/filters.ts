@@ -1,26 +1,104 @@
 import cloneDeep = require('lodash/cloneDeep');
 import isEmpty = require('lodash/isEmpty');
-import {
-    IAfm,
-    IFilter,
-    INegativeAttributeFilter,
-    IPositiveAttributeFilter
-} from '../interfaces/Afm';
+import { AFM } from '@gooddata/typings';
+import { unwrapSimpleMeasure } from '../utils/AfmUtils';
 
-export function isNotEmptyFilter(filter: IFilter): boolean {
-    return (filter.type === 'date') ||
-        (
-            !isEmpty((filter as IPositiveAttributeFilter).in) ||
-            !isEmpty((filter as INegativeAttributeFilter).notIn)
-        );
+function isFilterItem(filter: AFM.CompatibilityFilter): filter is AFM.FilterItem {
+    return !(filter as AFM.IExpressionFilter).value;
 }
 
-export function mergeFilters(afm: IAfm, filters: IFilter[]): IAfm {
+function isDateFilter(filter: AFM.FilterItem): filter is AFM.DateFilterItem {
+    return !!(
+        (filter as AFM.IAbsoluteDateFilter).absoluteDateFilter
+        || (filter as AFM.IRelativeDateFilter).relativeDateFilter
+    );
+}
+
+function getSelection(filter: AFM.FilterItem): string[] {
+    if ((filter as AFM.IPositiveAttributeFilter).positiveAttributeFilter) {
+        return (filter as AFM.IPositiveAttributeFilter).positiveAttributeFilter.in;
+    }
+    if ((filter as AFM.INegativeAttributeFilter).negativeAttributeFilter) {
+        return (filter as AFM.INegativeAttributeFilter).negativeAttributeFilter.notIn;
+    }
+    return [];
+}
+
+export function isNotEmptyFilter(filter: AFM.FilterItem): boolean {
+    return isDateFilter(filter) || !isEmpty(getSelection(filter));
+}
+
+export function mergeFilters(afm: AFM.IAfm, filters: AFM.FilterItem[]): AFM.IAfm {
     const cloned = cloneDeep(afm);
 
     return {
         ...cloned,
-        filters: [...(cloned.filters || []), ...filters]
+        filters: [...ensureArray(cloned.filters), ...filters]
             .filter(isNotEmptyFilter)
+    };
+}
+
+function ensureArray<T>(arr: T[]): T[] {
+    return arr || [];
+}
+
+function measureHasDateFilter(simpleMeasure: AFM.ISimpleMeasure) {
+    return ensureArray(simpleMeasure.filters).some(isDateFilter);
+}
+
+function getGlobalDateFilter(afm: AFM.IAfm): AFM.DateFilterItem {
+    for (const filter of ensureArray(afm.filters)) {
+        if (isFilterItem(filter) && isDateFilter(filter)) {
+            return filter;
+        }
+    }
+    return null;
+}
+
+/**
+ * AFM Date Filter logic:
+ * Prerequisities: At least one metric (M1) with date filter & global date filter (D1)
+ *
+ * Steps:
+ * 1. Remove date filter (D1) from global
+ * 2. Add D1 to each metric without date filter
+ * 3. M1 is untouched
+ */
+export function handleMeasureDateFilter(afm: AFM.IAfm): AFM.IAfm {
+    const globalDateFilter: AFM.DateFilterItem = getGlobalDateFilter(afm);
+    if (!globalDateFilter) {
+        return afm;
+    }
+
+    const measureDateFilterIsPresent = ensureArray(afm.measures).some((item: AFM.IMeasure) => {
+        const simpleMeasure = unwrapSimpleMeasure(item);
+        if (!simpleMeasure) {
+            return false;
+        }
+        return measureHasDateFilter(simpleMeasure);
+    });
+
+    if (!measureDateFilterIsPresent) {
+        return afm;
+    }
+
+    return {
+        ...afm,
+        filters: afm.filters.filter(f => isFilterItem(f) && !isDateFilter(f)),
+        measures: afm.measures.map((item: AFM.IMeasure): AFM.IMeasure => {
+            const simpleMeasure = unwrapSimpleMeasure(item);
+            if (!simpleMeasure || measureHasDateFilter(simpleMeasure)) {
+                return item;
+            }
+            return {
+                ...item,
+                definition: {
+                    measure: {
+                        ...simpleMeasure,
+                        filters: [...ensureArray(simpleMeasure.filters), globalDateFilter]
+                    }
+                }
+            };
+        })
     };
 }

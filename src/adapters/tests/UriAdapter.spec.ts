@@ -1,30 +1,17 @@
 import * as GoodData from 'gooddata';
-import { charts } from '../../legacy/tests/fixtures/VisObj.fixtures';
-import {
-    UriAdapter
-} from '../UriAdapter';
-
-jest.mock('../SimpleExecutorAdapter', () => {
-    class DummySimpleExecutorAdapter {
-        public createDataSource() {
-            return Promise.resolve({});
-        }
-    }
-
-    return {
-        SimpleExecutorAdapter: DummySimpleExecutorAdapter
-    };
-});
+import { charts } from '../../converters/tests/fixtures/VisObj.fixtures';
+import { UriAdapter } from '../UriAdapter';
 
 describe('UriAdapter', () => {
     const projectId = 'FoodMartDemo';
     const uri = '/gdc/md/FoodMartDemo/1';
     const uri2 = '/gdc/md/FoodMartDemo/2';
-    const dummyDataSource = {};
 
     function createDummySDK(): typeof GoodData {
         const visualizationObject = {
-            visualization: { content: charts.bar.simpleMeasure }
+            visualization: {
+                content: charts.bar.simpleMeasure
+            }
         };
 
         jest.spyOn(GoodData.xhr, 'get')
@@ -38,24 +25,16 @@ describe('UriAdapter', () => {
     });
 
     it('should fetch visualization object when creating data source', () => {
-        const DummySDK = createDummySDK();
-        const adapter = new UriAdapter(DummySDK, projectId);
+        const dummySDK = createDummySDK();
+        const adapter = new UriAdapter(dummySDK, projectId, 'translated-pop-suffix');
         return adapter.createDataSource({ uri }).then(() => {
-            expect(DummySDK.xhr.get).toBeCalledWith(uri);
-        });
-    });
-
-    it('should retrieve datasource when requested', () => {
-        const DummySDK = createDummySDK();
-        const adapter = new UriAdapter(DummySDK, projectId);
-        return adapter.createDataSource({ uri }).then((dataSource) => {
-            expect(dataSource).toEqual(dummyDataSource);
+            expect(dummySDK.xhr.get).toBeCalledWith(uri);
         });
     });
 
     it('should handle fail of vis. obj. fetch', () => {
         const DummySDK = createDummySDK();
-        const adapter = new UriAdapter(DummySDK, projectId);
+        const adapter = new UriAdapter(DummySDK, projectId, 'translated-pop-suffix');
         DummySDK.xhr.get = jest.fn(() => Promise.reject('invalid URI'));
         return adapter.createDataSource({ uri }).catch((error) => {
             expect(error).toBe('invalid URI');
@@ -64,7 +43,7 @@ describe('UriAdapter', () => {
 
     it('should request visualization object for consecutive createDataSource call only when uri changes', () => {
         const DummySDK = createDummySDK();
-        const adapter = new UriAdapter(DummySDK, projectId);
+        const adapter = new UriAdapter(DummySDK, projectId, 'translated-pop-suffix');
         return adapter.createDataSource({ uri }).then(() => {
             expect(DummySDK.xhr.get).toHaveBeenCalledTimes(1);
             return adapter.createDataSource({ uri }).then(() => {

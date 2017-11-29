@@ -6,7 +6,8 @@ import {
     ATTRIBUTE_URI_2,
     DATE_DATA_SET_URI,
     DATE_DISPLAY_FORM_URI,
-    DATE_URI
+    DATE_URI,
+    METRIC_ID_URI
 } from './Afm.fixtures';
 
 const simpleMeasure: IVisualizationObjectContent = {
@@ -197,7 +198,7 @@ const showInPercent: IVisualizationObjectContent = {
         categories: [{
             category: {
                 type: 'attribute',
-                collection: 'attribute',
+                collection: 'view',
                 displayForm: ATTRIBUTE_DISPLAY_FORM_URI
             }
         }],
@@ -222,7 +223,7 @@ const showInPercentWithDate: IVisualizationObjectContent = {
         }],
         categories: [{
             category: {
-                collection: 'attribute',
+                collection: 'view',
                 displayForm: DATE_DISPLAY_FORM_URI,
                 type: 'date'
             }
@@ -277,7 +278,7 @@ const popMeasure: IVisualizationObjectContent = {
             {
                 category: {
                     type: 'date',
-                    collection: 'attribute',
+                    collection: 'view',
                     displayForm: ATTRIBUTE_DISPLAY_FORM_URI,
                     attribute: ATTRIBUTE_URI
                 }
@@ -310,7 +311,7 @@ const popMeasureWithSorting: IVisualizationObjectContent = {
             {
                 category: {
                     type: 'date',
-                    collection: 'attribute',
+                    collection: 'view',
                     displayForm: ATTRIBUTE_DISPLAY_FORM_URI,
                     attribute: ATTRIBUTE_URI
                 }
@@ -326,7 +327,7 @@ const categoryWithSorting: IVisualizationObjectContent = {
         measures: [],
         categories: [{
             category: {
-                collection: 'attribute',
+                collection: 'view',
                 displayForm: ATTRIBUTE_DISPLAY_FORM_URI,
                 type: 'attribute',
                 sort: 'desc'
@@ -415,7 +416,7 @@ const attributeFilter: IVisualizationObjectContent = {
                     default: {
                         negativeSelection: false,
                         attributeElements: [
-                            `${ATTRIBUTE_DISPLAY_FORM_URI_2}?id=a`
+                            `${ATTRIBUTE_URI_2}?id=a`
                         ]
                     }
                 }
@@ -447,7 +448,7 @@ const attributeFilterWithAll: IVisualizationObjectContent = {
                     default: {
                         negativeSelection: false,
                         attributeElements: [
-                            `${ATTRIBUTE_DISPLAY_FORM_URI_2}?id=a`
+                            `${ATTRIBUTE_URI_2}?id=a`
                         ]
                     }
                 }
@@ -479,7 +480,7 @@ const stackingAttribute: IVisualizationObjectContent = {
             {
                 category: {
                     type: 'date',
-                    collection: 'attribute',
+                    collection: 'view',
                     displayForm: DATE_DISPLAY_FORM_URI,
                     attribute: DATE_URI
                 }
@@ -510,12 +511,165 @@ const stackingAttribute: IVisualizationObjectContent = {
                     displayForm: ATTRIBUTE_DISPLAY_FORM_URI,
                     default: {
                         negativeSelection: true,
-                        attributeElements: [`${ATTRIBUTE_DISPLAY_FORM_URI}?id=1`]
+                        attributeElements: [
+                            `${ATTRIBUTE_URI}?id=1`
+                        ]
                     }
                 }
             }
         ]
     }
+};
+
+const measuresOnly: IVisualizationObjectContent = {
+    type: 'pie',
+    buckets: {
+        measures: [
+            {
+                measure: {
+                    showInPercent: false,
+                    objectUri: METRIC_ID_URI,
+                    showPoP: false,
+                    title: 'Close BOP',
+                    type: 'metric',
+                    measureFilters: []
+                }
+            },
+            {
+                measure: {
+                    showInPercent: false,
+                    objectUri: METRIC_ID_URI,
+                    showPoP: false,
+                    title: 'Close EOP',
+                    type: 'metric',
+                    measureFilters: []
+                }
+            }
+        ],
+        categories: [],
+        filters: []
+    }
+};
+
+const segmentedAndTrended: IVisualizationObjectContent = {
+    type: 'line',
+    buckets: {
+        measures: [
+            {
+                measure: {
+                    aggregation: 'sum',
+                    showInPercent: false,
+                    objectUri: '/gdc/md/project/obj/metric.id',
+                    showPoP: false,
+                    format: '#,##0.00',
+                    title: 'Sum of Bundle cost',
+                    type: 'fact',
+                    measureFilters: [
+
+                    ]
+                }
+            }
+        ],
+        categories: [
+            {
+                category: {
+                    type: 'date',
+                    collection: 'trend',
+                    displayForm: DATE_DISPLAY_FORM_URI,
+                    attribute: DATE_URI
+                }
+            },
+            {
+                category: {
+                    type: 'attribute',
+                    collection: 'segment',
+                    attribute: ATTRIBUTE_URI,
+                    displayForm: ATTRIBUTE_DISPLAY_FORM_URI
+                }
+            }
+        ],
+        filters: []
+    }
+};
+
+const oneMeasureOneAttribute: IVisualizationObjectContent = {
+    type: 'table',
+    buckets: {
+        measures: [
+            {
+                measure: {
+                    aggregation: 'sum',
+                    showInPercent: false,
+                    objectUri: '/gdc/md/project/obj/metric.id',
+                    showPoP: false,
+                    format: '#,##0.00',
+                    title: 'Sum of Bundle cost',
+                    type: 'fact',
+                    measureFilters: [
+
+                    ]
+                }
+            }
+        ],
+        categories: [
+            {
+                category: {
+                    type: 'attribute',
+                    collection: 'attribute',
+                    attribute: ATTRIBUTE_URI,
+                    displayForm: ATTRIBUTE_DISPLAY_FORM_URI
+                }
+            }
+        ],
+        filters: []
+    }
+};
+
+const multipleSorts: IVisualizationObjectContent = {
+    type: 'table',
+    buckets: {
+        measures: [
+            {
+                measure: {
+                    aggregation: 'sum',
+                    showInPercent: false,
+                    objectUri: '/gdc/md/project/obj/metric.id',
+                    showPoP: false,
+                    format: '#,##0.00',
+                    title: 'Sum of Bundle cost',
+                    type: 'fact',
+                    measureFilters: [],
+                    sort: {
+                        direction: 'desc',
+                        sortByPoP: false
+                    }
+                }
+            },
+            {
+                measure: {
+                    aggregation: 'sum',
+                    showInPercent: false,
+                    objectUri: '/gdc/md/project/obj/metric.id',
+                    showPoP: false,
+                    format: '#,##0.00',
+                    title: 'Sum of Bundle cost',
+                    type: 'fact',
+                    measureFilters: [],
+                    sort: {
+                        direction: 'desc',
+                        sortByPoP: false
+                    }
+                }
+            }
+        ],
+        categories: [],
+        filters: []
+    }
+};
+
+export const tables = {
+    oneMeasureOneAttribute,
+    multipleSorts
 };
 
 export const charts = {
@@ -538,5 +692,11 @@ export const charts = {
         attributeFilter,
         attributeFilterWithAll,
         stackingAttribute
+    },
+    line: {
+        segmentedAndTrended
+    },
+    pie: {
+        measuresOnly
     }
 };

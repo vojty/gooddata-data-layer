@@ -9,7 +9,7 @@ export class DummyDataSource<T> implements IDataSource<T> {
         this.resolve = resolve;
     }
 
-    public getData(_transformation: any): Promise<T> { // tslint:disable-line:variable-name
+    public getData(): Promise<T> { // tslint:disable-line:variable-name
         if (this.resolve) {
             return Promise.resolve(this.data);
         }
@@ -19,6 +19,10 @@ export class DummyDataSource<T> implements IDataSource<T> {
 
     public getFingerprint() {
         return '';
+    }
+
+    public getResultSpec() {
+        return {};
     }
 
     public getAfm() {

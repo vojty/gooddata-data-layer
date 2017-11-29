@@ -1,37 +1,41 @@
 import { ISimpleExecutorResult } from 'gooddata';
+import { AFM } from '@gooddata/typings';
 
-import { IAfm } from '../interfaces/Afm';
 import { DataTable } from '../DataTable';
 import { DummyAdapter } from '../utils/DummyAdapter';
 
 describe('DataTable', () => {
     const dataResponse: ISimpleExecutorResult = { rawData: [['1', '2', '3']] };
-    const afm: IAfm = {
+    const afm: AFM.IAfm = {
         measures: [
             {
-                id: 'a',
+                localIdentifier: 'a',
                 definition: {
-                    baseObject: {
-                        id: 'b'
+                    measure: {
+                        item: {
+                            identifier: 'b'
+                        }
                     }
                 }
             }
         ]
     };
-    const afm2: IAfm = {
+    const afm2: AFM.IAfm = {
         measures: [
             {
-                id: 'c',
+                localIdentifier: 'c',
                 definition: {
-                    baseObject: {
-                        id: 'd'
+                    measure: {
+                        item: {
+                            identifier: 'd'
+                        }
                     }
                 }
             }
         ]
     };
-    const nonExecutableAfm: IAfm = {};
-    const transformation = {};
+    const nonExecutableAfm: AFM.IAfm = {};
+    const resultSpec: AFM.IResultSpec = {};
 
     describe('Events', () => {
         const setupDataTable = (success = true) => {
@@ -52,7 +56,7 @@ describe('DataTable', () => {
         it('should return data via onData callback', (done) => {
             const { dt, errCb, dataCb } = setupDataTable();
 
-            dt.getData(afm, transformation);
+            dt.getData(afm, resultSpec);
 
             setTimeout(() => {
                 expect(errCb).not.toBeCalled();
@@ -65,7 +69,7 @@ describe('DataTable', () => {
         it('should dispatch onError callback when error occurs', (done) => {
             const { dt, errCb, dataCb } = setupDataTable(false);
 
-            dt.getData(afm, transformation);
+            dt.getData(afm, resultSpec);
 
             setTimeout(() => {
                 expect(dataCb).not.toBeCalled();
@@ -78,7 +82,7 @@ describe('DataTable', () => {
         it('should not get new data for invalid AFM', (done) => {
             const { dt, errCb, dataCb } = setupDataTable();
 
-            dt.getData(nonExecutableAfm, transformation);
+            dt.getData(nonExecutableAfm, resultSpec);
 
             setTimeout(() => {
                 expect(dataCb).not.toBeCalled();
@@ -98,7 +102,7 @@ describe('DataTable', () => {
                 .resetDataSubscribers()
                 .resetErrorSubscribers();
 
-            dt.getData(nonExecutableAfm, transformation);
+            dt.getData(nonExecutableAfm, resultSpec);
 
             setTimeout(() => {
                 expect(dataCb).not.toBeCalled();
@@ -111,8 +115,8 @@ describe('DataTable', () => {
         it('should call handler only once', (done) => {
             const { dt, errCb, dataCb } = setupDataTable();
 
-            dt.getData(afm, transformation);
-            dt.getData(afm2, transformation);
+            dt.getData(afm, resultSpec);
+            dt.getData(afm2, resultSpec);
 
             setTimeout(() => {
                 try {
