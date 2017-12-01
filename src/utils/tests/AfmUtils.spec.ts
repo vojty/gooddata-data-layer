@@ -6,6 +6,7 @@ import {
     normalizeAfm,
     isDateFilter,
     isAttributeFilter,
+    dateFiltersDataSetsMatch,
     ALL_TIME_GRANULARITY
 } from '../AfmUtils';
 import {
@@ -224,7 +225,7 @@ describe('AFM utils', () => {
         }
     };
 
-    const df1: AFM.IRelativeDateFilter = {
+    const relativeDateFilterD1: AFM.IRelativeDateFilter = {
         relativeDateFilter: {
             dataSet: {
                 identifier: 'd1'
@@ -234,7 +235,18 @@ describe('AFM utils', () => {
             granularity: Granularities.YEAR
         }
     };
-    const absoluteDateFilter: AFM.IAbsoluteDateFilter = {
+
+    const absoluteDateFilterD1: AFM.IAbsoluteDateFilter = {
+        absoluteDateFilter: {
+            dataSet: {
+                identifier: 'd1'
+            },
+            from: '2001-01-01',
+            to: '2001-12-12'
+        }
+    };
+
+    const absoluteDateFilterAb: AFM.IAbsoluteDateFilter = {
         absoluteDateFilter: {
              dataSet: {
                  identifier: 'ab'
@@ -244,7 +256,7 @@ describe('AFM utils', () => {
         }
     };
 
-    const df1AllTime: AFM.IRelativeDateFilter = {
+    const allTimeDateFilterD1: AFM.IRelativeDateFilter = {
         relativeDateFilter: {
             dataSet: {
                 identifier: 'd1'
@@ -263,54 +275,51 @@ describe('AFM utils', () => {
                 ]
             };
             const attributeFilters = [af2];
-            const dateFilter = df1;
+            const dateFilter = relativeDateFilterD1;
 
             const enriched = appendFilters(afm, attributeFilters, dateFilter);
             expect(enriched.filters).toEqual([
-                af1, af2, df1
+                af1, af2, relativeDateFilterD1
             ]);
         });
 
         it('should override date filter if identifier is identical', () => {
             const afm = {
                 filters: [
-                    af1, df1
+                    af1, relativeDateFilterD1
                 ]
             };
             const attributeFilters: AFM.AttributeFilterItem[] = [];
-            const dateFilter = df1;
+            const dateFilter = relativeDateFilterD1;
 
             const enriched = appendFilters(afm, attributeFilters, dateFilter);
             expect(enriched.filters).toEqual([
-                af1, df1
+                af1, relativeDateFilterD1
             ]);
         });
 
         it('should duplicate date filter if ID different', () => {
             const afm = {
                 filters: [
-                    df1
+                    relativeDateFilterD1
                 ]
             };
             const attributeFilters: AFM.AttributeFilterItem[] = [];
-            const dateFilter = absoluteDateFilter;
+            const dateFilter = absoluteDateFilterAb;
 
             const enriched = appendFilters(afm, attributeFilters, dateFilter);
             expect(enriched.filters).toEqual([
-                df1, absoluteDateFilter
+                relativeDateFilterD1, absoluteDateFilterAb
             ]);
         });
 
         it('should delete date filter from AFM if "All time" date filter requested', () => {
             const afm = {
                 filters: [
-                    df1
+                    relativeDateFilterD1
                 ]
             };
-            const attributeFilters: AFM.AttributeFilterItem[] = [];
-            const dateFilter = df1AllTime;
-
-            const enriched = appendFilters(afm, attributeFilters, dateFilter);
+            const enriched = appendFilters(afm, [], allTimeDateFilterD1);
             expect(enriched.filters).toEqual([]);
         });
 
@@ -318,8 +327,26 @@ describe('AFM utils', () => {
             const afm: AFM.IAfm = {
                 filters: []
             };
-            const enriched = appendFilters(afm, [], absoluteDateFilter);
-            expect(enriched.filters).toEqual([absoluteDateFilter]);
+            const enriched = appendFilters(afm, [], absoluteDateFilterAb);
+            expect(enriched.filters).toEqual([absoluteDateFilterAb]);
+        });
+    });
+
+    describe('dateFiltersDataSetsMatch', () => {
+        it('should match same filters', () => {
+            expect(
+                dateFiltersDataSetsMatch(relativeDateFilterD1, allTimeDateFilterD1)
+            ).toEqual(true);
+
+            expect(
+                dateFiltersDataSetsMatch(relativeDateFilterD1, absoluteDateFilterD1)
+            ).toEqual(true);
+        });
+
+        it('should detect different filters', () => {
+            expect(
+                dateFiltersDataSetsMatch(relativeDateFilterD1, absoluteDateFilterAb)
+            ).toEqual(false);
         });
     });
 
@@ -327,7 +354,7 @@ describe('AFM utils', () => {
         it('should be false for only filters', () => {
             const afm = {
                 filters: [
-                    df1
+                    relativeDateFilterD1
                 ]
             };
 
