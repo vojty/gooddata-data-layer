@@ -94,15 +94,10 @@ function getDateFilterDateDataSet(filter: AFM.DateFilterItem): AFM.ObjQualifier 
     return null;
 }
 
-function dateFiltersDataSetsMatch(f1: AFM.DateFilterItem, f2: AFM.DateFilterItem) {
-    if ((isDateFilterRelative(f1) && isDateFilterRelative(f2)) || (
-        isDateFilterAbsolute(f1) && isDateFilterAbsolute(f2)
-    )) {
-        const d1 = getDateFilterDateDataSet(f1);
-        const d2 = getDateFilterDateDataSet(f2);
-        return getId(d1) === getId(d2);
-    }
-    return false;
+export function dateFiltersDataSetsMatch(f1: AFM.DateFilterItem, f2: AFM.DateFilterItem) {
+    const d1 = getDateFilterDateDataSet(f1);
+    const d2 = getDateFilterDateDataSet(f2);
+    return getId(d1) === getId(d2);
 }
 
 function isDateFilterAllTime(dateFilter: AFM.DateFilterItem): boolean {
