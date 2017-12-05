@@ -26,7 +26,7 @@ import { charts, tables } from './fixtures/VisObj.fixtures';
 import { TABLE, BAR, LINE, PIE } from '../../constants/visualizationTypes';
 
 describe('toAfmResultSpec', () => {
-    const translatedPopSuffix = 'translated-pop-suffix';
+    const translatedPopSuffix = ' - translated-pop-suffix';
 
     it('should convert simple measures', () => {
         expect(toAfmResultSpec(charts.bar.simpleMeasure, translatedPopSuffix)).toEqual({

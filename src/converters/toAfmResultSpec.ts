@@ -154,7 +154,7 @@ function convertMeasureAfm(
 
     if (measure.measure.showPoP) {
         const aliasPopProp = measure.measure.title
-            ? { alias: `${measure.measure.title} - ${translatedPopSuffix}` }
+            ? { alias: `${measure.measure.title}${translatedPopSuffix}` }
             : {};
         const popMeasure: AFM.IMeasure = {
             localIdentifier: `${afmMeasure.localIdentifier}_pop`,
