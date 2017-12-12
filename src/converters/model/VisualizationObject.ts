@@ -101,6 +101,17 @@ export interface IBuckets {
     measures: IMeasure[];
     categories: ICategory[];
     filters: EmbeddedFilter[];
+    totals?: IVisualizationTotal[];
+}
+
+export type TotalType = 'sum' | 'max' | 'min' | 'avg' | 'med' | 'nat';
+
+export interface IVisualizationTotal {
+    total: {
+        type: TotalType;
+        outputMeasureIndexes: number[];
+        alias?: string;
+    };
 }
 
 export interface IVisualizationObjectMeta {
