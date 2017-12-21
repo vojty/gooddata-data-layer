@@ -26,15 +26,19 @@
     "jest": "21.1.0",
     "jest-junit": "3.0.0",
     "ts-jest": "21.0.0",
-    "tslint-config-gooddata": "0.0.5",
+    "tslint-config-gooddata": "0.0.7",
     "typescript": "2.5.2"
+  },
+  "config": {
+    "tslint": "./src/**/*.ts"
   },
   "scripts": {
     "test": "jest --watch",
     "dev": "rm -rf dist && tsc --watch",
     "prepublish": "rm -rf dist && tsc",
-    "tslint": "./node_modules/tslint/bin/tslint --type-check --project tsconfig.base.json --format verbose './src/**/*.ts'",
-    "tslint-ci": "mkdir -p ./ci/results && ./node_modules/tslint/bin/tslint --type-check --project tsconfig.base.json --format checkstyle --out ./ci/results/tslint-results.xml './src/**/*.ts'",
+    "run-tslint": "./node_modules/tslint/bin/tslint -p tsconfig.base.json",
+    "tslint": "yarn run-tslint -- -t verbose '$npm_package_config_tslint'",
+    "tslint-ci": "mkdir -p ./ci/results && yarn run-tslint -- -t checkstyle -o ./ci/results/tslint-results.xml '$npm_package_config_tslint'",
     "validate": "tsc -p tsconfig.base.json --noEmit && yarn tslint",
     "validate-ci": "tsc -p tsconfig.base.json --noEmit && yarn tslint-ci"
   },
