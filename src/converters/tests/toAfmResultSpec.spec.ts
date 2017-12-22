@@ -1,6 +1,7 @@
 import { toAfmResultSpec } from '../toAfmResultSpec';
 import {
     simpleMeasure,
+    renamedMeasure,
     filteredMeasure,
     measureWithAbsoluteDate,
     measureWithRelativeDate,
@@ -11,8 +12,11 @@ import {
     measureWithSorting,
     categoryWithSorting,
     factBasedMeasure,
+    factBasedRenamedMeasure,
     attributeBasedMeasure,
+    attributeBasedRenamedMeasure,
     stackingAttribute,
+    stackingRenamedAttribute,
     attributeFilter,
     attributeFilterWithAll,
     dateFilter,
@@ -31,6 +35,13 @@ describe('toAfmResultSpec', () => {
     it('should convert simple measures', () => {
         expect(toAfmResultSpec(charts.bar.simpleMeasure, translatedPopSuffix)).toEqual({
             ...simpleMeasure,
+            type: BAR
+        });
+    });
+
+    it('should convert simple renamed measures', () => {
+        expect(toAfmResultSpec(charts.bar.renamedMeasure, translatedPopSuffix)).toEqual({
+            ...renamedMeasure,
             type: BAR
         });
     });
@@ -63,9 +74,23 @@ describe('toAfmResultSpec', () => {
         });
     });
 
+    it('should convert fact based renamed measures', () => {
+        expect(toAfmResultSpec(charts.bar.factBasedRenamedMeasure, translatedPopSuffix)).toEqual({
+            ...factBasedRenamedMeasure,
+            type: BAR
+        });
+    });
+
     it('should convert attribute based measures', () => {
         expect(toAfmResultSpec(charts.bar.attributeBasedMeasure, translatedPopSuffix)).toEqual({
             ...attributeBasedMeasure,
+            type: BAR
+        });
+    });
+
+    it('should convert attribute based renamed measures', () => {
+        expect(toAfmResultSpec(charts.bar.attributeBasedRenamedMeasure, translatedPopSuffix)).toEqual({
+            ...attributeBasedRenamedMeasure,
             type: BAR
         });
     });
@@ -143,6 +168,13 @@ describe('toAfmResultSpec', () => {
     it('should convert stacking attribute', () => {
         expect(toAfmResultSpec(charts.bar.stackingAttribute, translatedPopSuffix)).toEqual({
             ...stackingAttribute,
+            type: BAR
+        });
+    });
+
+    it('should convert stacking renamed attribute', () => {
+        expect(toAfmResultSpec(charts.bar.stackingRenamedAttribute, translatedPopSuffix)).toEqual({
+            ...stackingRenamedAttribute,
             type: BAR
         });
     });
