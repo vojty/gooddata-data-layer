@@ -44,7 +44,7 @@ $ yarn test
 ```
 git checkout master && git pull upstream master --tags
 npm version patch -m "Release v%s"
-npm publish
+npm publish --tag alpha
 git push upstream master --tags
 ```
 
