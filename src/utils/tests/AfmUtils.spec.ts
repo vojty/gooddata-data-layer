@@ -302,7 +302,7 @@ describe('AFM utils', () => {
             ]);
         });
 
-        it('should replace date filter if ID different', () => {
+        it('should append date filter if ID different', () => {
             const afm = {
                 filters: [
                     relativeDateFilterD1
@@ -313,7 +313,7 @@ describe('AFM utils', () => {
 
             const enriched = appendFilters(afm, attributeFilters, dateFilter);
             expect(enriched.filters).toEqual([
-                absoluteDateFilterAb
+                absoluteDateFilterAb, relativeDateFilterD1
             ]);
         });
 

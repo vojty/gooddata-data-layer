@@ -138,8 +138,11 @@ export function appendFilters(
         });
     }
 
-    if (afmDateFilter && !dateFilter) {
-        dateFilters.unshift(afmDateFilter);
+    if (
+        (afmDateFilter && dateFilter && !dateFiltersDataSetsMatch(afmDateFilter, dateFilter))
+        || (afmDateFilter && !dateFilter)
+    ) {
+        dateFilters.push(afmDateFilter);
     }
 
     const afmAttributeFilters = afmFilters.filter(filter => !isDateFilter(filter));
