@@ -49,6 +49,34 @@ export const simpleMeasure: IFixture = {
     }
 };
 
+export const renamedMeasure: IFixture = {
+    afm: {
+        measures: [
+            {
+                localIdentifier: 'm1',
+                definition: {
+                    measure: {
+                        item: {
+                            uri: METRIC_ID_URI
+                        }
+                    }
+                },
+                alias: 'Alias A1'
+            }
+        ]
+    },
+    resultSpec: {
+        dimensions: [
+            {
+                itemIdentifiers: ['measureGroup']
+            },
+            {
+                itemIdentifiers: []
+            }
+        ]
+    }
+};
+
 export const filteredMeasure: IFixture = {
     afm: {
         measures: [
@@ -504,6 +532,36 @@ export const factBasedMeasure: IFixture = {
     }
 };
 
+export const factBasedRenamedMeasure: IFixture = {
+    afm: {
+        measures: [
+            {
+                localIdentifier: 'm1',
+                definition: {
+                    measure: {
+                        item: {
+                            uri: '/gdc/md/project/obj/fact.id'
+                        },
+                        aggregation: 'sum'
+                    }
+                },
+                alias: 'Summary'
+            }
+        ]
+    },
+
+    resultSpec: {
+        dimensions: [
+            {
+                itemIdentifiers: ['measureGroup']
+            },
+            {
+                itemIdentifiers: []
+            }
+        ]
+    }
+};
+
 export const attributeBasedMeasure: IFixture = {
     afm: {
         measures: [
@@ -518,6 +576,36 @@ export const attributeBasedMeasure: IFixture = {
                     }
                 },
                 alias: 'COUNT of Measure M1',
+                format: '#,##0'
+            }
+        ]
+    },
+    resultSpec: {
+        dimensions: [
+            {
+                itemIdentifiers: ['measureGroup']
+            },
+            {
+                itemIdentifiers: []
+            }
+        ]
+    }
+};
+
+export const attributeBasedRenamedMeasure: IFixture = {
+    afm: {
+        measures: [
+            {
+                localIdentifier: 'm1',
+                definition: {
+                    measure: {
+                        item: {
+                            uri: ATTRIBUTE_DISPLAY_FORM_URI
+                        },
+                        aggregation: 'count'
+                    }
+                },
+                alias: 'Count',
                 format: '#,##0'
             }
         ]
@@ -584,6 +672,52 @@ export const stackingAttribute: IFixture = {
                         `${ATTRIBUTE_URI}?id=1`
                     ]
                 }
+            }
+        ]
+    },
+
+    resultSpec: {
+        dimensions: [
+            {
+                itemIdentifiers: ['a2']
+            },
+            {
+                itemIdentifiers: ['a1', 'measureGroup']
+            }
+        ]
+    }
+};
+
+export const stackingRenamedAttribute: IFixture = {
+    afm: {
+        measures: [
+            {
+                localIdentifier: 'm1',
+                definition: {
+                    measure: {
+                        item: {
+                            uri: METRIC_ID_URI
+                        },
+                        aggregation: 'sum'
+                    }
+                },
+                alias: 'My Metric Alias'
+            }
+        ],
+        attributes: [
+            {
+                alias: 'My Date Alias',
+                displayForm: {
+                    uri: DATE_DISPLAY_FORM_URI
+                },
+                localIdentifier: 'a1'
+            },
+            {
+                alias: 'My Attribute Alias',
+                displayForm: {
+                    uri: ATTRIBUTE_DISPLAY_FORM_URI
+                },
+                localIdentifier: 'a2'
             }
         ]
     },

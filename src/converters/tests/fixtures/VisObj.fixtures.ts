@@ -29,6 +29,26 @@ const simpleMeasure: IVisualizationObjectContent = {
     }
 };
 
+const renamedMeasure: IVisualizationObjectContent = {
+    type: 'bar',
+
+    buckets: {
+        measures: [{
+            measure: {
+                measureFilters: [],
+                objectUri: '/gdc/md/project/obj/metric.id',
+                showInPercent: false,
+                showPoP: false,
+                title: 'Measure M1',
+                alias: 'Alias A1',
+                type: 'metric'
+            }
+        }],
+        categories: [],
+        filters: []
+    }
+};
+
 const filteredMeasure: IVisualizationObjectContent = {
     type: 'bar',
 
@@ -160,6 +180,27 @@ const factBasedMeasure: IVisualizationObjectContent = {
     }
 };
 
+const factBasedRenamedMeasure: IVisualizationObjectContent = {
+    type: 'bar',
+
+    buckets: {
+        measures: [{
+            measure: {
+                measureFilters: [],
+                objectUri: '/gdc/md/project/obj/fact.id',
+                showInPercent: false,
+                showPoP: false,
+                title: 'SUM of Measure M1',
+                alias: 'Summary',
+                type: 'fact',
+                aggregation: 'sum'
+            }
+        }],
+        categories: [],
+        filters: []
+    }
+};
+
 const attributeBasedMeasure: IVisualizationObjectContent = {
     type: 'bar',
 
@@ -171,6 +212,27 @@ const attributeBasedMeasure: IVisualizationObjectContent = {
                 showInPercent: false,
                 showPoP: false,
                 title: 'COUNT of Measure M1',
+                type: 'attribute',
+                aggregation: 'count'
+            }
+        }],
+        categories: [],
+        filters: []
+    }
+};
+
+const attributeBasedRenamedMeasure: IVisualizationObjectContent = {
+    type: 'bar',
+
+    buckets: {
+        measures: [{
+            measure: {
+                measureFilters: [],
+                objectUri: ATTRIBUTE_DISPLAY_FORM_URI,
+                showInPercent: false,
+                showPoP: false,
+                title: 'COUNT of Measure M1',
+                alias: 'Count',
                 type: 'attribute',
                 aggregation: 'count'
             }
@@ -521,6 +583,48 @@ const stackingAttribute: IVisualizationObjectContent = {
     }
 };
 
+const stackingRenamedAttribute: IVisualizationObjectContent = {
+    type: 'bar',
+    buckets: {
+        measures: [
+            {
+                measure: {
+                    aggregation: 'sum',
+                    showInPercent: false,
+                    objectUri: '/gdc/md/project/obj/metric.id',
+                    showPoP: false,
+                    format: '#,##0.00',
+                    title: 'Sum of Bundle cost',
+                    alias: 'My Metric Alias',
+                    type: 'fact',
+                    measureFilters: []
+                }
+            }
+        ],
+        categories: [
+            {
+                category: {
+                    alias: 'My Date Alias',
+                    type: 'date',
+                    collection: 'view',
+                    displayForm: DATE_DISPLAY_FORM_URI,
+                    attribute: DATE_URI
+                }
+            },
+            {
+                category: {
+                    alias: 'My Attribute Alias',
+                    type: 'attribute',
+                    collection: 'stack',
+                    attribute: ATTRIBUTE_URI,
+                    displayForm: ATTRIBUTE_DISPLAY_FORM_URI
+                }
+            }
+        ],
+        filters: []
+    }
+};
+
 const measuresOnly: IVisualizationObjectContent = {
     type: 'pie',
     buckets: {
@@ -675,11 +779,14 @@ export const tables = {
 export const charts = {
     bar: {
         simpleMeasure,
+        renamedMeasure,
         filteredMeasure,
         measureWithRelativeDate,
         measureWithAbsoluteDate,
         factBasedMeasure,
+        factBasedRenamedMeasure,
         attributeBasedMeasure,
+        attributeBasedRenamedMeasure,
         showInPercent,
         showInPercentWithDate,
         measureWithSorting,
@@ -691,7 +798,8 @@ export const charts = {
         dateFilterWithUndefs,
         attributeFilter,
         attributeFilterWithAll,
-        stackingAttribute
+        stackingAttribute,
+        stackingRenamedAttribute
     },
     line: {
         segmentedAndTrended
