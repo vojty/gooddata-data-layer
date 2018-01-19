@@ -179,7 +179,8 @@ describe('handleMeasureDateFilter', () => {
             }
         }
     };
-    const globalDateFilter: AFM.DateFilterItem = {
+
+    const globalDateFilterA: AFM.DateFilterItem = {
         absoluteDateFilter: {
             dataSet: {
                 identifier: 'd1'
@@ -188,7 +189,18 @@ describe('handleMeasureDateFilter', () => {
             to: '2'
         }
     };
-    it('should move global filter to measures without date filter, if some metric has date filter', () => {
+
+    const globalDateFilterB: AFM.DateFilterItem = {
+        absoluteDateFilter: {
+            dataSet: {
+                identifier: 'd2'
+            },
+            from: '3',
+            to: '4'
+        }
+    };
+
+    it('should move global filters to measures without date filter, if some metric has date filter', () => {
         const afm: AFM.IAfm = {
             measures: [
                 measureWithDateFilter,
@@ -214,7 +226,8 @@ describe('handleMeasureDateFilter', () => {
                 }
             ],
             filters: [
-                globalDateFilter
+                globalDateFilterA,
+                globalDateFilterB
             ]
         };
 
@@ -228,7 +241,7 @@ describe('handleMeasureDateFilter', () => {
                             item: {
                                 identifier: 'm2'
                             },
-                            filters: [globalDateFilter]
+                            filters: [globalDateFilterA, globalDateFilterB]
                         }
                     }
                 },
@@ -239,7 +252,7 @@ describe('handleMeasureDateFilter', () => {
                             item: {
                                 identifier: 'm3'
                             },
-                            filters: [globalDateFilter]
+                            filters: [globalDateFilterA, globalDateFilterB]
                         }
                     }
                 }
@@ -264,7 +277,7 @@ describe('handleMeasureDateFilter', () => {
                 }
             ],
             filters: [
-                globalDateFilter
+                globalDateFilterA
             ]
         };
         expect(handleMeasureDateFilter(afm)).toEqual(afm);
@@ -276,7 +289,7 @@ describe('handleMeasureDateFilter', () => {
                 measureWithDateFilter
             ],
             filters: [
-                globalDateFilter
+                globalDateFilterA
             ]
         };
         const expectedAfm: AFM.IAfm = {
@@ -290,7 +303,7 @@ describe('handleMeasureDateFilter', () => {
 
     it('should handle AFM without measures', () => {
         const afmWithFilterOnly: AFM.IAfm = {
-            filters: [globalDateFilter]
+            filters: [globalDateFilterA]
         };
 
         expect(handleMeasureDateFilter(afmWithFilterOnly)).toEqual(afmWithFilterOnly);

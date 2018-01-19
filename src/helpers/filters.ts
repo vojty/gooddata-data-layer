@@ -46,13 +46,14 @@ function measureHasDateFilter(simpleMeasure: AFM.ISimpleMeasure) {
     return ensureArray(simpleMeasure.filters).some(isDateFilter);
 }
 
-function getGlobalDateFilter(afm: AFM.IAfm): AFM.DateFilterItem {
+function getGlobalDateFilters(afm: AFM.IAfm): AFM.DateFilterItem[] {
+    const ret: AFM.DateFilterItem[] = [];
     for (const filter of ensureArray(afm.filters)) {
         if (isFilterItem(filter) && isDateFilter(filter)) {
-            return filter;
+            ret.push(filter);
         }
     }
-    return null;
+    return ret;
 }
 
 /**
@@ -65,8 +66,8 @@ function getGlobalDateFilter(afm: AFM.IAfm): AFM.DateFilterItem {
  * 3. M1 is untouched
  */
 export function handleMeasureDateFilter(afm: AFM.IAfm): AFM.IAfm {
-    const globalDateFilter: AFM.DateFilterItem = getGlobalDateFilter(afm);
-    if (!globalDateFilter) {
+    const globalDateFilters = getGlobalDateFilters(afm);
+    if (!globalDateFilters.length) {
         return afm;
     }
 
@@ -95,7 +96,7 @@ export function handleMeasureDateFilter(afm: AFM.IAfm): AFM.IAfm {
                 definition: {
                     measure: {
                         ...simpleMeasure,
-                        filters: [...ensureArray(simpleMeasure.filters), globalDateFilter]
+                        filters: [...ensureArray(simpleMeasure.filters), ...globalDateFilters]
                     }
                 }
             };
