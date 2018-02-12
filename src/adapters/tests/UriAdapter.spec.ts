@@ -1,23 +1,25 @@
-import * as GoodData from 'gooddata';
+import { factory, SDK } from 'gooddata';
 import { charts } from '../../converters/tests/fixtures/VisObj.fixtures';
 import { UriAdapter } from '../UriAdapter';
+
+const sdk = factory();
 
 describe('UriAdapter', () => {
     const projectId = 'FoodMartDemo';
     const uri = '/gdc/md/FoodMartDemo/1';
     const uri2 = '/gdc/md/FoodMartDemo/2';
 
-    function createDummySDK(): typeof GoodData {
+    function createDummySDK(): SDK {
         const visualizationObject = {
             visualizationObject: {
                 content: charts.simpleMeasure
             }
         };
 
-        jest.spyOn(GoodData.xhr, 'get')
+        jest.spyOn(sdk.xhr, 'get')
             .mockImplementation(() => Promise.resolve(visualizationObject));
 
-        return GoodData;
+        return sdk;
     }
 
     afterEach(() => {

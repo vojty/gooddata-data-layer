@@ -1,5 +1,5 @@
 import { AFM, Execution, VisualizationObject } from '@gooddata/typings';
-import * as GoodData from 'gooddata';
+import { SDK } from 'gooddata';
 
 import { IAdapter } from '../interfaces/Adapter';
 import { IDataSource } from '../interfaces/DataSource';
@@ -9,7 +9,7 @@ import { appendFilters } from '../utils/AfmUtils';
 import { IDataSourceParams } from '../interfaces/DataSourceParams';
 
 function defaultExecuteAdapterFactory(
-    sdk: typeof GoodData,
+    sdk: SDK,
     projectId: string
 ): IAdapter<Execution.IExecutionResponses> {
     return new ExecuteAfmAdapter(sdk, projectId);
@@ -20,7 +20,7 @@ export class UriAdapter implements IAdapter<Execution.IExecutionResponses> {
     private visualizationObject: VisualizationObject.IVisualizationObjectResponse;
 
     constructor(
-        private sdk: typeof GoodData,
+        private sdk: SDK,
         private projectId: string,
         private executeAdapterFactory: any = defaultExecuteAdapterFactory
     ) {}

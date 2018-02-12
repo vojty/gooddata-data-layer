@@ -2,6 +2,10 @@
 # yarn lockfile v1
 
 
+"@gooddata/typings@0.0.6-pbenes-visualization-object-2018-02-09T08-11-51-489Z":
+  version "0.0.6-pbenes-visualization-object-2018-02-09T08-11-51-489Z"
+  resolved "https://registry.yarnpkg.com/@gooddata/typings/-/typings-0.0.6-pbenes-visualization-object-2018-02-09T08-11-51-489Z.tgz#0743b0cc9bf1a8c9992e449bbabf9d0b23b32c6f"
+
 "@gooddata/typings@0.0.6-pbenes-visualization-object-2018-02-09T14-03-56-154Z":
   version "0.0.6-pbenes-visualization-object-2018-02-09T14-03-56-154Z"
   resolved "https://registry.yarnpkg.com/@gooddata/typings/-/typings-0.0.6-pbenes-visualization-object-2018-02-09T14-03-56-154Z.tgz#7db6264d3b858bee5ef4aab2bc03ec3525698346"
@@ -931,11 +935,11 @@ globals@^9.18.0:
   version "9.18.0"
   resolved "https://registry.yarnpkg.com/globals/-/globals-9.18.0.tgz#aa3896b3e69b487f17e31ed2143d69a8e30c2d8a"
 
-gooddata@4.5.0-pbenes-visualization-object-2018-02-09T14-06-11-864Z:
-  version "4.5.0-pbenes-visualization-object-2018-02-09T14-06-11-864Z"
-  resolved "https://registry.yarnpkg.com/gooddata/-/gooddata-4.5.0-pbenes-visualization-object-2018-02-09T14-06-11-864Z.tgz#6fa9c4b0492c685209678a199cf3a6e7e18bd0b3"
+gooddata@4.5.0-vojty-factory2-2018-02-13T12-25-30-160Z:
+  version "4.5.0-vojty-factory2-2018-02-13T12-25-30-160Z"
+  resolved "https://registry.yarnpkg.com/gooddata/-/gooddata-4.5.0-vojty-factory2-2018-02-13T12-25-30-160Z.tgz#92706a1f038ee50d0b09314ce0d0b5750719c7b3"
   dependencies:
-    "@gooddata/typings" "0.0.6-pbenes-visualization-object-2018-02-09T14-03-56-154Z"
+    "@gooddata/typings" "0.0.6-pbenes-visualization-object-2018-02-09T08-11-51-489Z"
     es6-promise "3.0.2"
     fetch-cookie "0.4.0"
     invariant "2.2.2"
